@@ -47,6 +47,9 @@ LIMITES
 * SUOMI VIIRS C2
 * MODIS C6.1
 
+* https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/viirs-i-band-active-fire-data
+
 
 yarn create react-app my-app --template typescript
 npx create-react-app client --use-npm --no-optional --template typescript
+
