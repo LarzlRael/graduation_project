@@ -29,19 +29,18 @@
 </head>
 
 <body>
-  <div class="form">
-    <form action="" id="form">
-      <input type="date" name="" id="calendario">
-      <button type="submit">Consultar</button>
-    </form>
-    <div id="reactbox"></div>
-  </div>
+
+  <div id="app"></div>
 
   <div id="map">
   </div>
 
+  {{!-- React Library --}}
   <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+
   <script src="js/qgis2web_expressions.js"></script>
   <script src="js/qgis2web_expressions.js"></script>
   <script src="js/leaflet.js"></script>
@@ -58,9 +57,9 @@
   <script src="js/leaflet-measure.js"></script>
   <script src="js/leaflet-search.js"></script>
   <script src="data/Departamentos_Bolivia_2015_1.js"></script>
-  <script src="data/FocosdecalorBolivia_2.js"></script>
+  <script src="js/services/mapServices.js"></script>
   <script src="data/main.js"></script>
-  <script src="js/react.js"></script>
+  <script src="js/react.js" type="text/jsx"></script>
   <script>
     var map = L.map('map', {
       zoomControl: true, maxZoom: 15, minZoom: 2
@@ -260,79 +259,68 @@
     map.getPane('pane_FocosdecalorBolivia_2').style['mix-blend-mode'] = 'normal';
 
 
-    const pintarMapa = (date = '2020-11-14') => {
-      const queryDatabase = consulta(
-        date,
-      ).then((json_FocosdecalorBolivia_2) => {
+    const pintarMapa = (date, json_FocosdecalorBolivia_2) => {
 
-        var layer_FocosdecalorBolivia_2 = new L.geoJson(json_FocosdecalorBolivia_2, {
-          attribution: '',
-          interactive: true,
-          dataVar: 'json_FocosdecalorBolivia_2',
-          layerName: 'layer_FocosdecalorBolivia_2',
-          pane: 'pane_FocosdecalorBolivia_2',
-          onEachFeature: pop_FocosdecalorBolivia_2,
-          pointToLayer: function (feature, latlng) {
-            var context = {
-              feature: feature,
-              variables: {}
-            };
-            return L.circleMarker(latlng, style_FocosdecalorBolivia_2_0(feature));
-          },
-        });
-        bounds_group.addLayer(layer_FocosdecalorBolivia_2);
-        map.addLayer(layer_FocosdecalorBolivia_2);
-        var osmGeocoder = new L.Control.Geocoder({
-          collapsed: true,
-          position: 'topleft',
-          text: 'Search',
-          title: 'Testing'
-        }).addTo(map);
 
-        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
-          .className += ' fa fa-search';
-        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
-          .title += 'Search for a place';
-        var baseMaps = {};
-        L.control.layers(baseMaps, {'Focos de calor Bolivia<br /><table><tr><td style="text-align: center;"><img src="legend/FocosdecalorBolivia_2_2083290.png" /></td><td>208 - 329</td></tr><tr><td style="text-align: center;"><img src="legend/FocosdecalorBolivia_2_3293431.png" /></td><td>329 - 343</td></tr><tr><td style="text-align: center;"><img src="legend/FocosdecalorBolivia_2_3433672.png" /></td><td>343 - 367</td></tr></table>': layer_FocosdecalorBolivia_2, '<img src="legend/Departamentos_Bolivia_2015_1.png" /> Departamentos_Bolivia_2015': layer_Departamentos_Bolivia_2015_1, "Capa Base": layer_CapaBase_0, }).addTo(map);
-        setBounds();
-        map.addControl(new L.Control.Search({
-          layer: layer_FocosdecalorBolivia_2,
-          initial: false,
-          hideMarkerOnCollapse: true,
-          propertyName: 'acq_time'
-        }));
-        document.getElementsByClassName('search-button')[0].className +=
-          ' fa fa-binoculars';
-        resetLabels([layer_FocosdecalorBolivia_2]);
-        map.on("zoomend", function () {
-          resetLabels([layer_FocosdecalorBolivia_2]);
-        });
-        map.on("layeradd", function () {
-          resetLabels([layer_FocosdecalorBolivia_2]);
-        });
-        map.on("layerremove", function () {
-          resetLabels([layer_FocosdecalorBolivia_2]);
-        });
+      var elem = document.querySelectorAll(".leaflet-interactive");
+      elem.forEach(element => {
+        element.remove();
+      })
+
+      var layer_FocosdecalorBolivia_2 = new L.geoJson(json_FocosdecalorBolivia_2, {
+        attribution: '',
+        interactive: true,
+        dataVar: 'json_FocosdecalorBolivia_2',
+        layerName: 'layer_FocosdecalorBolivia_2',
+        pane: 'pane_FocosdecalorBolivia_2',
+        onEachFeature: pop_FocosdecalorBolivia_2,
+        pointToLayer: function (feature, latlng) {
+          var context = {
+            feature: feature,
+            variables: {}
+          };
+          return L.circleMarker(latlng, style_FocosdecalorBolivia_2_0(feature));
+        },
       });
+
+      var baseMaps = {};
+
+      const table = document.querySelector('.leaflet-control-layers.leaflet-control');
+      const search = document.querySelector('.leaflet-control-search.leaflet-control');
+
+      if (search) {
+        search.remove();
+      }
+      if (table) {
+        table.remove();
+      }
+
+      L.control.layers(baseMaps, {'Focos de calor Bolivia<br /><table id="table"><tr><td style="text-align: center;"><img src="legend/FocosdecalorBolivia_2_2083290.png" /></td><td>208 - 329</td></tr><tr><td style="text-align: center;"><img src="legend/FocosdecalorBolivia_2_3293431.png" /></td><td>329 - 343</td></tr><tr><td style="text-align: center;"><img src="legend/FocosdecalorBolivia_2_3433672.png" /></td><td>343 - 367</td></tr></table>': layer_FocosdecalorBolivia_2, '<img src="legend/Departamentos_Bolivia_2015_1.png" /> Departamentos_Bolivia_2015': layer_Departamentos_Bolivia_2015_1, "Capa Base": layer_CapaBase_0, }).addTo(map);
+
+      setBounds();
+      map.addControl(new L.Control.Search({
+        layer: layer_FocosdecalorBolivia_2,
+        initial: false,
+        hideMarkerOnCollapse: true,
+        propertyName: 'acq_time'
+      }));
+      document.getElementsByClassName('search-button')[0].className +=
+        ' fa fa-binoculars';
+      resetLabels([layer_FocosdecalorBolivia_2]);
+      map.on("zoomend", function () {
+        resetLabels([layer_FocosdecalorBolivia_2]);
+      });
+      map.on("layeradd", function () {
+        resetLabels([layer_FocosdecalorBolivia_2]);
+      });
+      map.on("layerremove", function () {
+        resetLabels([layer_FocosdecalorBolivia_2]);
+      });
+
     }
 
 
-    pintarMapa();
-
-
-
-
   </script>
-
-  <script type="text/jsx">
-    const name = 'Josh Perez';
-    const element = <h1>Hello, {name}</h1>;
-    const divContainer = document.getElementById('reactbox');
-    console.log('hola que fue');
-    console.log(divContainer);
-    ReactDOM.render(element, divContainer);
-    </script>
 </body>
 
 </html>
