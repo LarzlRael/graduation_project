@@ -58,7 +58,6 @@
   <script src="js/leaflet-search.js"></script>
   <script src="data/Departamentos_Bolivia_2015_1.js"></script>
   <script src="js/services/mapServices.js"></script>
-  <script src="data/main.js"></script>
   <script src="js/react.js" type="text/jsx"></script>
   <script>
     var map = L.map('map', {
@@ -286,7 +285,6 @@
       var baseMaps = {};
 
       const table = document.querySelector('.leaflet-control-layers.leaflet-control');
-      const search = document.querySelector('.leaflet-control-search.leaflet-control');
 
       if (search) {
         search.remove();

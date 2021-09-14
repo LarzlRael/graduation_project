@@ -16,7 +16,7 @@ export class MapsController {
   constructor(private mapsService: MapsService) { }
 
   @Get()
-  @Render('map/index')
+  @Render('map/index2')
   geoLog() {
     return { token: 'hello word', email: 'que fue' };
   }
