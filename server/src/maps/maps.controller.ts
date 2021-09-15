@@ -6,14 +6,28 @@ import {
   Post,
   Render,
   Res,
+  HttpStatus
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MapsService } from './maps.service';
 import { MapDto } from './dto/mapDto';
+import { join } from 'path';
 
 @Controller('maps')
 export class MapsController {
   constructor(private mapsService: MapsService) { }
+
+
+  /* @Get('*')
+  showMenu(@Res() res: Response) {
+    console.log(join(__dirname, '../..', 'public/main/index.html'));
+    res.sendFile(join(__dirname, '../..', 'public/main/index.html')),
+      function (err) {
+        if (err) {
+          res.status(500).send(err);
+        }
+      };
+  } */
 
   @Get()
   @Render('map/index2')
@@ -31,9 +45,24 @@ export class MapsController {
   }
   @Get('getbyDate/:date')
   async getHeatSourcesByDate(@Res() res: Response, @Param('date') date) {
-    console.log(date);
     const result = await this.mapsService.getHeatSourcesByDate(date);
     return res.json(result);
+  }
+  @Get('refreshinformation')
+  async loadData(@Res() res: Response) {
+
+    const result = await this.mapsService.saveNewData();
+    if (result) {
+      res.status(HttpStatus.OK).json({
+        ok: true,
+        msg: 'Informacion actualizada'
+      })
+    } else {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        ok: false,
+        msg: 'La base de datos ya esta actualizada'
+      })
+    }
   }
 
   @Post('getbybetweendate')

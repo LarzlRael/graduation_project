@@ -9,6 +9,8 @@ import { ClassificationModule } from './classification/classification.module';
 import { AnalysisModule } from './analysis/analysis.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +29,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.PASSWORD,
       database: process.env.DATABASE,
       synchronize: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
     }),
   ],
   controllers: [AppController],

@@ -1,7 +1,12 @@
 /* eslint-disable prettier/prettier */
 
 const Calendario = () => {
-  const today = new Date().toISOString().slice(0, 10);
+
+  const date = new Date();
+  date.setHours(date.getHours() - 4);
+  const today = date.toISOString().slice(0, 10);
+
+
   const [dateState, setDate] = React.useState({
     dateStart: today,
     dateEnd: today,
