@@ -22,7 +22,8 @@ export class MapsService {
 
   async getHeatSourcesByBetweenDate(mapdto: MapDto): Promise<MapResponse> {
     const query = `
-    SELECT *, st_x(geometry) as lng, st_y(geometry) as lat 
+
+    SELECT distinct *, st_x(geometry) as lng, st_y(geometry) as lat 
     FROM fire_one_year
     WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
     order by brightness ${mapdto.orderBy};`;
@@ -31,7 +32,7 @@ export class MapsService {
 
   async getHighestOrLowestHeatSources(mapdto: MapDto): Promise<MapResponse> {
     const query = `
-    SELECT *, st_x(geometry) as lng, st_y(geometry) as lat 
+    SELECT distinct *, st_x(geometry) as lng, st_y(geometry) as lat 
     FROM fire_one_year
     WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
     order by brightness ${mapdto.orderBy};`;
@@ -41,7 +42,7 @@ export class MapsService {
   async getHeatSourcesToday() {
     const today = new Date().toISOString().slice(0, 10);
     const query = `
-    SELECT *, st_x(geometry) as lng, st_y(geometry) as lat 
+    SELECT distinct *, st_x(geometry) as lng, st_y(geometry) as lat 
     FROM fire_one_year
     WHERE acq_date = '${today}'`;
     return this.saveJsonAndParseAsGeoJson(query);

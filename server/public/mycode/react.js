@@ -1,4 +1,9 @@
 /* eslint-disable prettier/prettier */
+const Loading = () => {
+  return (
+    <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+  )
+}
 
 const Calendario = () => {
 
@@ -10,7 +15,7 @@ const Calendario = () => {
   const [dateState, setDate] = React.useState({
     dateStart: today,
     dateEnd: today,
-    geoJson: {},
+    geoJson: null,
   });
   const [loading, setLoading] = React.useState(false);
 
@@ -29,10 +34,9 @@ const Calendario = () => {
     let geoJsonData;
     setLoading(true);
     if (dateState.dateStart === dateState.dateEnd) {
-      console.log('consultado de un solo dia')
+
       geoJsonData = await getByDate(dateState.dateStart);
     } else {
-      console.log('consultado entre 2 dias')
       geoJsonData = await getByBetweenDate(dateState.dateStart, dateState.dateEnd);
     }
     setLoading(false);
@@ -51,8 +55,10 @@ const Calendario = () => {
     mostrarPuntos();
   }
   return (
-    <div className="form">
+    <div className="calendar">
+      <h3>Consultar Focos de calor</h3>
       <form onSubmit={onSubmit}>
+        <span className="fromTo">Desde</span>
         <input
           type="date"
           name="dateStart"
@@ -60,6 +66,7 @@ const Calendario = () => {
           value={dateState.dateStart}
           onChange={({target}) => onChange(target.value, target.name)}
         />
+        <span className="fromTo">Hasta</span>
         <input
           type="date"
           name="dateEnd"
@@ -69,13 +76,16 @@ const Calendario = () => {
           onChange={({target}) => onChange(target.value, target.name)}
         />
         <button type="submit">Consultar</button>
-        <div className="">
-          {dateState.dateStart == dateState.dateEnd ? <span>Consultado focos de calor de {dateState.dateStart} </span>
-            : <span>consultado focos de calor en {dateState.dateStart} hasta {dateState.dateEnd}</span>
+        <div className="information">
+          {dateState.dateStart == dateState.dateEnd ? <span>Consultado focos de calor de: <br /> <b>{dateState.dateStart}</b> </span>
+            : <span>Consultado focos de calor en: <br /> <b>{dateState.dateStart}</b> hasta <b>{dateState.dateEnd}</b></span>
           }
+          <br />
+          Se registraron <b>{dateState.geoJson === null ? '0' : dateState.geoJson.features.length}</b> focos de calor
         </div>
         {
-          loading && <div>Cargando</div>
+          loading &&
+          <Loading />
         }
       </form>
     </div>
