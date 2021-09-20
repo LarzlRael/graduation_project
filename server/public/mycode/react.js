@@ -54,6 +54,14 @@ const Calendario = () => {
     e.preventDefault();
     mostrarPuntos();
   }
+
+  const convertirFecha = (date) => {
+    /* 2021-09-14 */
+    const newDate = date.split('-');
+    const datecurrent = `${newDate[2]}-${newDate[1]}-${newDate[0]}`;
+    console.log(datecurrent);
+    return datecurrent;
+  }
   return (
     <div className="calendar">
       <h3>Consultar Focos de calor</h3>
@@ -77,8 +85,9 @@ const Calendario = () => {
         />
         <button type="submit">Consultar</button>
         <div className="information">
-          {dateState.dateStart == dateState.dateEnd ? <span>Consultado focos de calor de: <br /> <b>{dateState.dateStart}</b> </span>
-            : <span>Consultado focos de calor en: <br /> <b>{dateState.dateStart}</b> hasta <b>{dateState.dateEnd}</b></span>
+          {dateState.dateStart == dateState.dateEnd ? <span>Consultado focos de calor de: <br />
+            <b>{convertirFecha(dateState.dateStart)}</b> </span>
+            : <span>Consultado focos de calor en: <br /> <b>{convertirFecha(dateState.dateStart)}</b> hasta <b>{convertirFecha(dateState.dateEnd)}</b></span>
           }
           <br />
           Se registraron <b>{dateState.geoJson === null ? '0' : dateState.geoJson.features.length}</b> focos de calor

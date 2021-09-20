@@ -22,7 +22,6 @@ export class MapsService {
 
   async getHeatSourcesByBetweenDate(mapdto: MapDto): Promise<MapResponse> {
     const query = `
-
     SELECT distinct *, st_x(geometry) as lng, st_y(geometry) as lat 
     FROM fire_one_year
     WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
