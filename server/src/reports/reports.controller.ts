@@ -1,8 +1,6 @@
 import { Controller, Get, Param, Res } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { Response } from 'express';
-import { join } from 'path';
-import { truncate } from 'fs';
 
 @Controller('reports')
 export class ReportsController {
@@ -13,8 +11,10 @@ export class ReportsController {
     console.log(day);
     const report = await this.reportsService.getReportCVSbyOneDate(day);
     if (report.ok) {
-      const pathFile = join(__dirname, '../../public', report.filename);
-      res.download(pathFile);
+      return res.json({
+        ok: true,
+        csv: report.filename,
+      });
     } else {
       return res.json({
         ok: false,
@@ -27,15 +27,49 @@ export class ReportsController {
   async geoJsonReport(@Res() res: Response, @Param('day') day) {
     console.log(day);
     const report = await this.reportsService.getReportGeoJSONByOneDate(day);
+    return res.json(report);
+  }
+
+  @Get('geojsonreportbytwodays/:dateStart/:dateEnd')
+  async geoJsonReportByTwoDates(
+    @Res() res: Response,
+    @Param('dateStart') dateStart: Date,
+    @Param('dateEnd') dateEnd: Date,
+  ) {
+    const report = await this.reportsService.getReportGeoJSONByBetweenDates(
+      dateStart,
+      dateEnd,
+    );
     if (report.ok) {
-      const pathFile = join(__dirname, '../../public', report.filename);
-      res.download(pathFile);
+      return res.json(report.filename);
+    } else {
+      return res.json({
+        ok: false,
+        mensaje: 'No se econtraron registro de focos de calor en esa fecha',
+      });
+    }
+  }
+
+  @Get('getreportcvsbytwodates/:dateStart/:dateEnd')
+  async geoCVSReportByTwoDates(
+    @Res() res: Response,
+    @Param('dateStart') dateStart: Date,
+    @Param('dateEnd') dateEnd: Date,
+  ) {
+    const report = await this.reportsService.getReportCVSbyBetweenTwoDates(
+      dateStart,
+      dateEnd,
+    );
+    if (report.ok) {
+      return res.json({
+        ok: true,
+        csv: report.filename,
+      });
     } else {
       res.json({
         ok: false,
         mensaje: 'No se econtraron registro de focos de calor en esa fecha',
       });
-      /* truncate(join(__dirname, '../../public', report.filename)) */
     }
   }
 }

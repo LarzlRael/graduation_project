@@ -60,7 +60,7 @@ export class MapsController {
     } else {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         ok: false,
-        msg: 'La base de datos ya esta actualizada'
+        msg: 'La base de datos ya esta actualizada',
       })
     }
   }
