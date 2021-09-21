@@ -59,9 +59,9 @@ const Calendario = () => {
     /* 2021-09-14 */
     const newDate = date.split('-');
     const datecurrent = `${newDate[2]}-${newDate[1]}-${newDate[0]}`;
-    console.log(datecurrent);
     return datecurrent;
   }
+
   return (
     <div className="calendar">
       <h3>Consultar Focos de calor</h3>
