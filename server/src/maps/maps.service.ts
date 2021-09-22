@@ -47,8 +47,7 @@ export class MapsService {
     return this.saveJsonAndParseAsGeoJson(query);
   }
 
-
-  async saveNewData(): Promise<boolean> {
+  async saveNewData(path: string): Promise<boolean> {
     try {
       const today = new Date().toISOString().slice(0, 10);
 
@@ -56,11 +55,11 @@ export class MapsService {
         `SELECT * FROM public.fire_one_year where acq_date ='${today}' limit 1;`,
       );
       if (verifyData.rows.length > 0) {
-        console.log('los datos ya fueron actualizados')
+        console.log('los datos ya fueron actualizados');
         return false;
       } else {
         const query = `
-        copy public.fire_one_year (latitude, longitude, brightness, scan, track, acq_date, acq_time, satellite, instrument, confidence, version, bright_t31, frp, daynight) FROM 'D:/Descargas/fire2dias/fire_nrt_M-C61_221619.csv' CSV ENCODING 'UTF8' QUOTE '\"' ESCAPE '''';
+        copy public.fire_one_year (latitude, longitude, brightness, scan, track, acq_date, acq_time, satellite, instrument, confidence, version, bright_t31, frp, daynight) FROM '${path}' CSV ENCODING 'UTF8' QUOTE '\"' ESCAPE '''';
         `;
         await this.pool.query(query);
         await this.pool.query(`

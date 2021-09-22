@@ -1,4 +1,5 @@
 import { MapResponse, Feature } from '../interfaces/mapsResponse';
+import { extname } from 'path';
 
 export const createFileInfoRequest = (features: Feature[]) => {
   const data: MapResponse = {
@@ -12,4 +13,24 @@ export const createFileInfoRequest = (features: Feature[]) => {
   };
 
   return data;
+};
+
+export const editFileName = (req, file, callback) => {
+  const name = file.originalname.split('.')[0];
+  const fileExtName = extname(file.originalname);
+  const randomName = Array(4)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 16).toString(16))
+    .join('');
+  callback(null, `${name}-${randomName}${fileExtName}`);
+};
+
+export const cvsFilter = (req, file, callback) => {
+  if (!file.originalname.match(/\.(csv)$/)) {
+    return callback(
+      new Error('Solo son permitidos archivos de tipo .csv'),
+      false,
+    );
+  }
+  callback(null, true);
 };

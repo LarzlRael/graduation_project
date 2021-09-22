@@ -6,15 +6,17 @@ import {
   databasePoolFactory,
   ConfigService,
 } from 'src/databasePool';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [ConfigModule.forRoot(), MulterModule.register({ dest: './files' }),],
   providers: [
     {
       provide: 'DATABASE_POOL',
       inject: [ConfigService],
       useFactory: databasePoolFactory,
     },
+
     MapsService,
   ],
   controllers: [MapsController],

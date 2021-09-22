@@ -6,17 +6,22 @@ import {
   Post,
   Render,
   Res,
-  HttpStatus
+  HttpStatus,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MapsService } from './maps.service';
 import { MapDto } from './dto/mapDto';
 import { join } from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { cvsFilter, editFileName } from './utils/utils';
+import { diskStorage } from 'multer';
+import { readFile, writeFile, truncate, unlink } from 'fs';
 
 @Controller('maps')
 export class MapsController {
   constructor(private mapsService: MapsService) { }
-
 
   /* @Get('*')
   showMenu(@Res() res: Response) {
@@ -48,22 +53,6 @@ export class MapsController {
     const result = await this.mapsService.getHeatSourcesByDate(date);
     return res.json(result);
   }
-  @Get('refreshinformation')
-  async loadData(@Res() res: Response) {
-
-    const result = await this.mapsService.saveNewData();
-    if (result) {
-      res.status(HttpStatus.OK).json({
-        ok: true,
-        msg: 'Informacion actualizada'
-      })
-    } else {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        ok: false,
-        msg: 'La base de datos ya esta actualizada',
-      })
-    }
-  }
 
   @Post('getbybetweendate')
   async getbyBetweenDate(@Res() res: Response, @Body() mapDto: MapDto) {
@@ -79,9 +68,54 @@ export class MapsController {
     const result = await this.mapsService.getHighestOrLowestHeatSources(mapDto);
     return res.json(result);
   }
+
   @Get('today')
   async getHeatSourcesToday(@Res() res: Response) {
     const result = await this.mapsService.getHeatSourcesToday();
     return res.json(result);
+  }
+
+  @Get('uploadcsvupdated')
+  @UseInterceptors(
+    FileInterceptor('csv', {
+      fileFilter: cvsFilter,
+      storage: diskStorage({
+        filename: editFileName,
+        destination: './files',
+      }),
+    }),
+  )
+  async uploadcsvupdated(
+    @Res() res: Response,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const path = join(__dirname, '../../', `files/${file.filename}`);
+    readFile(path, 'utf8', function (err, data) {
+      if (err) {
+        console.log(err);
+      }
+      const linesExceptFirst = data.split('\n').slice(1).join('\n');
+      writeFile(path, linesExceptFirst, function (e) {
+        console.log(e);
+      });
+    });
+
+    const response = await this.mapsService.saveNewData(path);
+
+    unlink(path, (err) => {
+      console.log(err);
+    });
+
+    if (response) {
+      res.json({
+        ok: true,
+        msg: 'datos actualizados',
+      });
+    } else {
+      res.json({
+        ok: false,
+        msg: 'Los datos ya fueron actualizados',
+      });
+    }
   }
 }
