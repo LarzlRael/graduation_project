@@ -139,9 +139,6 @@
     function pop_Focosdecalor_2(feature, layer) {
       var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(feature.properties['id'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
                         <td colspan="2">' + (feature.properties['latitude'] !== null ? autolinker.link(feature.properties['latitude'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
@@ -149,42 +146,6 @@
                     </tr>\
                     <tr>\
                         <td colspan="2"><strong>brightness</strong><br />' + (feature.properties['brightness'] !== null ? autolinker.link(feature.properties['brightness'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['scan'] !== null ? autolinker.link(feature.properties['scan'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['track'] !== null ? autolinker.link(feature.properties['track'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2"><strong>acq_date</strong><br />' + (feature.properties['acq_date'] !== null ? autolinker.link(feature.properties['acq_date'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['acq_time'] !== null ? autolinker.link(feature.properties['acq_time'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['satellite'] !== null ? autolinker.link(feature.properties['satellite'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['instrument'] !== null ? autolinker.link(feature.properties['instrument'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['confidence'] !== null ? autolinker.link(feature.properties['confidence'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['version'] !== null ? autolinker.link(feature.properties['version'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['bright_t31'] !== null ? autolinker.link(feature.properties['bright_t31'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['frp'] !== null ? autolinker.link(feature.properties['frp'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['daynight'] !== null ? autolinker.link(feature.properties['daynight'].toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['field_15'] !== null ? autolinker.link(feature.properties['field_15'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
       layer.bindPopup(popupContent, {maxHeight: 400});

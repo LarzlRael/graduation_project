@@ -5,22 +5,48 @@ const Loading = () => {
   )
 }
 
+const getCurrentDate = (time) => {
+  const date = new Date();
+  switch (time) {
+    case 'today':
+      date.setHours(date.getHours());
+      break;
+
+    case 'yesterday':
+      date.setHours(date.getHours() - 24);
+      break;
+
+    case 'week':
+      date.setHours(date.getHours() - 168);
+      break;
+    case 'twoWeeks':
+      date.setHours(date.getHours() - 336);
+      break;
+    case 'oneMounth':
+      date.setHours(date.getHours() - 720);
+      break;
+
+    default:
+      date.setHours(date.getHours());
+  }
+  date.setHours(date.getHours() - 4);
+  return date.toISOString().slice(0, 10);
+
+}
+
 const Calendario = () => {
 
-  const date = new Date();
-  date.setHours(date.getHours() - 4);
-  const today = date.toISOString().slice(0, 10);
-
+  const today = getCurrentDate('today');
 
   const [dateState, setDate] = React.useState({
     dateStart: today,
-    dateEnd: today,
     geoJson: null,
   });
+  const [message, setMessage] = React.useState();
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    mostrarPuntos();
+    consultByRange('today');
   }, [])
 
   const onChange = async (value, campo) => {
@@ -30,29 +56,52 @@ const Calendario = () => {
     });
   }
 
-  const mostrarPuntos = async () => {
+
+  const consultByRange = async (range) => {
     let geoJsonData;
     setLoading(true);
-    if (dateState.dateStart === dateState.dateEnd) {
 
-      geoJsonData = await getByDate(dateState.dateStart);
-    } else {
-      geoJsonData = await getByBetweenDate(dateState.dateStart, dateState.dateEnd);
+    switch (range) {
+      case 'today':
+        geoJsonData = await getByBetweenDate(getCurrentDate('today'), getCurrentDate('today'));
+        setMessage('Hoy');
+        break;
+
+      case '24hrs':
+        geoJsonData = await getByBetweenDate(getCurrentDate('yesterday'), getCurrentDate('today'));
+        setMessage('las ultimas 24 horas');
+        break;
+
+      case 'week':
+        geoJsonData = await getByBetweenDate(getCurrentDate('week'), getCurrentDate('today'));
+        setMessage('los ultimos 7 dias');
+        break;
+
+      case 'twoWeeks':
+        geoJsonData = await getByBetweenDate(getCurrentDate('twoWeeks'), getCurrentDate('today'));
+        setMessage('las ultimas 2 semanas');
+        break;
+      /* case 'oneMounth':
+        geoJsonData = await getByBetweenDate(getCurrentDate('oneMounth'), getCurrentDate('today'));
+        setMessage('hace un 1 mes');
+        break; */
+
+      default:
+        break;
     }
-    setLoading(false);
 
+    setLoading(false);
 
     setDate(prevState => ({
       ...prevState,
       geoJson: geoJsonData,
     }));
-    console.log(dateState);
+
     pintarMapa(dateState.dateStart, geoJsonData);
   }
 
   const onSubmit = (e) => {
     e.preventDefault();
-    mostrarPuntos();
   }
 
   const convertirFecha = (date) => {
@@ -67,6 +116,7 @@ const Calendario = () => {
       <h3>Consultar Focos de calor</h3>
       <form onSubmit={onSubmit}>
         <span className="fromTo">Desde</span>
+
         <input
           type="date"
           name="dateStart"
@@ -74,23 +124,15 @@ const Calendario = () => {
           value={dateState.dateStart}
           onChange={({target}) => onChange(target.value, target.name)}
         />
-        <span className="fromTo">Hasta</span>
-        <input
-          type="date"
-          name="dateEnd"
-          value={dateState.dateEnd}
-          min={dateState.dateStart}
-          max={today}
-          onChange={({target}) => onChange(target.value, target.name)}
-        />
-        <button type="submit">Consultar</button>
+
+        <button onClick={() => {consultByRange('today')}}>Hoy</button>
+        <button onClick={() => {consultByRange('24hrs')}}>Ultimas 24 horas</button>
+        <button onClick={() => {consultByRange('week')}}>7 dias</button>
+        <button onClick={() => {consultByRange('twoWeeks')}}>14 dias</button>
+
+
         <div className="information">
-          {dateState.dateStart == dateState.dateEnd ? <span>Consultado focos de calor de: <br />
-            <b>{convertirFecha(dateState.dateStart)}</b> </span>
-            : <span>Consultado focos de calor en: <br /> <b>{convertirFecha(dateState.dateStart)}</b> hasta <b>{convertirFecha(dateState.dateEnd)}</b></span>
-          }
-          <br />
-          Se registraron <b>{dateState.geoJson === null ? '0' : dateState.geoJson.features.length}</b> focos de calor
+          <span>Consultado focos de calor de {message}</span>
         </div>
         {
           loading &&

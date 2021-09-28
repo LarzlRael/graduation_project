@@ -15,6 +15,8 @@ export interface Report {
   bright_t31: number;
   confidence: number;
   frp: number;
+  type?: string | number;
+  daynight?: string;
 }
 export enum Instrument {
   Modis = 'MODIS',

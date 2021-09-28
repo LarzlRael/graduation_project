@@ -34,3 +34,13 @@ export const cvsFilter = (req, file, callback) => {
   }
   callback(null, true);
 };
+
+export const getCurrentDate = (yesterday?: boolean): string => {
+  const date = new Date();
+  if (yesterday) {
+    date.setHours(date.getHours() - 24);
+  } else {
+    date.setHours(date.getHours() - 4);
+  }
+  return date.toISOString().slice(0, 10);
+}

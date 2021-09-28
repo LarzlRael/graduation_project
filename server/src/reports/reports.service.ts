@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
+import { fire_history } from 'src/tables';
 import { GeoJsonResponse } from './interfaces/geoJson.interface';
 import { Report } from './interfaces/report.interface';
 
@@ -23,7 +24,7 @@ export class ReportsService {
 
   async getReportCVSbyOneDate(date): Promise<{ ok: boolean, filename: string }> {
 
-    const queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from fire_one_year
+    const queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from ${fire_history}
     WHERE acq_date  = '${date}' order by brightness DESC;`;
 
     const getReport = await this.pool.query(queryText);
@@ -51,7 +52,7 @@ export class ReportsService {
   }
 
   async getReportCVSbyBetweenTwoDates(dateStart: Date, dateEnd: Date): Promise<{ ok: boolean, filename: string }> {
-    const queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from fire_one_year
+    const queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from ${fire_history}
     WHERE acq_date  BETWEEN '${dateStart}' AND '${dateEnd}' order by brightness DESC;`;
     const getReport = await this.pool.query(queryText);
     const format: Report[] = getReport.rows;
@@ -76,7 +77,7 @@ export class ReportsService {
   }
 
   async getReportGeoJSONByOneDate(date: string) {
-    const query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat  FROM fire_one_year WHERE acq_date = '${date}' `;
+    const query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat  FROM ${fire_history} WHERE acq_date = '${date}' `;
     const res = await this.pool.query(query);
     if (res.rows.length == 0) {
       return {
@@ -90,7 +91,7 @@ export class ReportsService {
     return geojson;
   }
   async getReportGeoJSONByBetweenDates(dateStart: Date, dateEnd: Date) {
-    const query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat FROM fire_one_year WHERE acq_date BETWEEN '${dateStart}' AND '${dateEnd}' order by brightness DESC; `;
+    const query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat FROM ${fire_history} WHERE acq_date BETWEEN '${dateStart}' AND '${dateEnd}' order by brightness DESC; `;
     const res = await this.pool.query(query);
     if (res.rows.length == 0) {
       return {

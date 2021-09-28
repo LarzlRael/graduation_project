@@ -17,8 +17,18 @@ import { join } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { cvsFilter, editFileName } from './utils/utils';
 import { diskStorage } from 'multer';
-import { readFile, writeFile, truncate, unlink } from 'fs';
-
+import {
+  readFile,
+  writeFile,
+  createReadStream,
+  unlink,
+  createWriteStream,
+  readFileSync,
+  writeFileSync,
+} from 'fs';
+/* import parse from 'csv-parse/lib/sync'; */
+import * as csv from 'csv/lib/sync';
+import { Report } from 'src/reports/interfaces/report.interface';
 @Controller('maps')
 export class MapsController {
   constructor(private mapsService: MapsService) { }
@@ -74,8 +84,13 @@ export class MapsController {
     const result = await this.mapsService.getHeatSourcesToday();
     return res.json(result);
   }
+  @Get('24hrs')
+  async get24HrsHistory(@Res() res: Response) {
+    const result = await this.mapsService.get24HrsHistory();
+    return res.json(result);
+  }
 
-  @Get('uploadcsvupdated')
+  @Post('uploadcsvupdate')
   @UseInterceptors(
     FileInterceptor('csv', {
       fileFilter: cvsFilter,
@@ -89,24 +104,54 @@ export class MapsController {
     @Res() res: Response,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const path = join(__dirname, '../../', `files/${file.filename}`);
-    readFile(path, 'utf8', function (err, data) {
+    console.log('loading.....');
+    const pathIn = join(__dirname, '../../', `files/${file.filename}`);
+
+    // Load
+    const strcsv = readFileSync(pathIn, 'utf-8');
+    const data: Report[] = (csv.parse as any)(strcsv, {
+      bom: true,
+      cast: false,
+      columns: true,
+    });
+    data.forEach((simpleData) => {
+      if (simpleData.type) {
+        delete simpleData.type;
+      }
+      if (parseInt(simpleData.daynight) === 0) {
+        simpleData.daynight = 'N';
+      } else if (parseInt(simpleData.daynight) === 1) {
+        simpleData.daynight = 'D';
+      }
+      if (typeof simpleData.confidence !== 'number') {
+        simpleData.confidence = 0;
+      }
+    });
+    //Save
+    const pathOut = join(__dirname, '../../', `files/cvsconvertido.csv`);
+    writeFileSync(
+      pathOut,
+      (csv.stringify as any)(data, { header: true, quoted: false }),
+      'utf-8',
+    );
+
+    readFile(pathOut, 'utf8', function (err, data) {
       if (err) {
         console.log(err);
       }
       const linesExceptFirst = data.split('\n').slice(1).join('\n');
-      writeFile(path, linesExceptFirst, function (e) {
+      writeFile(pathOut, linesExceptFirst, function (e) {
         console.log(e);
       });
     });
 
-    const response = await this.mapsService.saveNewData(path);
+    const response = await this.mapsService.saveNewData(pathOut);
 
-    unlink(path, (err) => {
+    /* unlink(path, (err) => {
       console.log(err);
-    });
+    }); */
 
-    if (response) {
+    /* if (response) {
       res.json({
         ok: true,
         msg: 'datos actualizados',
@@ -116,6 +161,10 @@ export class MapsController {
         ok: false,
         msg: 'Los datos ya fueron actualizados',
       });
-    }
+    } */
+    res.json({
+      ok: true,
+      msg: 'Updated :D',
+    });
   }
 }

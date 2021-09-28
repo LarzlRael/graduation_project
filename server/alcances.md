@@ -7,13 +7,13 @@ Desarrollar e implementar un sistema web de información geográfica aplicado al
 
 ## Objetivos Especificos
 
- * Hacer el análisis de requerimientos de la información.
- * Implementar una base de datos espacial.
- * Proporcionar información a través de los mapas georreferenciados.
- * Crear un módulo para hacer reportes estadísticos.
- * Aplicar una metodología de desarrollo de sistemas de información.
- * Obtener el grado de riesgo de incendio según el tipo de foco de calor.
- * Diseñar un geo visor para poder visualizar los mapas necesarios.
+* Hacer el análisis de requerimientos de la información.
+* Implementar una base de datos espacial.
+* Proporcionar información a través de los mapas georreferenciados.
+* Crear un módulo para hacer reportes estadísticos.
+* Aplicar una metodología de desarrollo de sistemas de información.
+* Obtener el grado de riesgo de incendio según el tipo de foco de calor.
+* Diseñar un geo visor para poder visualizar los mapas necesarios.
 
 
 
