@@ -8,9 +8,11 @@ export const convertirFecha = (date: Date) => {
 export const setFileName = (dateStart: string, dateEnd?: string): string => {
 
     const spliteDateStart = dateStart.split('-');
+    if (dateStart === dateEnd) {
+        return `${spliteDateStart[2]}-${spliteDateStart[1]}-${spliteDateStart[0]}`;
+    }
     if (dateEnd !== undefined) {
         const splitDateEnd = dateEnd.split('-');
-
         return `${spliteDateStart[2]}${spliteDateStart[1]}${spliteDateStart[0]}-${splitDateEnd[2]}${splitDateEnd[1]}${splitDateEnd[0]}`
     }
     else {

@@ -125,10 +125,12 @@ const Calendario = () => {
           onChange={({target}) => onChange(target.value, target.name)}
         />
 
-        <button onClick={() => {consultByRange('today')}}>Hoy</button>
-        <button onClick={() => {consultByRange('24hrs')}}>Ultimas 24 horas</button>
-        <button onClick={() => {consultByRange('week')}}>7 dias</button>
-        <button onClick={() => {consultByRange('twoWeeks')}}>14 dias</button>
+        <div className="group-buttons">
+          <button onClick={() => {consultByRange('today')}}>Hoy</button>
+          <button onClick={() => {consultByRange('24hrs')}}>24 horas</button>
+          <button onClick={() => {consultByRange('week')}}>7 dias</button>
+          <button onClick={() => {consultByRange('twoWeeks')}}>14 dias</button>
+        </div>
 
 
         <div className="information">

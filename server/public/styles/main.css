@@ -23,13 +23,6 @@
   padding: 0.5rem 0;
   width: 100%;
 }
-.calendar button {
-  width: 100%;
-  padding: 0.8rem 0;
-  border-radius: 5px;
-  padding: 1rem 0;
-  border: none;
-}
 .calendar .information {
   margin-top: 1rem;
 }
@@ -39,6 +32,17 @@
 .calendar .fromTo {
   font-size: 14px;
   margin: 0;
+}
+.calendar .group-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.calendar .group-buttons button {
+  padding: 0.8rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
 }
 
 .lds-ring {

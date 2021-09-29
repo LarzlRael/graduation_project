@@ -147,11 +147,11 @@ export class MapsController {
 
     const response = await this.mapsService.saveNewData(pathOut);
 
-    /* unlink(path, (err) => {
+    unlink(pathOut, (err) => {
       console.log(err);
-    }); */
+    });
 
-    /* if (response) {
+    if (response) {
       res.json({
         ok: true,
         msg: 'datos actualizados',
@@ -161,10 +161,6 @@ export class MapsController {
         ok: false,
         msg: 'Los datos ya fueron actualizados',
       });
-    } */
-    res.json({
-      ok: true,
-      msg: 'Updated :D',
-    });
+    }
   }
 }

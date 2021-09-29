@@ -22,46 +22,26 @@ const convertirFecha = (date: string, multi: boolean): string => {
 export class ReportsService {
   constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
 
-  async getReportCVSbyOneDate(date): Promise<{ ok: boolean, filename: string }> {
-
-    const queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from ${fire_history}
-    WHERE acq_date  = '${date}' order by brightness DESC;`;
-
-    const getReport = await this.pool.query(queryText);
-    const format: Report[] = getReport.rows;
-
-    if (format.length == 0) {
-      return {
-        ok: false,
-        filename: '',
-      }
-    }
-
-    let cvs = '';
-    cvs +=
-      'latitude,longitude,brightness,acq_date,acq_time,satellite,instrument,version,bright_t31,confidence,frp,vcs\n';
-
-    format.map((report) => {
-      cvs += `${report.latitude},${report.longitude},${report.brightness},${report.acq_date.toISOString().slice(0, 10)},${report.acq_time},${report.satellite},${report.instrument},${report.version},${report.bright_t31},${report.confidence},${report.frp}` + '\n';
-    });
-
-    return {
-      ok: true,
-      filename: cvs,
-    }
-  }
-
-  async getReportCVSbyBetweenTwoDates(dateStart: Date, dateEnd: Date): Promise<{ ok: boolean, filename: string }> {
-    const queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from ${fire_history}
+  async getReportCVS(dateStart: string, dateEnd?: string): Promise<{ ok: boolean, filename: string }> {
+    let queryText: string;
+    if (dateEnd != null) {
+      queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from ${fire_history}
     WHERE acq_date  BETWEEN '${dateStart}' AND '${dateEnd}' order by brightness DESC;`;
+    } else {
+      queryText = `SELECT latitude, longitude ,brightness,acq_date,acq_time,satellite, instrument, version, bright_t31,confidence,frp  from ${fire_history}
+    WHERE acq_date  BETWEEN '${dateStart}' AND '${dateStart}' order by brightness DESC;`;
+    }
+
     const getReport = await this.pool.query(queryText);
     const format: Report[] = getReport.rows;
+
     if (format.length == 0) {
       return {
         ok: false,
         filename: '',
       }
     }
+
     let cvs = '';
     cvs +=
       'latitude,longitude,brightness,acq_date,acq_time,satellite,instrument,version,bright_t31,confidence,frp,vcs\n';
@@ -76,8 +56,14 @@ export class ReportsService {
     }
   }
 
-  async getReportGeoJSONByOneDate(date: string) {
-    const query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat  FROM ${fire_history} WHERE acq_date = '${date}' `;
+
+  async getReportGeoJSON(dateStart: string, dateEnd?: string) {
+    let query: string;
+    if (dateEnd != null) {
+      query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat FROM ${fire_history} WHERE acq_date BETWEEN '${dateStart}' AND '${dateEnd}' order by brightness DESC; `;
+    } else {
+      query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat FROM ${fire_history} WHERE acq_date BETWEEN '${dateStart}' AND '${dateStart}' order by brightness DESC; `;
+    }
     const res = await this.pool.query(query);
     if (res.rows.length == 0) {
       return {
@@ -90,23 +76,7 @@ export class ReportsService {
     });
     return geojson;
   }
-  async getReportGeoJSONByBetweenDates(dateStart: Date, dateEnd: Date) {
-    const query = `SELECT *, st_x(geometry) as lng, st_y(geometry) as lat FROM ${fire_history} WHERE acq_date BETWEEN '${dateStart}' AND '${dateEnd}' order by brightness DESC; `;
-    const res = await this.pool.query(query);
-    if (res.rows.length == 0) {
-      return {
-        ok: false,
-        filename: '',
-      }
-    };
-    const geojson: GeoJsonResponse = await GeoJSON.parse(res.rows, {
-      Point: ['lat', 'lng'],
-    });
-    return {
-      ok: true,
-      filename: geojson,
-    };
-  }
+
 
   /*  generateReport(dataContent: string, format: keyof typeof ReportFormatENUM, startDate: string, endDate?: string): string {
  

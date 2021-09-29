@@ -13,39 +13,24 @@ export const getHigherOrLowerByDate = async (date: string): Promise<DatesRespons
     return data;
 }
 
-export const getCVSreport = async (date: string) => {
+export const getCVSreport = async (dateStart: string, dateEnd: string) => {
 
-    const response = await serverAPI.get(`reports/getreportcvs/${date}`);
+    const response = await serverAPI.get(`reports/getreportcvs/${dateStart}/${dateEnd}`);
     let blob = new Blob([response.data.csv]);
-    saveAs(blob, `reporte ${setFileName(date)}.csv`);
+    saveAs(blob, `reporte ${setFileName(dateStart, dateEnd)}.csv`);
 
 }
 
-export const getReportGeoJsonByDate = async (date: string) => {
+export const getReportGeoJsonByDate = async (dateStart: string, dateEnd: string) => {
     /* window.location.href = `${baseURL}/reports/geojsonreport/${date}`; */
-    const response = await serverAPI.get(`reports/geojsonreport/${date}`, {
-        responseType: 'blob',
-    });
-    let blob = new Blob([response.data]);
-    saveAs(blob, `reporte ${setFileName(date)}.geojson`);
-
-}
-
-export const getCVSreportByTwoDates = async (dateStart: string, dateEnd: string) => {
-
-    const response = await serverAPI.get(`getreportcvsbytwodates/${dateStart}/${dateEnd}`);
-    let blob = new Blob([response.data.csv]);
-    saveAs(blob, `${setFileName(dateStart, dateEnd)}.csv`);
-}
-
-export const getReportGeoJsonByTwoDates = async (dateStart: string, dateEnd: string) => {
-
-    const response = await serverAPI.get(`reports/geojsonreportbytwodays/${dateStart}/${dateEnd}`, {
+    const response = await serverAPI.get(`reports/geojsonreport/${dateStart}/${dateEnd}`, {
         responseType: 'blob',
     });
     let blob = new Blob([response.data]);
     saveAs(blob, `reporte ${setFileName(dateStart, dateEnd)}.geojson`);
+
 }
+
 
 export const uploadFileCVS = async (file: File): Promise<string> => {
     let formData = new FormData();

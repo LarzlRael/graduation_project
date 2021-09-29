@@ -18,27 +18,31 @@ export const useReport = () => {
         setStatus();
     }, []);
 
-    const generateCVSreport = async (date: string) => {
+    const generateCVSreport = async (fecha: Date) => {
+        const date = fecha.toString().slice(0, 10)
         await getCVSreport(date);
 
     }
-    const generateGeoJsonReport = async (date: string) => {
-        const getGeoJsonReport = await getReportGeoJsonByDate(date);
+    const generateGeoJsonReport = async (fecha: Date) => {
+        const date = fecha.toString().slice(0, 10)
+        const getGeoJsonReport = await getReportGeoJsonByDate(date.toString().slice(0, 10));
         return getGeoJsonReport;
     }
 
-
-    const generatePdfReport = (dateToconsult: string) => {
+    const generatePdfReport = (dateToconsult: Date) => {
+        const newDate = convertirFecha(dateToconsult)
         const doc = new jsPDF('portrait', 'px', 'letter', false);
         dates?.dates.map((date, i) => {
             doc.text(convertirFecha(date), 30, i * 20);
         })
-        doc.save(`reporte${dateToconsult}.pdf`);
+        doc.save(`reporte${newDate}.pdf`);
     }
+
+
     return {
-        generatePdfReport,
         generateCVSreport,
         generateGeoJsonReport,
+        generatePdfReport,
         dates
     }
 
