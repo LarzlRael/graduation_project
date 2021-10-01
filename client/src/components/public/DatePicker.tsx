@@ -9,10 +9,16 @@ import StaticDateRangePicker from '@mui/lab/StaticDateRangePicker';
 import MuiDateRangePickerDay, {
     DateRangePickerDayProps,
 } from '@mui/lab/DateRangePickerDay';
-
+import { es } from "date-fns/locale";
 import { Button } from '@mui/material';
 import { useReport } from '../../hooks/useReport';
-import { getReportGeoJsonByTwoDates } from '../../provider/services';
+import { FaFileCsv, FaFilePdf, FaCalendarAlt } from "react-icons/fa";
+import { VscJson } from "react-icons/vsc";
+import { CircularProgress } from '@material-ui/core';
+import moment from 'moment'
+import 'moment/locale/es'  // without this line it didn't work
+moment.locale('es')
+
 
 const DateRangePickerDay = styled(MuiDateRangePickerDay)(
     ({ theme, isHighlighting, isStartOfHighlighting, isEndOfHighlighting }) => ({
@@ -41,7 +47,7 @@ export const CustomDateRangePickerDay = () => {
         generateCVSreport,
         generateGeoJsonReport,
         generatePdfReport,
-        dates: datesDB
+        loading
     } = useReport();
 
     const renderWeekPickerDay = (
@@ -55,12 +61,15 @@ export const CustomDateRangePickerDay = () => {
         console.log(value[0].toISOString().slice(0, 10));
         setValue(value);
     }
-
+    /* const transformDate = (date: Date) => {
+        convertirFecha(date);
+    } */
     const date = new Date();
-
+    const size = '1.2rem';
     return (
-        <Fragment>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <div className="calendar-buttons">
+
+            <LocalizationProvider dateAdapter={AdapterDateFns} locale={es}>
                 <StaticDateRangePicker
                     displayStaticWrapperAs="desktop"
                     label="date range"
@@ -78,16 +87,49 @@ export const CustomDateRangePickerDay = () => {
                 />
             </LocalizationProvider>
 
-            {dates.map(home => <div>{home?.toDateString()}</div>)}
-            <Button variant="outlined" >
-                Descargar Reporte PDF
-            </Button>
-            <Button variant="outlined" >
-                Descargar Reporte CSV
-            </Button>
-            <Button variant="outlined" >
-                Descargar GeoJson
-            </Button>
-        </Fragment>
+            <div className="buttons-groups">
+
+                <Button
+                    disabled={loading}
+                    onClick={() =>
+                        generatePdfReport(dates[0]!)
+                    }
+                    variant="outlined" >
+                    <FaFilePdf
+                        color="#f40f02"
+                        size={size}
+                    />Descargar Reporte PDF
+                </Button>
+                <Button
+                    disabled={loading}
+                    onClick={() =>
+                        generateCVSreport(dates[0]!, dates[1]!)
+                    }
+                    variant="outlined" >
+                    <FaFileCsv
+                        size={size}
+                    />
+                    Descargar CSV
+                </Button>
+                <Button
+                    disabled={loading}
+                    onClick={() => generateGeoJsonReport(dates[0]!, dates[1]!)}
+                    variant="outlined" >
+                    <VscJson
+                        color="#201b1b"
+                        size={size}
+                    />
+                    Descargar GeoJson
+                </Button>
+
+                {loading && <CircularProgress />}
+                <h2>Consultas entre fechas</h2>
+                {dates.map((home, i) =>
+                    <p>
+                        {moment(home).format('LL')}
+                    </p>
+                )}
+            </div>
+        </div>
     );
 }

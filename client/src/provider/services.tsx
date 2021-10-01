@@ -3,9 +3,13 @@ import { DatesResponse } from '../interfaces/datesResponse';
 import { saveAs } from 'file-saver';
 import { setFileName } from '../utils/utils';
 
-export const getDates = async (): Promise<DatesResponse> => {
+export const getDates = async () => {
     const { data } = await serverAPI.get<DatesResponse>('/analysis/dates');
     return data;
+    /* console.log(data.dates[0].getTime() , data.dates[1].getTime()); */
+    /* var diff = Math.abs(data.dates[0].getTime() - data.dates[1].getTime());
+    var diffDays = Math.ceil(diff / (1000 * 3600 * 24)); */
+    
 }
 
 export const getHigherOrLowerByDate = async (date: string): Promise<DatesResponse> => {
@@ -13,24 +17,25 @@ export const getHigherOrLowerByDate = async (date: string): Promise<DatesRespons
     return data;
 }
 
-export const getCVSreport = async (dateStart: string, dateEnd: string) => {
+export const getCVSreport = async (dateStart: string, dateEnd?: string) => {
 
-    const response = await serverAPI.get(`reports/getreportcvs/${dateStart}/${dateEnd}`);
+    const query = `reports/getreportcvs/${dateStart}/${dateEnd !== null ? dateEnd : dateStart}`;
+    const response = await serverAPI.get(query);
+
     let blob = new Blob([response.data.csv]);
     saveAs(blob, `reporte ${setFileName(dateStart, dateEnd)}.csv`);
-
 }
 
-export const getReportGeoJsonByDate = async (dateStart: string, dateEnd: string) => {
-    /* window.location.href = `${baseURL}/reports/geojsonreport/${date}`; */
-    const response = await serverAPI.get(`reports/geojsonreport/${dateStart}/${dateEnd}`, {
+export const getReportGeoJsonByDate = async (dateStart: string, dateEnd?: string) => {
+
+    const query = `reports/geojsonreport/${dateStart}/${dateEnd !== null ? dateEnd : dateStart}`;
+    const response = await serverAPI.get(query, {
         responseType: 'blob',
     });
+
     let blob = new Blob([response.data]);
     saveAs(blob, `reporte ${setFileName(dateStart, dateEnd)}.geojson`);
-
 }
-
 
 export const uploadFileCVS = async (file: File): Promise<string> => {
     let formData = new FormData();

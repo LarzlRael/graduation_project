@@ -1,16 +1,35 @@
-.pointer{
+.pointer {
     cursor: pointer;
 }
-.dashContentContainer{
+.dashContentContainer {
     margin: 2rem;
 }
 
-.align-calendar{
+.align-calendar {
     display: flex;
     align-items: flex-end;
 }
 
-
-.table-download{
+.table-download {
     width: 500px;
+}
+
+.calendar-buttons {
+    display: flex;
+}
+.css-quj9j6-MuiTable-root {
+    width: 25%;
+}
+
+.layout_page {
+    width: 1200px;
+    margin: 1rem auto;
+}
+
+.buttons-groups {
+    display: flex;
+    flex-direction: column;
+    button {
+        margin: 0.5rem 1rem;
+    }
 }

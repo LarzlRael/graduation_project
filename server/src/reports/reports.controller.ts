@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Res } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { Response } from 'express';
-
+import { unlinkSync } from 'fs';
 @Controller('reports')
 export class ReportsController {
   constructor(private reportsService: ReportsService) { }
@@ -37,5 +37,20 @@ export class ReportsController {
       dateEnd,
     );
     return res.json(report);
+  }
+  @Get('getshapefile/:dateStart/:dateEnd')
+  async getShapeFIle(
+    @Res() res: Response,
+    @Param('dateStart') dateStart,
+    @Param('dateEnd') dateEnd,
+  ) {
+    const shapeFilePath = await this.reportsService.convertGeoJsonToshapFile(
+      dateStart,
+      dateEnd,
+    );
+    return res.download(shapeFilePath.shapeFilePath, function () {
+      unlinkSync(shapeFilePath.shapeFilePath);
+      unlinkSync(shapeFilePath.geoJsonPath);
+    });
   }
 }

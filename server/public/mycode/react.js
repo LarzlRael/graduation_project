@@ -129,7 +129,6 @@ const Calendario = () => {
           <button onClick={() => {consultByRange('today')}}>Hoy</button>
           <button onClick={() => {consultByRange('24hrs')}}>24 horas</button>
           <button onClick={() => {consultByRange('week')}}>7 dias</button>
-          <button onClick={() => {consultByRange('twoWeeks')}}>14 dias</button>
         </div>
 
 

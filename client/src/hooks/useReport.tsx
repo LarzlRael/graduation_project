@@ -1,40 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import { getDates, getCVSreport, getReportGeoJsonByDate } from '../provider/services';
-import { DatesResponse } from '../interfaces/datesResponse';
 import { Report } from '../interfaces/reportsInterface';
 import { convertirFecha } from '../utils/utils';
 // Create Document Component
 
 export const useReport = () => {
 
-    const [dates, setDates] = useState<DatesResponse>();
+    const [dates, setDates] = useState<Date[]>();
+    const [loading, setLoading] = useState<boolean>();
+    const [diffDays, setdiffDays] = useState<number>(0);
+
 
     useEffect(() => {
-        const setStatus = async () => {
-            const dates = await getDates();
-            setDates(dates);
-        }
         setStatus();
     }, []);
 
-    const generateCVSreport = async (fecha: Date) => {
-        const date = fecha.toString().slice(0, 10)
-        await getCVSreport(date);
+    const setStatus = async () => {
+        setLoading(true);
+        const dates = await getDates();
+        setLoading(false);
+
+        if (!loading) {
+            const date1 = new Date(dates.dates[0]);
+            const date2 = new Date(dates.dates[1]);
+            setDates([date1, date2]);
+            const diff = Math.abs(date1.getTime() - date2.getTime());
+            const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+            setdiffDays(diffDays)
+        }
 
     }
-    const generateGeoJsonReport = async (fecha: Date) => {
-        const date = fecha.toString().slice(0, 10)
-        const getGeoJsonReport = await getReportGeoJsonByDate(date.toString().slice(0, 10));
+
+
+
+    const generateCVSreport = async (dateStart: Date, dateEnd: Date) => {
+        setLoading(true);
+        await getCVSreport(
+            dateStart.toISOString().slice(0, 10),
+            dateEnd.toISOString().slice(0, 10));
+        setLoading(false);
+    }
+
+    const generateGeoJsonReport = async (dateStart: Date, dateEnd: Date) => {
+        setLoading(true);
+        const getGeoJsonReport = await getReportGeoJsonByDate(
+            dateStart.toISOString().slice(0, 10),
+            dateEnd.toISOString().slice(0, 10));
+        setLoading(false);
         return getGeoJsonReport;
+
     }
 
     const generatePdfReport = (dateToconsult: Date) => {
+        setLoading(true);
         const newDate = convertirFecha(dateToconsult)
         const doc = new jsPDF('portrait', 'px', 'letter', false);
-        dates?.dates.map((date, i) => {
-            doc.text(convertirFecha(date), 30, i * 20);
-        })
+        //TODo generar el informe pdf
+        setLoading(false);
         doc.save(`reporte${newDate}.pdf`);
     }
 
@@ -43,7 +66,9 @@ export const useReport = () => {
         generateCVSreport,
         generateGeoJsonReport,
         generatePdfReport,
-        dates
+        loading,
+        dates,
+        diffDays
     }
 
 

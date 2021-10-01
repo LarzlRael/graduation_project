@@ -4,17 +4,22 @@ import { Pool } from 'pg';
 import { fire_history } from 'src/tables';
 import { GeoJsonResponse } from './interfaces/geoJson.interface';
 import { Report } from './interfaces/report.interface';
-
-
+import { join } from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { convert } = require('geojson2shp')
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const GeoJSON = require('geojson');
+import { writeFileSync } from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 
-const convertirFecha = (date: string, multi: boolean): string => {
-  console.log('date from convertir fecha function ' + date);
-  const newDate = date.split('-');
-  if (multi) { return `${newDate[2]}${newDate[1]}${newDate[0]}` }
+const setFileName = (dateStart: string, dateEnd: string): string => {
+  const newDate1 = dateStart.split('-');
+  const newDate2 = dateEnd.split('-');
+  if (dateStart === dateEnd) {
+    return `${newDate1[2]}-${newDate1[1]}-${newDate1[0]}`
+  }
   else {
-    return `${newDate[2]}-${newDate[1]}-${newDate[0]}`;
+    return `${newDate1[2]}${newDate1[1]}${newDate1[0]}-${newDate2[2]}${newDate2[1]}${newDate2[0]}`;
   }
 }
 
@@ -105,4 +110,27 @@ export class ReportsService {
      });
      return filename;
    } */
+
+  async convertGeoJsonToshapFile(dateStart: string, dateEnd?: string): Promise<{
+    shapeFilePath: string;
+    geoJsonPath: string;
+  }> {
+
+    const nameFileName = ` ${setFileName(dateStart, dateEnd)}`;
+
+    const options = {
+      layer: nameFileName,
+      targetCrs: 4326
+    }
+
+    const geoJsonPath = join(__dirname, '..', `../public/${uuidv4()}.geojson`);
+    const shapeFilePath = join(__dirname, '..', `../public/${nameFileName}.zip`);
+
+    const getGeoJsonInfo = await this.getReportGeoJSON(dateStart, dateEnd);
+
+    await writeFileSync(geoJsonPath, JSON.stringify(getGeoJsonInfo));
+    await convert(geoJsonPath, shapeFilePath, options);
+    return { shapeFilePath, geoJsonPath };
+  }
+
 }
