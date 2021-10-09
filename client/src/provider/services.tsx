@@ -1,4 +1,4 @@
-import { serverAPI } from './serverProvider';
+import { baseURL, serverAPI } from './serverProvider';
 import { DatesResponse } from '../interfaces/datesResponse';
 import { saveAs } from 'file-saver';
 import { setFileName } from '../utils/utils';
@@ -6,10 +6,7 @@ import { setFileName } from '../utils/utils';
 export const getDates = async () => {
     const { data } = await serverAPI.get<DatesResponse>('/analysis/dates');
     return data;
-    /* console.log(data.dates[0].getTime() , data.dates[1].getTime()); */
-    /* var diff = Math.abs(data.dates[0].getTime() - data.dates[1].getTime());
-    var diffDays = Math.ceil(diff / (1000 * 3600 * 24)); */
-    
+
 }
 
 export const getHigherOrLowerByDate = async (date: string): Promise<DatesResponse> => {
@@ -55,6 +52,13 @@ export const uploadFileCVS = async (file: File): Promise<string> => {
 
     } catch (error) {
         return 'Hubo un error al subir el archivo';
+    }
+}
+export const downloadShapeFile = async (dateStart: string, dateEnd: string) => {
+    const url = `${baseURL}/reports/getshapefile/${dateStart}/${dateEnd}`;
+    const openWindow = window.open(url, '_blank');
+    if (openWindow) {
+        openWindow.focus();
     }
 
 }

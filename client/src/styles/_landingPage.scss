@@ -17,7 +17,7 @@
     .buttonMap {
         display: block;
         border-radius: 40px;
-        border: none;   
+        border: none;
         padding: 1rem 1.5rem;
         width: 100%;
         margin: 3rem 0;
@@ -27,8 +27,8 @@
         font-size: 1.1rem;
         text-decoration: none;
         text-align: center;
-        transition: .3s ease all;
-        &:hover{
+        transition: 0.3s ease all;
+        &:hover {
             background: darken($color: $primaryLanding, $amount: 25);
         }
     }
@@ -46,11 +46,22 @@
     margin: 3rem 0;
     display: flex;
     justify-content: space-between;
+
     .enlaces {
-        a {
-            margin: 0 1.5rem;
-            text-decoration: none;
+        .link {
             color: $titleLanding;
+            font-size: 1.1rem;
+            text-decoration: none;
+            margin: 0 1.5rem;
+            transition: 0.3s ease all;
+            &:hover {
+                color: $primaryLanding;
+            }
+            &.active {
+                font-weight: bold;
+                border-bottom: 3px solid $primaryLanding;
+                color: $primaryLanding;
+            }
         }
     }
 }

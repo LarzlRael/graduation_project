@@ -79,16 +79,16 @@ export class MapsController {
     return res.json(result);
   }
 
-  @Get('today')
-  async getHeatSourcesToday(@Res() res: Response) {
-    const result = await this.mapsService.getHeatSourcesToday();
+  @Post('getheatsourcesbydeparment')
+  async getHeatSourcesByDeparment(
+    @Res() res: Response,
+    @Body() mapDto: MapDto,
+  ) {
+    const result = await this.mapsService.getHeatSourcesByDeparment(mapDto);
     return res.json(result);
   }
-  @Get('24hrs')
-  async get24HrsHistory(@Res() res: Response) {
-    const result = await this.mapsService.get24HrsHistory();
-    return res.json(result);
-  }
+
+
 
   @Post('uploadcsvupdate')
   @UseInterceptors(
@@ -154,7 +154,7 @@ export class MapsController {
     if (response) {
       res.json({
         ok: true,
-        msg: 'datos actualizados',
+        msg: 'datos actualizados correctamente',
       });
     } else {
       res.json({

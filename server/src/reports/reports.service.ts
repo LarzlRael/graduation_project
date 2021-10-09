@@ -133,4 +133,8 @@ export class ReportsService {
     return { shapeFilePath, geoJsonPath };
   }
 
+  async getInfoByDepartament(dateStart: string, dateEntd?: string) {
+
+  }
+
 }

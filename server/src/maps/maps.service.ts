@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool } from 'pg';
 import { MapDto } from './dto/mapDto';
-import { createFileInfoRequest, getCurrentDate } from './utils/utils';
+import {
+  createFileInfoRequest,
+  getCurrentDate,
+  convertDepartmentsToString,
+} from './utils/utils';
 import { MapResponse } from './interfaces/mapsResponse';
 import { fire_history } from 'src/tables';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -29,6 +33,18 @@ export class MapsService {
     order by brightness ${mapdto.orderBy};`;
     return this.saveJsonAndParseAsGeoJson(query);
   }
+  async getHeatSourcesByDeparment(mapdto: MapDto): Promise<MapResponse> {
+    mapdto.departaments = convertDepartmentsToString(mapdto.departaments);
+    const query = `
+    select a.* 
+    from fire_history as a
+    join "Polygons" as b
+    on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '${mapdto.dateStart}' and '${mapdto.dateEnd}' 
+    and b."DEPARTAMEN" in (${mapdto.departaments}));
+    `;
+    console.log(query);
+    return this.saveJsonAndParseAsGeoJson(query);
+  }
 
   async getHighestOrLowestHeatSources(mapdto: MapDto): Promise<MapResponse> {
     const query = `
@@ -36,15 +52,6 @@ export class MapsService {
     FROM ${fire_history}
     WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
     order by brightness ${mapdto.orderBy};`;
-    return this.saveJsonAndParseAsGeoJson(query);
-  }
-
-  async getHeatSourcesToday() {
-    const today = new Date().toISOString().slice(0, 10);
-    const query = `
-    SELECT distinct *, st_x(geometry) as lng, st_y(geometry) as lat 
-    FROM ${fire_history}
-    WHERE acq_date = '${today}'`;
     return this.saveJsonAndParseAsGeoJson(query);
   }
 
@@ -82,16 +89,5 @@ export class MapsService {
     } catch (error) {
       console.log(error);
     }
-  }
-
-  async get24HrsHistory(): Promise<MapResponse> {
-    const query = `
-    SELECT distinct *, st_x(geometry) as lng, st_y(geometry) as lat 
-    FROM ${fire_history}
-    WHERE acq_date BETWEEN '${getCurrentDate(true)}' AND '${getCurrentDate(
-      false,
-    )}'
-    ;`;
-    return this.saveJsonAndParseAsGeoJson(query);
   }
 }

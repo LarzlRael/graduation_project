@@ -5,7 +5,7 @@ export const LandingPage = () => {
     return (
         <div
             style={{
-                backgroundImage: `url(${process.env.PUBLIC_URL + '/img/world.png'})`,
+                backgroundImage: `url(${process.env.PUBLIC_URL + '/img/back4.png'})`,
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',

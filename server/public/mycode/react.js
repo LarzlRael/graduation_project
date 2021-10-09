@@ -34,6 +34,17 @@ const getCurrentDate = (time) => {
 
 }
 
+const departamentosBolivia = [
+  'La Paz',
+  'Oruro',
+  'Potosi',
+  'Santa Cruz',
+  'Beni',
+  'Pando',
+  'Cochabamba',
+  'Tarija',
+  'Chuquisaca',
+]
 const Calendario = () => {
 
   const today = getCurrentDate('today');
@@ -111,6 +122,8 @@ const Calendario = () => {
     return datecurrent;
   }
 
+
+
   return (
     <div className="calendar">
       <h3>Consultar Focos de calor</h3>
@@ -124,6 +137,11 @@ const Calendario = () => {
           value={dateState.dateStart}
           onChange={({target}) => onChange(target.value, target.name)}
         />
+        <label htmlFor="">Seleccionar Departamento</label>
+        <select name="" id="">
+          {departamentosBolivia.map((departament) =>
+            (<option value={departament}>{departament}</option>))}
+        </select>
 
         <div className="group-buttons">
           <button onClick={() => {consultByRange('today')}}>Hoy</button>

@@ -1,13 +1,13 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
-import { getDates, getCVSreport, getReportGeoJsonByDate } from '../provider/services';
+import { getDates, getCVSreport, getReportGeoJsonByDate, downloadShapeFile } from '../provider/services';
 import { Report } from '../interfaces/reportsInterface';
 import { convertirFecha } from '../utils/utils';
 // Create Document Component
 
 export const useReport = () => {
 
-    const [dates, setDates] = useState<Date[]>();
+    const [dateFromTo, setDates] = useState<Date[]>();
     const [loading, setLoading] = useState<boolean>();
     const [diffDays, setdiffDays] = useState<number>(0);
 
@@ -60,14 +60,22 @@ export const useReport = () => {
         setLoading(false);
         doc.save(`reporte${newDate}.pdf`);
     }
+    const generateShapeFile = async (dateStart: Date, dateEnd: Date) => {
+        setLoading(true);
+        await downloadShapeFile(
+            dateStart.toISOString().slice(0, 10),
+            dateEnd.toISOString().slice(0, 10));
+        setLoading(false);
+    }
 
 
     return {
         generateCVSreport,
         generateGeoJsonReport,
         generatePdfReport,
+        generateShapeFile,
         loading,
-        dates,
+        dateFromTo,
         diffDays
     }
 

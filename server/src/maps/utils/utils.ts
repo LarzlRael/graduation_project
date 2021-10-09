@@ -43,4 +43,30 @@ export const getCurrentDate = (yesterday?: boolean): string => {
     date.setHours(date.getHours() - 4);
   }
   return date.toISOString().slice(0, 10);
+};
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+export const convertDepartmentsToString = (departamentos: string): string => {
+  const departamentosBolivia =
+    'La Paz,Oruro,Cochabamba,Tarija,Pando,Santa Cruz,Potosi,Chuquisaca,Beni';
+  if (departamentos.toLowerCase() === 'bolivia') {
+    const split = departamentosBolivia.split(',');
+    let query = '';
+    split.map((departamento) => {
+      return (query += `'${capitalizeFirstLetter(departamento.trim())}',`);
+    });
+
+    return query.substring(0, query.length - 1);
+  } else {
+    const split = departamentos.split(',');
+    let query = '';
+    split.map((departamento) => {
+      return (query += `'${capitalizeFirstLetter(departamento.trim())}',`);
+    });
+
+    return query.substring(0, query.length - 1);
+  }
+};

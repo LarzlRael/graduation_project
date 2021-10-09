@@ -3,6 +3,7 @@ import { AdminLogin } from '../admin/LoginAdmin';
 import { AdminDashboard } from '../admin/DashBoard';
 import { LandingPage } from '../components/public/landingPage/LandingPage';
 import { ReportsLists } from '../components/public/ReportsLists';
+import { Ley1171 } from '../components/Ley1171';
 
 
 export const Navigator = () => {
@@ -10,9 +11,10 @@ export const Navigator = () => {
         < Router >
             <Switch>
                 <Route path="/" exact component={LandingPage} />
-                <Route path="/login" component={AdminLogin} />
-                <Route path="/dashboard" component={AdminDashboard} />
-                <Route path="/reportes" component={ReportsLists} />
+                <Route path="/login" exact component={AdminLogin} />
+                <Route path="/dashboard" exact component={AdminDashboard} />
+                <Route path="/reportes" exact component={ReportsLists} />
+                <Route path="/ley1171" exact component={Ley1171} />
                 {/* <Route path="/report" component={MyDocument} /> */}
             </Switch>
         </Router >

@@ -47,6 +47,7 @@ export const CustomDateRangePickerDay = () => {
         generateCVSreport,
         generateGeoJsonReport,
         generatePdfReport,
+        generateShapeFile,
         loading
     } = useReport();
 
@@ -120,6 +121,16 @@ export const CustomDateRangePickerDay = () => {
                         size={size}
                     />
                     Descargar GeoJson
+                </Button>
+                <Button
+                    disabled={loading}
+                    onClick={() => generateShapeFile(dates[0]!, dates[1]!)}
+                    variant="outlined" >
+                    <VscJson
+                        color="#201b1b"
+                        size={size}
+                    />
+                    Descargar ShapeFile
                 </Button>
 
                 {loading && <CircularProgress />}
