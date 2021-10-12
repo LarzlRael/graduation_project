@@ -27,7 +27,7 @@ export class MapsService {
 
   async getHeatSourcesByBetweenDate(mapdto: MapDto): Promise<MapResponse> {
     const query = `
-    SELECT distinct latitude ,longitude,brightness, st_x(geometry) as lng, st_y(geometry) as lat 
+    SELECT distinct latitude ,longitude,brightness, longitude as lng, latitude as lat 
     FROM ${fire_history}
     WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
     order by brightness ${mapdto.orderBy};`;
@@ -36,24 +36,16 @@ export class MapsService {
   async getHeatSourcesByDeparment(mapdto: MapDto): Promise<MapResponse> {
     mapdto.departaments = convertDepartmentsToString(mapdto.departaments);
     const query = `
-    select a.* 
+    select a.longitude as lng, a.latitude as lat, a.brightness, a.longitude, a.latitude
+
     from fire_history as a
     join "Polygons" as b
     on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '${mapdto.dateStart}' and '${mapdto.dateEnd}' 
     and b."DEPARTAMEN" in (${mapdto.departaments}));
     `;
-    console.log(query);
     return this.saveJsonAndParseAsGeoJson(query);
   }
 
-  async getHighestOrLowestHeatSources(mapdto: MapDto): Promise<MapResponse> {
-    const query = `
-    SELECT distinct *, st_x(geometry) as lng, st_y(geometry) as lat 
-    FROM ${fire_history}
-    WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
-    order by brightness ${mapdto.orderBy};`;
-    return this.saveJsonAndParseAsGeoJson(query);
-  }
 
   async saveNewData(path: string): Promise<boolean> {
     try {

@@ -70,15 +70,6 @@ export class MapsController {
     return res.json(result);
   }
 
-  @Post('gethighestorlowest')
-  async getHighestOrLowestHeatSources(
-    @Res() res: Response,
-    @Body() mapDto: MapDto,
-  ) {
-    const result = await this.mapsService.getHighestOrLowestHeatSources(mapDto);
-    return res.json(result);
-  }
-
   @Post('getheatsourcesbydeparment')
   async getHeatSourcesByDeparment(
     @Res() res: Response,

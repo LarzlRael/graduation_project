@@ -38,6 +38,11 @@
   <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+    integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/locale/es.js"></script>
+
   <script src="js/qgis2web_expressions.js"></script>
   <script src="js/leaflet.js"></script>
   <script src="js/multi-style-layer.js"></script>
@@ -206,8 +211,7 @@
     map.getPane('pane_Focosdecalor_2').style['mix-blend-mode'] = 'normal';
 
 
-    const pintarMapa = (date, json_Focosdecalor_2) => {
-
+    const pintarMapa = (json_Focosdecalor_2) => {
       var elem = document.querySelectorAll(".leaflet-interactive");
       elem.forEach(element => {
         element.remove();

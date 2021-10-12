@@ -5,7 +5,7 @@ const Loading = () => {
   )
 }
 
-const getCurrentDate = (time) => {
+const getCurrentDatex = (time) => {
   const date = new Date();
   switch (time) {
     case 'today':
@@ -47,14 +47,47 @@ const departamentosBolivia = [
 ]
 const Calendario = () => {
 
-  const today = getCurrentDate('today');
+  const today = getCurrentDatex('today');
 
   const [dateState, setDate] = React.useState({
     dateStart: today,
     geoJson: null,
+    showMenu: false,
   });
+
   const [message, setMessage] = React.useState();
   const [loading, setLoading] = React.useState(false);
+  const [departamento, setDepartamento] = React.useState(departamentosBolivia[0]);
+
+  const getCurrentDate = (time) => {
+    const date = new Date(dateState.dateStart);
+
+    switch (time) {
+      case 'today':
+        date.setHours(date.getHours() - 0);
+        break;
+
+      case '24hrs':
+        date.setHours(date.getHours() - 24);
+        break;
+
+      case 'week':
+        date.setHours(date.getHours() - 168);
+        break;
+      case 'twoWeeks':
+        date.setHours(date.getHours() - 336);
+        break;
+      case 'oneMounth':
+        date.setHours(date.getHours() - 720);
+        break;
+
+      default:
+        date.setHours(date.getHours() - 0);
+    }
+    date.setHours(date.getHours() - 4 + 24);
+    return date.toISOString().slice(0, 10);
+
+  }
 
   React.useEffect(() => {
     consultByRange('today');
@@ -72,43 +105,74 @@ const Calendario = () => {
     let geoJsonData;
     setLoading(true);
 
-    switch (range) {
-      case 'today':
-        geoJsonData = await getByBetweenDate(getCurrentDate('today'), getCurrentDate('today'));
-        setMessage('Hoy');
-        break;
+    if (!dateState.showMenu) {
 
-      case '24hrs':
-        geoJsonData = await getByBetweenDate(getCurrentDate('yesterday'), getCurrentDate('today'));
-        setMessage('las ultimas 24 horas');
-        break;
+      switch (range) {
+        case 'today':
+          geoJsonData = await getByBetweenDate(getCurrentDate('today'), getCurrentDate('today'));
+          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')}`);
+          break;
 
-      case 'week':
-        geoJsonData = await getByBetweenDate(getCurrentDate('week'), getCurrentDate('today'));
-        setMessage('los ultimos 7 dias');
-        break;
+        case '24hrs':
+          geoJsonData = await getByBetweenDate(getCurrentDate('24hrs'), getCurrentDate('today'));
+          setMessage(`las ultimas 24 horas a partir de ${moment(dateState.dateStart).format('LL')}`);
+          break;
 
-      case 'twoWeeks':
-        geoJsonData = await getByBetweenDate(getCurrentDate('twoWeeks'), getCurrentDate('today'));
-        setMessage('las ultimas 2 semanas');
-        break;
-      /* case 'oneMounth':
-        geoJsonData = await getByBetweenDate(getCurrentDate('oneMounth'), getCurrentDate('today'));
-        setMessage('hace un 1 mes');
-        break; */
+        case 'week':
+          geoJsonData = await getByBetweenDate(getCurrentDate('week'), getCurrentDate('today'));
+          setMessage(`los ultimos 7 dias a partir de ${moment(dateState.dateStart).format('LL')}`);
+          break;
 
-      default:
-        break;
+        case 'twoWeeks':
+          geoJsonData = await getByBetweenDate(getCurrentDate('twoWeeks'), getCurrentDate('today'));
+          setMessage('las ultimas 2 semanas');
+          break;
+        /* case 'oneMounth':
+          geoJsonData = await getByBetweenDate(getCurrentDate('oneMounth'), getCurrentDate('today'));
+          setMessage('hace un 1 mes');
+          break; */
+
+        default:
+          break;
+      }
+    } else {
+
+      switch (range) {
+        case 'today':
+          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('today'), getCurrentDate('today'), departamento);
+          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+
+          break;
+
+        case '24hrs':
+          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('24hrs'), getCurrentDate('today'), departamento);
+          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+          break;
+
+        case 'week':
+          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('week'), getCurrentDate('today'), departamento);
+          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+          break;
+
+        case 'twoWeeks':
+          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('twoWeeks'), getCurrentDate('today'), departamento);
+          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+          break;
+
+        default:
+          break;
+      }
     }
 
-    setLoading(false);
 
+    setLoading(false);
+    /*     console.log(geoJsonData); */
     setDate(prevState => ({
       ...prevState,
       geoJson: geoJsonData,
     }));
 
-    pintarMapa(dateState.dateStart, geoJsonData);
+    pintarMapa(geoJsonData);
   }
 
   const onSubmit = (e) => {
@@ -120,6 +184,21 @@ const Calendario = () => {
     const newDate = date.split('-');
     const datecurrent = `${newDate[2]}-${newDate[1]}-${newDate[0]}`;
     return datecurrent;
+  }
+
+  const consultarPorDepartamento = async () => {
+
+    setLoading(true);
+
+    const geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('week'), getCurrentDate('today'), departamento);
+    setLoading(false);
+
+    setDate(prevState => ({
+      ...prevState,
+      geoJson: geoJsonData,
+    }));
+
+    pintarMapa(geoJsonData);
   }
 
 
@@ -137,16 +216,26 @@ const Calendario = () => {
           value={dateState.dateStart}
           onChange={({target}) => onChange(target.value, target.name)}
         />
-        <label htmlFor="">Seleccionar Departamento</label>
-        <select name="" id="">
-          {departamentosBolivia.map((departament) =>
-            (<option value={departament}>{departament}</option>))}
-        </select>
+        {dateState.showMenu &&
+          <React.Fragment>
+            <label htmlFor="">Seleccionar Departamento</label>
+            <select name="departamento" id="" onChange={(e) => setDepartamento(e.target.value)}>
+              {departamentosBolivia.map((departament) =>
+              (<option
+                key={departament}
+                value={departament}>{departament}</option>))}
+            </select>
+          </React.Fragment>
+        }
+        <input type="checkbox" name="showMenu" id="" onChange={(e) => onChange(e.target.checked, e.target.name)} />
 
         <div className="group-buttons">
-          <button onClick={() => {consultByRange('today')}}>Hoy</button>
-          <button onClick={() => {consultByRange('24hrs')}}>24 horas</button>
-          <button onClick={() => {consultByRange('week')}}>7 dias</button>
+          <button onClick={() => consultByRange('today')}>Consultar {moment(dateState.dateStart).format('LL')}</button>
+          <button onClick={() => consultByRange('24hrs')}>24 horas</button>
+          <button onClick={() => consultByRange('week')}>7 dias</button>
+          {/* {dateState.showMenu &&
+            <button onClick={consultarPorDepartamento}>Consultar por departamento</button>
+          } */}
         </div>
 
 
@@ -157,8 +246,8 @@ const Calendario = () => {
           loading &&
           <Loading />
         }
-      </form>
-    </div>
+      </form >
+    </div >
   );
 }
 

@@ -3,13 +3,13 @@ export const Header = () => {
     return (
         <header className="header">
             <div className="logo">
-                <NavLink to='/'>Logo we </NavLink>
+                <NavLink to='/inicio'>Logo we </NavLink>
             </div>
             <div className="enlaces">
                 <NavLink
                     activeClassName="active"
                     className="link"
-                    to='/'>Inicio
+                    to='/inicio'>Inicio
                 </NavLink>
                 <NavLink
                     activeClassName="active"
@@ -26,6 +26,12 @@ export const Header = () => {
                     className="link"
                     to='/ley1171'>
                     Ley 1171
+                </NavLink>
+                <NavLink
+                    activeClassName="active"
+                    className="link"
+                    to='/departamentos'>
+                    Departamentos
                 </NavLink>
 
             </div>
