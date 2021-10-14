@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { AuthAdminContext } from '../context/AuthAdminContext';
 /* import ErrorLabel from '../error-label';
 import LoginContext from '../login/LoginContext'; */
 /* import { getDates } from '../provider/services';
@@ -7,9 +8,9 @@ import { v4 as uuidv4 } from 'uuid'; */
 
 
 export const AdminLogin = () => {
-    /* const loginContext = useContext(LoginContext);
+    const loginContext = useContext(AuthAdminContext);
 
-    const { adminLogin, mensaje_login_error, s_admin_auth } = loginContext; */
+    const { singIn } = loginContext;
 
     /*  useEffect(() => {
          if (s_admin_auth) {
@@ -23,13 +24,9 @@ export const AdminLogin = () => {
          // eslint-disable-next-line
      }, [s_admin_auth]); */
 
-    
-
-   
-
     const [userAdmin, setUserAdmin] = useState({
-        email: 'xdx@gmail.com',
-        password: '123456789'
+        email: 'admin@admin.com',
+        password: 'Fantasticbaby11xdA'
     });
     //? Error state
     const [Error, setError] = useState({
@@ -39,11 +36,7 @@ export const AdminLogin = () => {
 
     const handleSumbit = (e: any) => {
         e.preventDefault();
-        /* adminLogin(userAdmin);
-        setError({
-            ...Error,
-            error_message: mensaje_login_error
-        }) */
+        singIn({ username: userAdmin.email, password: userAdmin.password });
     }
 
     const { email, password } = userAdmin;
@@ -94,7 +87,7 @@ export const AdminLogin = () => {
                 <h1>Administrar Cars System</h1>
                 <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. A qui ipsam numquam dolore quo, aperiam voluptates labore, error totam rem hic, minus incidunt autem nesciunt ea laborum temporibus enim tempora.</span>
             </div>
-            
+
         </div >
     )
 }

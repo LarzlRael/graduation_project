@@ -30,18 +30,19 @@ export class MapsService {
     SELECT distinct latitude ,longitude,brightness, longitude as lng, latitude as lat 
     FROM ${fire_history}
     WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
-    order by brightness ${mapdto.orderBy};`;
+    order by brightness`;
     return this.saveJsonAndParseAsGeoJson(query);
   }
 
   async getHeatSourcesByDeparment(mapdto: MapDto): Promise<MapResponse> {
-    mapdto.departaments = convertDepartmentsToString(mapdto.departaments);
+    /*     mapdto.departaments = convertDepartmentsToString(mapdto.departaments); */
+    console.log(mapdto);
     const query = `
     select a.longitude as lng, a.latitude as lat, a.brightness, a.longitude, a.latitude
     from ${fire_history} as a
     join ${departamentos} as b
     on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '${mapdto.dateStart}' and '${mapdto.dateEnd}' 
-    and b.departament_name in (${mapdto.departaments}));
+    and b.departament_name in ('${mapdto.departament}' ));
     `;
     return this.saveJsonAndParseAsGeoJson(query);
   }

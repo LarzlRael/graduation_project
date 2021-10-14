@@ -1,4 +1,4 @@
-export interface    GeoJsonResponse {
+export interface GeoJsonResponse {
     ok: boolean;
     report: Report;
 }

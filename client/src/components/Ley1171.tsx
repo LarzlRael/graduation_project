@@ -1,11 +1,9 @@
 import React from 'react'
-import { Header } from './public/landingPage/Header';
 import { Layout } from './Layout';
 
 export const Ley1171 = () => {
     return (
         <Layout>
-            <Header />
             <div className="ley1171">
 
                 <h1 className="center title"><h1>Bolivia: Ley de uso y manejo racional de quemas, 2 de mayo de 2019</h1></h1>

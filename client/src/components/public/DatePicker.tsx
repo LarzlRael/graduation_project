@@ -1,7 +1,7 @@
 import { useState, Fragment } from 'react';
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import { Button, Box, TextField } from '@mui/material';
+
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { DateRange } from '@mui/lab/DateRangePicker';
@@ -10,7 +10,6 @@ import MuiDateRangePickerDay, {
     DateRangePickerDayProps,
 } from '@mui/lab/DateRangePickerDay';
 import { es } from "date-fns/locale";
-import { Button } from '@mui/material';
 import { useReport } from '../../hooks/useReport';
 import { FaFileCsv, FaFilePdf, FaCalendarAlt } from "react-icons/fa";
 import { VscJson } from "react-icons/vsc";

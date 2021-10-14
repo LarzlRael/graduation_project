@@ -3,7 +3,7 @@ export const Header = () => {
     return (
         <header className="header">
             <div className="logo">
-                <NavLink to='/inicio'>Logo we </NavLink>
+                <NavLink to='/inicio'>Logo we</NavLink>
             </div>
             <div className="enlaces">
                 <NavLink
@@ -16,22 +16,22 @@ export const Header = () => {
                     className="link"
                     to='/reportes'>Reportes y descargas
                 </NavLink>
-                <a
+                {/* <a
                     href="http://localhost:4000/maps"
                     target="_blank"
-                    className="link" rel="noreferrer">Ir a mapa interactivo</a>
+                    className="link" rel="noreferrer">Mapa de Bolivia</a> */}
 
+                <NavLink
+                    activeClassName="active"
+                    className="link"
+                    to='/departamentos'>
+                    Mapa por departamentos 
+                </NavLink>
                 <NavLink
                     activeClassName="active"
                     className="link"
                     to='/ley1171'>
                     Ley 1171
-                </NavLink>
-                <NavLink
-                    activeClassName="active"
-                    className="link"
-                    to='/departamentos'>
-                    Departamentos
                 </NavLink>
 
             </div>

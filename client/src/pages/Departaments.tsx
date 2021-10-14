@@ -1,6 +1,11 @@
 
 import { useState } from 'react';
+import { Layout } from '../components/Layout';
+import { MapBoxLayer } from '../components/mapbox/MapBoxLayer.js';
 import { Header } from '../components/public/landingPage/Header';
+import LabTabs from '../components/Tabs';
+import { CardInfo } from '../components/CardInfo';
+
 
 const images = [
     { name: 'La Paz', source: 'lapaz.png' },
@@ -19,27 +24,27 @@ export const Departaments = () => {
     const onChange = (e: any) => {
         setselectedImage(e.target.value);
         console.log(e.target.value);
-
     }
     return (
-        <div>
-            <Header />
-            <select name="" id="" onChange={onChange}>
+        <Layout>
+            {/* <select name="" id="" onChange={onChange}>
                 {images.map(image => (
                     <option value={image.source}>{image.name}</option>
                 ))}
             </select>
 
             <>
-                <img 
-                style={{
-                    width: '90px',
-                    height: '90px',
-                }}
-                src={process.env.PUBLIC_URL + `/departamentos/${selectedImage}`} alt={images[0].name} />
+                <img
+                    style={{
+                        width: '90px',
+                        height: '90px',
+                    }}
+                    src={process.env.PUBLIC_URL + `/departamentos/${selectedImage}`} alt={images[0].name} />
                 <br />
-            </>
-
-        </div>
+            </> */}
+            
+            <LabTabs />
+            {/* <MapBoxLayer /> */}
+        </Layout>
     )
 }

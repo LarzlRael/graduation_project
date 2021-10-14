@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { fire_history } from 'src/tables';
+import { departamentos, fire_history } from 'src/tables';
+import { AnalysisDto } from './analysis.dto';
 
 @Injectable()
 export class AnalysisService {
@@ -27,4 +28,20 @@ export class AnalysisService {
     return array;
   }
 
+  async getNHeatSourceByDepartament(analysisDto: AnalysisDto) {
+
+    const query = `select a.longitude as lng, a.latitude as lat, a.brightness
+    from ${fire_history} as a
+    join ${departamentos} as b
+    on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN $1 and $2
+    and b.departament_name in ($3)) ORDER BY a.brightness ${analysisDto.orderBy} limit $4`;
+
+    const res = await this.pool.query(query, [
+      analysisDto.dateStart,
+      analysisDto.dateEnd,
+      analysisDto.departamento,
+      analysisDto.limit,
+    ]);
+    return res.rows;
+  }
 }

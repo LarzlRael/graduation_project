@@ -25,7 +25,7 @@ const getByBetweenDate = async function (dateStart, dateEnd) {
 const getHeatSourcesByDeparment = async function (
   dateStart,
   dateEnd,
-  departaments,
+  departament,
 ) {
   const rawResponse = await fetch(`${baseUrl}/maps/getheatsourcesbydeparment`, {
     method: 'POST',
@@ -36,7 +36,7 @@ const getHeatSourcesByDeparment = async function (
     body: JSON.stringify({
       dateStart,
       dateEnd,
-      departaments,
+      departament,
     }),
   });
 
