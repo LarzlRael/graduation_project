@@ -7,7 +7,7 @@ import {
   convertDepartmentsToString,
 } from './utils/utils';
 import { MapResponse } from './interfaces/mapsResponse';
-import { fire_history } from 'src/tables';
+import { departamentos, fire_history } from 'src/tables';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const GeoJSON = require('geojson');
 @Injectable()
@@ -33,17 +33,36 @@ export class MapsService {
     order by brightness ${mapdto.orderBy};`;
     return this.saveJsonAndParseAsGeoJson(query);
   }
+
   async getHeatSourcesByDeparment(mapdto: MapDto): Promise<MapResponse> {
     mapdto.departaments = convertDepartmentsToString(mapdto.departaments);
     const query = `
     select a.longitude as lng, a.latitude as lat, a.brightness, a.longitude, a.latitude
-
-    from fire_history as a
-    join "Polygons" as b
+    from ${fire_history} as a
+    join ${departamentos} as b
     on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '${mapdto.dateStart}' and '${mapdto.dateEnd}' 
-    and b."DEPARTAMEN" in (${mapdto.departaments}));
+    and b.departament_name in (${mapdto.departaments}));
     `;
     return this.saveJsonAndParseAsGeoJson(query);
+  }
+
+  async getDepartamentPolygon(nombre_departamento: string) {
+    const query = `
+        SELECT jsonb_build_object(
+          'type',     'FeatureCollection',
+          'features', jsonb_agg(feature)
+      )
+      FROM (
+        SELECT jsonb_build_object(
+          'type',       'Feature',
+          'id',         id,
+          'geometry',   ST_AsGeoJSON(geom)::jsonb,
+          'properties', to_jsonb(row) - 'gid' - 'geom'
+        ) AS feature
+        FROM (SELECT * FROM departamentos where departament_name='${nombre_departamento}') row) features;
+    `;
+    const res = await this.pool.query(query);
+    return res.rows[0].jsonb_build_object;
   }
 
 

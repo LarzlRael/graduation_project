@@ -70,6 +70,15 @@ export class MapsController {
     return res.json(result);
   }
 
+  @Get('getdepartamento/:departamento')
+  async getDepartamentPolygon(
+    @Res() res: Response,
+    @Param('departamento') departamento,
+  ) {
+    const result = await this.mapsService.getDepartamentPolygon(departamento);
+    return res.json(result);
+  }
+
   @Post('getheatsourcesbydeparment')
   async getHeatSourcesByDeparment(
     @Res() res: Response,
@@ -78,8 +87,6 @@ export class MapsController {
     const result = await this.mapsService.getHeatSourcesByDeparment(mapDto);
     return res.json(result);
   }
-
-
 
   @Post('uploadcsvupdate')
   @UseInterceptors(

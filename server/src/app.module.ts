@@ -23,6 +23,7 @@ import { join } from 'path';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
+      autoLoadEntities: true,
       host: process.env.HOST,
       port: 5432,
       username: 'postgres',
