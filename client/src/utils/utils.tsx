@@ -19,3 +19,33 @@ export const setFileName = (dateStart: string, dateEnd?: string): string => {
         return `${spliteDateStart[2]}-${spliteDateStart[1]}-${spliteDateStart[0]}`;
     }
 }
+
+
+export const getRankDate = (time: string, dateTo: Date): string => {
+
+    const date = new Date(dateTo.toISOString().slice(0, 10));
+
+    switch (time) {
+        case 'today':
+            date.setHours(date.getHours() - 0);
+            break;
+        case '24hrs':
+            date.setHours(date.getHours() - 24);
+            break;
+        case 'week':
+            date.setHours(date.getHours() - 168);
+            break;
+        case 'twoWeeks':
+            date.setHours(date.getHours() - 336);
+            break;
+        case 'oneMounth':
+            date.setHours(date.getHours() - 720);
+            break;
+
+        default:
+            date.setHours(date.getHours() - 0);
+    }
+    date.setHours(date.getHours() - 4 + 24);
+    return date.toISOString().slice(0, 10);
+
+}

@@ -33,3 +33,21 @@
         margin: 0.5rem 1rem;
     }
 }
+
+.app-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.map {
+    margin: 0 auto;
+    max-width: 800px;
+    height: 600px;
+}
+
+.info {
+    width: 100%;
+    text-align: center;
+}

@@ -5,12 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { accountsLink } from './dataMenu';
 import { UpdateInformation } from './dashboard/UpdateInformation';
 import { CVSTutorial } from './dashboard/CVSTutorial';
+import { AuthAdminContext } from '../context/AuthAdminContext';
 
 export const AdminDashboard = () => {
 
     const [openMenu, setOpenMenu] = useState(false);
+    const { logOut } = useContext(AuthAdminContext);
 
-    // let { image, name } = s_autenticado_admin;
     const handleToogleMenu = () => {
         setOpenMenu(!openMenu);
     }
@@ -44,7 +45,6 @@ export const AdminDashboard = () => {
 
                                 {item.items.map((link) => (
                                     <NavLink
-                                        /*                                         onClick={handleToogleMenu} */
                                         key={uuidv4()}
                                         className="dash-item"
                                         activeClassName="active"
@@ -62,7 +62,7 @@ export const AdminDashboard = () => {
                     <div className="dash-group">
                         <ul className="dash-item">Ver empleados</ul>
                         <ul className="dash-item" >Cuentas asociadas</ul>
-                        <ul className="dash-item" onClick={() => { }}>Salir</ul>
+                        <ul className="dash-item" onClick={logOut}>Salir</ul>
                     </div>
 
                 </div>
