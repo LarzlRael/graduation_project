@@ -60,5 +60,32 @@ export const downloadShapeFile = async (dateStart: string, dateEnd: string) => {
     if (openWindow) {
         openWindow.focus();
     }
-
 }
+
+
+export const consultByDeparments = async (dateEnd: string, dateStart: string, departamentSelected: string) => {
+    const resp = await serverAPI.post('/maps/getheatsourcesbydeparment', {
+        dateEnd,
+        dateStart,
+        departament: departamentSelected,
+    });
+
+    return resp.data;
+};
+interface HottestByDeparament {
+    dateStart: string;
+    dateEnd: string;
+    departamento: string;
+    orderBy: 'asc' | 'desc';
+    limit: number;
+}
+export const getnHeatSourceByDepartament = async (hottestbydeparament: HottestByDeparament) => {
+    const resp = await serverAPI.post('/analysis/getnheatsourcebydepartament', {
+        ...hottestbydeparament
+    });
+
+    return resp.data;
+};
+
+
+

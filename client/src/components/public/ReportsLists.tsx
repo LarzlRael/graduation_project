@@ -11,7 +11,6 @@ export const ReportsLists = () => {
 
     return (
         <Layout>
-            <Header />
             <h3>Seleccionar fecha en el calendario</h3>
             <CustomDateRangePickerDay />
 

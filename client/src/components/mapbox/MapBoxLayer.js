@@ -6,6 +6,8 @@ import { CircularProgress } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { getRankDate } from "../../utils/utils";
+import { consultByDeparments } from "../../provider/services";
+import { CardInfo } from "../CardInfo";
 
 const departametsArray = [
     'La Paz',
@@ -41,15 +43,17 @@ export const MapBoxLayer = () => {
 
     const [zoom, setZoom] = useState(4.8);
     const [loading, setLoading] = useState(false);
+    const [focosDeCalor, setfocosDeCalor] = useState({});
     const [selecteDepartament, setSelecteDepartament] = useState(departametsArray[0]);
+    const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState(departametsArray[0]);
     const [selectedDate, setSelectedDay] = useState({
         selectedDate: new Date(),
-        rank: '123',
+        rank: getRankDate('today', new Date()),
     });
 
 
 
-    const showMapBoxMap = async (data) => {
+    const showMapBoxMap = async () => {
 
         let map = new mapboxgl.Map({
             container: mapContainer.current,
@@ -64,7 +68,7 @@ export const MapBoxLayer = () => {
 
             map.addSource('points', {
                 type: 'geojson',
-                data: data,
+                data: focosDeCalor,
                 /* cluster: selecteDepartament === 'Santa Cruz' || 'Beni' || 'Pando' ? false : true, */
 
             });
@@ -136,16 +140,16 @@ export const MapBoxLayer = () => {
     const consultar = async (rango = 'today') => {
         switch (rango) {
             case 'today':
-                setSelectedDay({ ...setSelectedDay, rank: getRankDate('today', selectedDate.selectedDate) });
+                setSelectedDay({ ...selectedDate, rank: getRankDate('today', selectedDate.selectedDate) });
                 break;
             case '24hr':
-                setSelectedDay({ ...setSelectedDay, rank: getRankDate('24hrs', selectedDate.selectedDate) });
+                setSelectedDay({ ...selectedDate, rank: getRankDate('24hrs', selectedDate.selectedDate) });
                 break;
             case 'week':
-                setSelectedDay({ ...setSelectedDay, rank: getRankDate('week', selectedDate.selectedDate) });
+                setSelectedDay({ ...selectedDate, rank: getRankDate('week', selectedDate.selectedDate) });
                 break;
             case 'oneMounth':
-                setSelectedDay({ ...setSelectedDay, rank: getRankDate('oneMounth', selectedDate.selectedDate) });
+                setSelectedDay({ ...selectedDate, rank: getRankDate('oneMounth', selectedDate.selectedDate) });
                 break;
 
             default:
@@ -153,79 +157,84 @@ export const MapBoxLayer = () => {
         }
         setLoading(true);
 
-        const consult = await axios.post('http://localhost:4000/maps/getheatsourcesbydeparment', {
-            dateStart: selectedDate.selectedDate.toISOString().slice(0, 10),
-            dateEnd: selectedDate.rank,
-            departaments: selecteDepartament
-        });
-        setLoading(false);
 
-        showMapBoxMap(consult.data);
+        const consult = await consultByDeparments(selectedDate.selectedDate.toISOString().slice(0, 10), selectedDate.rank, selecteDepartament)
+        setLoading(false);
+        showMapBoxMap();
+        setfocosDeCalor(consult);
+        setSelecteDepartamentCopy(selecteDepartament);
     }
 
     return (
-
-        <div className="district-map-wrapper">
-            {loading ? <CircularProgress size={50} /> :
-                <>
-                    <div className="info">
-                        Current hovered district: <strong>{hoveredDistrict ? hoveredDistrict : ""}</strong>
-                    </div>
-                    <div id="districtDetailMap" className="map">
-                        <div style={{ height: "100%" }} ref={mapContainer}>
+        <>
+            <CardInfo
+                departamento={selecteDepartamentCopy}
+                numeroFocos={focosDeCalor.features ? focosDeCalor.features.length : 0}
+                dateStart={selectedDate.selectedDate}
+                dateEnd={selectedDate.rank}
+            />
+            <div className="district-map-wrapper">
+                {loading ? <CircularProgress size={50} /> :
+                    <>
+                        <div className="info">
+                            Current hovered district: <strong>{hoveredDistrict ? hoveredDistrict : ""}</strong>
                         </div>
-                    </div>
-                </>
-            }
+                        <div id="districtDetailMap" className="map">
+                            <div style={{ height: "100%" }} ref={mapContainer}>
+                            </div>
+                        </div>
+                    </>
+                }
 
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    /* value={Agent} */
-                    label="Age"
-                    onChange={onChange}
+                <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        /* value={Agent} */
+                        label="Age"
+                        onChange={onChange}
+                    >
+                        {departametsArray.map((departament) => (
+                            <MenuItem value={departament}>{departament}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                        label="Seleccionar fecha"
+                        value={selectedDate.selectedDate}
+                        inputFormat="dd/MM/yyyy"
+                        maxDate={new Date()}
+                        onChange={(newValue) => {
+                            setSelectedDay({ ...selectedDate, selectedDate: newValue });
+                        }}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                </LocalizationProvider>
+                <Button
+                    onClick={() => consultar('today')}
+                    variant="contained" >
+                    HOY
+                </Button>
+                <Button
+                    onClick={() => consultar('24hrs')}
+                    variant="contained" >
+                    24 horas
+                </Button>
+                <Button
+                    onClick={() => consultar('week')}
+                    variant="contained" >
+                    1 semana
+                </Button>
+                <Button
+                    onClick={() => consultar('oneMounth')}
+                    variant="contained"
                 >
-                    {departametsArray.map((departament) => (
-                        <MenuItem value={departament}>{departament}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                    label="Seleccionar fecha"
-                    value={selectedDate.selectedDate}
-                    inputFormat="dd/MM/yyyy"
-                    maxDate={new Date()}
-                    onChange={(newValue) => {
-                        setSelectedDay({ ...selectedDate, selectedDate: newValue });
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                />
-            </LocalizationProvider>
-            <Button
-                onClick={() => consultar('today')}
-                variant="contained" href="#contained-buttons">
-                HOY
-            </Button>
-            <Button
-                onClick={() => consultar('24hrs')}
-                variant="contained" href="#contained-buttons">
-                24 horas
-            </Button>
-            <Button
-                onClick={() => consultar('week')}
-                variant="contained" href="#contained-buttons">
-                1 semana
-            </Button>
-            <Button
-                onClick={() => consultar('oneMounth')}
-                variant="contained"
-                href="#contained-buttons">
-                1 mes
-            </Button>
-        </div>
+                    1 mes
+                </Button>
+            </div>
+        </>
     );
 }
 

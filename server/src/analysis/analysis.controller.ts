@@ -1,6 +1,7 @@
-import { Controller, Get, Res, Param } from '@nestjs/common';
+import { Controller, Get, Res, Param, Body, Post } from '@nestjs/common';
 import { AnalysisService } from './analysis.service';
 import { Response } from 'express';
+import { AnalysisDto } from './analysis.dto';
 
 @Controller('analysis')
 export class AnalysisController {
@@ -11,6 +12,21 @@ export class AnalysisController {
     res.json({
       ok: true,
       dates,
+    });
+  }
+
+  @Post('getnheatsourcebydepartament')
+  async getNHeatSourceByDepartament(
+    @Res() res: Response,
+    @Body() analysisDto: AnalysisDto,
+  ) {
+    console.log(analysisDto)
+    const resp = await this.analysisService.getNHeatSourceByDepartament(
+      analysisDto,
+    );
+    return res.json({
+      ok: true,
+      resp,
     });
   }
 }

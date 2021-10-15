@@ -21,7 +21,7 @@ export const setFileName = (dateStart: string, dateEnd?: string): string => {
 }
 
 
-export const getRankDate = (time: string, dateTo: Date): string => {
+export const getRankDate = (time: string, dateTo: Date = new Date()): string => {
 
     const date = new Date(dateTo.toISOString().slice(0, 10));
 

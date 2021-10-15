@@ -4,6 +4,7 @@ import { Layout } from '../components/Layout';
 import { MapBoxLayer } from '../components/mapbox/MapBoxLayer.js';
 import { Header } from '../components/public/landingPage/Header';
 import LabTabs from '../components/Tabs';
+import { CardInfo } from '../components/CardInfo';
 
 
 const images = [
@@ -26,7 +27,6 @@ export const Departaments = () => {
     }
     return (
         <Layout>
-            <Header />
             {/* <select name="" id="" onChange={onChange}>
                 {images.map(image => (
                     <option value={image.source}>{image.name}</option>
@@ -42,6 +42,7 @@ export const Departaments = () => {
                     src={process.env.PUBLIC_URL + `/departamentos/${selectedImage}`} alt={images[0].name} />
                 <br />
             </> */}
+            
             <LabTabs />
             {/* <MapBoxLayer /> */}
         </Layout>
