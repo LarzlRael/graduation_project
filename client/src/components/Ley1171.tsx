@@ -54,7 +54,7 @@ export const Ley1171 = () => {
                 <p><strong>Artículo 9°.- (Destino de los recursos económicos) </strong>Los recursos provenientes de la recaudación de multas emergentes de la aplicación de la presente Ley, serán depositados por la Autoridad de Fiscalización y Control Social de Bosques y Tierra - ABT, en el Tesoro General de la Nación - TGN.
                 </p>
                 <h1>
-                    <a id="idm111"> </a>Disposiciones adicionales
+                    <a id="idm111">Disposiciones adicionales</a>
                 </h1>
                 <p><strong>Primera .- </strong>Con carácter excepcional se establece un período de regularización en el pago de deudas por sanciones administrativas por quemas sin autorización existentes a la fecha, aplicable a predios con procesos administrativos iniciados, con etapa recursiva en curso y predios que no cuenten con proceso administrativo iniciado, de acuerdo al siguiente detalle:
                 </p><ol type="a" className="a"><li>Para propiedades individuales:

@@ -1,5 +1,3 @@
-import React from 'react'
-import { Layout } from './Layout';
 import { getnHeatSourceByDepartament } from '../provider/services';
 import { useEffect } from 'react';
 
@@ -16,7 +14,6 @@ export const HottesSources = () => {
     }
     useEffect(() => {
         getSoruces()
-        
     }, [])
     return (
         <div>

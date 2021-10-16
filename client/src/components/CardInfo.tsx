@@ -16,15 +16,16 @@ interface CardInfoInterface {
     numeroFocos: string;
     dateStart: Date;
     dateEnd: string;
+    imageUrl: string;
 }
-export const CardInfo = ({ departamento, numeroFocos, dateStart, dateEnd }: CardInfoInterface) => {
+export const CardInfo = ({ departamento, numeroFocos, dateStart, dateEnd, imageUrl }: CardInfoInterface) => {
     return (
         <Card sx={{ maxWidth: 345 }}>
             <CardMedia
                 component="img"
                 height="140"
-                image="https://mui.com/static/images/cards/contemplative-reptile.jpg"
-                alt="green iguana"
+                image={imageUrl}
+                alt={departamento}
             />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
