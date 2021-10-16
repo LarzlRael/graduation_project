@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import mapboxgl from 'mapbox-gl';
-import axios from 'axios';
+import { useState, useEffect } from "react";
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
 import { CircularProgress } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/lab";
@@ -9,132 +7,45 @@ import { getRankDate } from "../../utils/utils";
 import { consultByDeparments } from "../../provider/services";
 import { CardInfo } from "../CardInfo";
 
-const departametsArray = [
-    'La Paz',
-    'Oruro',
-    'Potosi',
-    'Tarija',
-    'Chuquisica',
-    'Cochabamba',
-    'Beni',
-    'Pando',
-    'Santa Cruz',
-];
+import ReactMapGL, { Layer, Source } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { departametsArray } from "../../data/data";
+
+const apikey = process.env.REACT_APP_MAPBOX_KEY;
 
 export const MapBoxLayer = () => {
 
-    //Assign the Mapbox token from the environment variable set in .env
-    mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_KEY;
-
-    const mapContainer = useRef(null);
-
-    const [longLat, setLongLat] = useState({
-        long: -66.2137434,
-        lat: -17.390915,
+    const [viewport, setViewport] = useState({
+        width: 800,
+        height: 800,
+        longitude: -66.2137434,
+        latitude: -17.390915,
+        zoom: 4.5
     });
 
-
-    const [hoveredDistrict, _setHoveredDistrict] = useState(null);
-    const hoveredDistrictRef = useRef(hoveredDistrict);
-    const setHoveredDistrict = (data) => {
-        hoveredDistrictRef.current = data;
-        _setHoveredDistrict(data);
-    };
-
-    const [zoom, setZoom] = useState(4.8);
     const [loading, setLoading] = useState(false);
     const [focosDeCalor, setfocosDeCalor] = useState({});
-    const [selecteDepartament, setSelecteDepartament] = useState(departametsArray[0]);
-    const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState(departametsArray[0]);
+    const [selecteDepartament, setSelecteDepartament] = useState({
+        departamentSelected: departametsArray[0].name,
+        image: departametsArray[0].imageUrl,
+    });
+    const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState({
+        departamentSelected: departametsArray[0].name,
+        image: departametsArray[0].imageUrl,
+    });
     const [selectedDate, setSelectedDay] = useState({
         selectedDate: new Date(),
         rank: getRankDate('today', new Date()),
     });
 
 
-
-    const showMapBoxMap = async () => {
-
-        let map = new mapboxgl.Map({
-            container: mapContainer.current,
-            style: "mapbox://styles/mapbox/light-v10",
-            center: [longLat.long, longLat.lat],
-            zoom: zoom
-        });
-        // Add zoom and rotation controls to the map.
-        map.addControl(new mapboxgl.NavigationControl());
-
-        map.once("load", function () {
-
-            map.addSource('points', {
-                type: 'geojson',
-                data: focosDeCalor,
-                /* cluster: selecteDepartament === 'Santa Cruz' || 'Beni' || 'Pando' ? false : true, */
-
-            });
-
-            map.addLayer({
-                'id': 'district-layer',
-                'type': 'circle', // <== !important
-                'source': 'points',
-                'layout': {},
-                'paint': {}
-            });
-
-            map.on('mousemove', 'district-layer', function (e) {
-                if (e.features.length > 0) {
-                    if (hoveredDistrictRef.current && hoveredDistrictRef.current > -1) {
-
-                        map.setFeatureState(
-                            { source: 'district-source', id: hoveredDistrictRef.current },
-                            { hover: false }
-                        );
-                    }
-
-                    let _hoveredDistrict = e.features[0].id;
-
-                    map.setFeatureState(
-                        { source: 'district-source', id: _hoveredDistrict },
-                        { hover: true }
-                    );
-
-                    setHoveredDistrict(_hoveredDistrict);
-                }
-
-            });
-
-            // When the mouse leaves the state-fill layer, update the feature state of the
-            // previously hovered feature.
-            map.on('mouseleave', 'district-layer', function () {
-                if (hoveredDistrictRef.current) {
-                    map.setFeatureState(
-                        { source: 'district-source', id: hoveredDistrictRef.current },
-                        { hover: false }
-                    );
-                }
-                setHoveredDistrict(null);
-            });
-
-            map.on('move', () => {
-                const { lng, lat } = map.getCenter();
-
-                setLongLat({
-                    lat: parseInt(lat.toFixed(4)),
-                    long: parseInt(lng.toFixed(4)),
-                });
-                setZoom(parseInt(map.getZoom().toFixed(2)));
-            });
-
-        });
-    }
-
-    useEffect(() => {
-        consultar();
-    }, []);
-
-
     const onChange = (e) => {
-        setSelecteDepartament(e.target.value);
+        const index = e.target.value;
+        setSelecteDepartament({
+            ...selecteDepartament,
+            departamentSelected: departametsArray[index].name,
+            image: departametsArray[index].imageUrl,
+        });
     }
 
     const consultar = async (rango = 'today') => {
@@ -158,82 +69,105 @@ export const MapBoxLayer = () => {
         setLoading(true);
 
 
-        const consult = await consultByDeparments(selectedDate.selectedDate.toISOString().slice(0, 10), selectedDate.rank, selecteDepartament)
-        setLoading(false);
-        showMapBoxMap();
+        const consult = await consultByDeparments(selectedDate.selectedDate.toISOString().slice(0, 10), selectedDate.rank, selecteDepartament.departamentSelected);
         setfocosDeCalor(consult);
-        setSelecteDepartamentCopy(selecteDepartament);
+        setLoading(false);
+        setSelecteDepartamentCopy({ ...selecteDepartamentCopy, departamentSelected: selecteDepartament.departamentSelected, image: selecteDepartament.image });
+
     }
+
+    const layerStyle = {
+        id: 'point',
+        type: 'circle',
+        paint: {
+            'circle-radius': 5,
+            'circle-color': '#007cbf'
+        }
+    };
+
+    useEffect(() => {
+        consultar()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <>
             <CardInfo
-                departamento={selecteDepartamentCopy}
+                departamento={selecteDepartamentCopy.departamentSelected}
                 numeroFocos={focosDeCalor.features ? focosDeCalor.features.length : 0}
                 dateStart={selectedDate.selectedDate}
                 dateEnd={selectedDate.rank}
+                imageUrl={selecteDepartamentCopy.image}
             />
-            <div className="district-map-wrapper">
-                {loading ? <CircularProgress size={50} /> :
-                    <>
-                        <div className="info">
-                            Current hovered district: <strong>{hoveredDistrict ? hoveredDistrict : ""}</strong>
-                        </div>
-                        <div id="districtDetailMap" className="map">
-                            <div style={{ height: "100%" }} ref={mapContainer}>
-                            </div>
-                        </div>
-                    </>
-                }
 
-                <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        /* value={Agent} */
-                        label="Age"
-                        onChange={onChange}
-                    >
-                        {departametsArray.map((departament) => (
-                            <MenuItem value={departament}>{departament}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DatePicker
-                        label="Seleccionar fecha"
-                        value={selectedDate.selectedDate}
-                        inputFormat="dd/MM/yyyy"
-                        maxDate={new Date()}
-                        onChange={(newValue) => {
-                            setSelectedDay({ ...selectedDate, selectedDate: newValue });
-                        }}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                </LocalizationProvider>
-                <Button
-                    onClick={() => consultar('today')}
-                    variant="contained" >
-                    HOY
-                </Button>
-                <Button
-                    onClick={() => consultar('24hrs')}
-                    variant="contained" >
-                    24 horas
-                </Button>
-                <Button
-                    onClick={() => consultar('week')}
-                    variant="contained" >
-                    1 semana
-                </Button>
-                <Button
-                    onClick={() => consultar('oneMounth')}
-                    variant="contained"
+            <ReactMapGL
+                mapboxApiAccessToken={apikey}
+                {...viewport}
+                mapStyle='mapbox://styles/mapbox/light-v10'
+                onViewportChange={nextViewport => setViewport(nextViewport)}
+            >
+                <Source id="my-data" type="geojson" data={focosDeCalor}>
+                    <Layer {...layerStyle} />
+                </Source>
+            </ReactMapGL>
+
+
+            <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="departamento"
+                    label="Age"
+                    value={selecteDepartament.departamentSelected}
+                    onChange={onChange}
                 >
-                    1 mes
-                </Button>
-            </div>
+                    {departametsArray.map((index, i) => (
+                        <MenuItem
+                            key={departametsArray[i].name}
+                            value={i}>{departametsArray[i].name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                    label="Seleccionar fecha"
+                    value={selectedDate.selectedDate}
+                    inputFormat="dd/MM/yyyy"
+                    maxDate={new Date()}
+                    onChange={(newValue) => {
+                        setSelectedDay({ ...selectedDate, selectedDate: newValue });
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                />
+            </LocalizationProvider>
+            <Button
+                onClick={() => consultar('today')}
+                variant="contained"
+                disabled={loading}
+            >
+                HOY
+            </Button>
+            <Button
+                onClick={() => consultar('24hrs')}
+                disabled={loading}
+                variant="contained" >
+                24 horas
+            </Button>
+            <Button
+                onClick={() => consultar('week')}
+                disabled={loading}
+                variant="contained" >
+                1 semana
+            </Button>
+            <Button
+                onClick={() => consultar('oneMounth')}
+                disabled={loading}
+                variant="contained"
+            >
+                1 mes
+            </Button>
         </>
     );
 }

@@ -1,9 +1,6 @@
-import { useState } from 'react'
-import { useReport } from '../../hooks/useReport';
 
 import { CustomDateRangePickerDay } from './DatePicker';
 import { Layout } from '../Layout';
-import { Header } from './landingPage/Header';
 import ResponsiveDatePickers from '../CalendarPicker';
 
 export const ReportsLists = () => {

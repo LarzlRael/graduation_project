@@ -16,15 +16,15 @@ import { CircularProgress } from '@material-ui/core';
 
 export const LoadingScreen = () => {
     return (
-        <CircularProgress  />
+        <CircularProgress />
     )
 }
 
 export const Navigator = () => {
-    /*  const { status } = useContext(AuthAdminContext);
-     if (status === 'checking') {
-         return <LoadingScreen />
-     } */
+    const { status } = useContext(AuthAdminContext);
+    if (status === 'checking') {
+        return <LoadingScreen />
+    }
     return (
         <Router >
             <Switch>
