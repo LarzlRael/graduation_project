@@ -1,5 +1,4 @@
-import { serverAPI } from '../provider/serverProvider';
-
+import { serverAPI } from '../provider/serverConfig';
 
 //? funcione que sirve para poder enviar los headers
 

@@ -20,10 +20,33 @@ export class AnalysisController {
     @Res() res: Response,
     @Body() analysisDto: AnalysisDto,
   ) {
-    console.log(analysisDto)
+    console.log(analysisDto);
     const resp = await this.analysisService.getNHeatSourceByDepartament(
       analysisDto,
     );
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+
+  @Get('nombres_provincias/:departamento')
+  async getNamesProvincias(
+    @Res() res: Response,
+    @Param('departamento') departamento,
+  ) {
+    const resp = await this.analysisService.getNamesProvincias(departamento);
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+  @Get('nombres_municipios/:departamento')
+  async getNombresProvincias(
+    @Res() res: Response,
+    @Param('departamento') departamento,
+  ) {
+    const resp = await this.analysisService.getNamesMunicipios(departamento);
     return res.json({
       ok: true,
       resp,

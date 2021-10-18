@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
-import { getDates, getCVSreport, getReportGeoJsonByDate, downloadShapeFile } from '../provider/services';
+import { getDates, } from '../provider/services';
 import { convertirFecha } from '../utils/utils';
+import { getCVSreport, getReportGeoJsonByDate, downloadShapeFile } from '../provider/reportsServices';
 // Create Document Component
 
 export const useReport = () => {
@@ -13,7 +14,7 @@ export const useReport = () => {
 
     useEffect(() => {
         setStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const setStatus = async () => {

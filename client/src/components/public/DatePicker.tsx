@@ -11,7 +11,7 @@ import MuiDateRangePickerDay, {
 } from '@mui/lab/DateRangePickerDay';
 import { es } from "date-fns/locale";
 import { useReport } from '../../hooks/useReport';
-import { FaFileCsv, FaFilePdf, FaCalendarAlt } from "react-icons/fa";
+import { FaFileCsv, FaFilePdf } from "react-icons/fa";
 import { VscJson } from "react-icons/vsc";
 import { CircularProgress } from '@material-ui/core';
 import moment from 'moment'

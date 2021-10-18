@@ -79,9 +79,24 @@ export const MapBoxLayer = () => {
     const layerStyle = {
         id: 'point',
         type: 'circle',
+        /*  paint: {
+             'circle-radius': 5,
+             'circle-color': '#000'
+             
+         } */
         paint: {
+            // Make circles larger as the user zooms from z12 to z22.
             'circle-radius': 5,
-            'circle-color': '#007cbf'
+            // Color circles by ethnicity, using a `match` expression.
+            'circle-color': [
+                "rgb",
+                // red is higher when feature.properties.temperature is higher
+                ["get", "brightness"],
+                // green is always zero
+                0,
+                // blue is higher when feature.properties.temperature is lower
+                ["-", 100, ["get", "brightness"]]
+            ]
         }
     };
 
@@ -119,7 +134,7 @@ export const MapBoxLayer = () => {
                     id="demo-simple-select"
                     name="departamento"
                     label="Age"
-                    value={selecteDepartament.departamentSelected}
+                    value={selecteDepartament.departamentSelect}
                     onChange={onChange}
                 >
                     {departametsArray.map((index, i) => (

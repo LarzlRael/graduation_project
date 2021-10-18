@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@material-ui/core'
 import { ChangeEvent } from 'react';
-import { uploadFileCVS } from '../../provider/services';
 import { IoCloseCircleSharp } from 'react-icons/io5';
 import { MdFileUpload } from "react-icons/md";
+import { uploadFileCVS } from '../../provider/reportsServices';
 export const UpdateInformation = () => {
 
     const [selectedFile, setSelectedFile] = useState<File>();

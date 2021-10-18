@@ -42,7 +42,7 @@ export class MapsService {
     from ${fire_history} as a
     join ${departamentos} as b
     on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '${mapdto.dateStart}' and '${mapdto.dateEnd}' 
-    and b.departament_name in ('${mapdto.departament}' ));
+    and b.nombre_departamento in ('${mapdto.departament}' ));
     `;
     return this.saveJsonAndParseAsGeoJson(query);
   }
@@ -60,7 +60,7 @@ export class MapsService {
           'geometry',   ST_AsGeoJSON(geom)::jsonb,
           'properties', to_jsonb(row) - 'gid' - 'geom'
         ) AS feature
-        FROM (SELECT * FROM departamentos where departament_name='${nombre_departamento}') row) features;
+        FROM (SELECT * FROM departamentos where nombre_departamento='${nombre_departamento}') row) features;
     `;
     const res = await this.pool.query(query);
     return res.rows[0].jsonb_build_object;

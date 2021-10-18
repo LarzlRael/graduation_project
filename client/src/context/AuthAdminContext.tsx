@@ -1,8 +1,8 @@
 import { createContext, useEffect, useReducer } from 'react';
 
 import { authReducer, AuthState } from './AuthAdminReducer';
-import { serverAPI } from '../provider/serverProvider';
 import { ErrorResponse, LoginData, LoginResponse, RegisterData } from './login.admin.interfaces';
+import { serverAPI } from '../provider/serverConfig';
 
 type AuthContextProps = {
     errorMessage: string;

@@ -33,7 +33,6 @@ export const Departaments = () => {
             </> */}
             
             <LabTabs />
-            <MapBoxLayer />
         </Layout>
     )
 }
