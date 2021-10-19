@@ -1,10 +1,6 @@
-
 import { Layout } from '../components/Layout';
-import { MapBoxLayer } from '../components/mapbox/MapBoxLayer.js';
 
-
-import LabTabs from '../components/Tabs';
-
+import LabTabs from '../components/tabs/Tabs';
 
 export const Departaments = () => {
 

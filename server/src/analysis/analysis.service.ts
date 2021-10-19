@@ -45,7 +45,7 @@ export class AnalysisService {
 
   async getNamesProvincias(nombreDepartamento: string) {
     const query = `select nombre_provincia,departamento from provincias
-    where departamento = $1`;
+    where departamento = $1 order by nombre_provincia ASC`;
 
     const res = await this.pool.query(query, [nombreDepartamento]);
     return res.rows;

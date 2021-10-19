@@ -16,8 +16,8 @@ const apikey = process.env.REACT_APP_MAPBOX_KEY;
 export const MapBoxLayer = () => {
 
     const [viewport, setViewport] = useState({
-        width: 800,
-        height: 800,
+        width: 600,
+        height: 600,
         longitude: -66.2137434,
         latitude: -17.390915,
         zoom: 4.5
@@ -49,6 +49,7 @@ export const MapBoxLayer = () => {
     }
 
     const consultar = async (rango = 'today') => {
+
         switch (rango) {
             case 'today':
                 setSelectedDay({ ...selectedDate, rank: getRankDate('today', selectedDate.selectedDate) });
@@ -66,25 +67,26 @@ export const MapBoxLayer = () => {
             default:
                 break;
         }
+        console.log('consultando we')
         setLoading(true);
 
 
-        const consult = await consultByDeparments(selectedDate.selectedDate.toISOString().slice(0, 10), selectedDate.rank, selecteDepartament.departamentSelected);
+        /* const consult = await consultByDeparments(selectedDate.selectedDate.toISOString().slice(0, 10), selectedDate.rank, selecteDepartament.departamentSelected);
         setfocosDeCalor(consult);
         setLoading(false);
-        setSelecteDepartamentCopy({ ...selecteDepartamentCopy, departamentSelected: selecteDepartament.departamentSelected, image: selecteDepartament.image });
+        setSelecteDepartamentCopy({ ...selecteDepartamentCopy, departamentSelected: selecteDepartament.departamentSelected, image: selecteDepartament.image }); */
 
     }
 
     const layerStyle = {
         id: 'point',
         type: 'circle',
-        /*  paint: {
-             'circle-radius': 5,
-             'circle-color': '#000'
-             
-         } */
         paint: {
+            'circle-radius': 5,
+            'circle-color': '#000'
+
+        }
+        /* paint: {
             // Make circles larger as the user zooms from z12 to z22.
             'circle-radius': 5,
             // Color circles by ethnicity, using a `match` expression.
@@ -97,13 +99,31 @@ export const MapBoxLayer = () => {
                 // blue is higher when feature.properties.temperature is lower
                 ["-", 100, ["get", "brightness"]]
             ]
-        }
+        } */
     };
 
     useEffect(() => {
         consultar()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+
+
+        const consultar = async () => {
+            const queryResult = await consultByDeparments(selectedDate.selectedDate.toISOString().slice(0, 10), selectedDate.rank, selecteDepartament.departamentSelected);
+            setfocosDeCalor(queryResult);
+            setLoading(false);
+            setSelecteDepartamentCopy({ ...selecteDepartamentCopy, departamentSelected: selecteDepartament.departamentSelected, image: selecteDepartament.image });
+        }
+        if (loading === true) {
+
+            consultar();
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loading]);
+
 
     return (
         <>
