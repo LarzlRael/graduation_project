@@ -1,6 +1,7 @@
 import { Layout } from '../components/Layout';
+import { TabNavigator } from './tabs/TabNavigator';
 
-import LabTabs from '../components/tabs/Tabs';
+
 
 export const Departaments = () => {
 
@@ -27,8 +28,8 @@ export const Departaments = () => {
                     src={process.env.PUBLIC_URL + `/departamentos/${selectedImage}`} alt={images[0].name} />
                 <br />
             </> */}
-            
-            <LabTabs />
+
+            <TabNavigator />
         </Layout>
     )
 }

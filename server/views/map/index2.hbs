@@ -18,6 +18,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   <style>
     html,
     body,
@@ -150,7 +152,8 @@
                         <td colspan="2">' + (feature.properties['longitude'] !== null ? autolinker.link(feature.properties['longitude'].toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <td colspan="2"><strong>brightness</strong><br />' + (feature.properties['brightness'] !== null ? autolinker.link(feature.properties['brightness'].toLocaleString()) : '') + '</td>\
+                        <td colspan="2"><strong>brightness</strong><br />' + (feature.properties['brightness'] !== null ?
+          autolinker.link((feature.properties['brightness']).toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
       layer.bindPopup(popupContent, {maxHeight: 400});

@@ -4,12 +4,12 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { MapBoxLayer } from '../mapbox/MapBoxLayer';
+import { MapBoxLayer } from '../../components/mapbox/MapBoxLayer';
 
 import { Municipios } from './Municipios';
 import { Provincias } from './Provincias';
 
-export default function LabTabs() {
+export const TabNavigator = () => {
     const [value, setValue] = useState('1');
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {

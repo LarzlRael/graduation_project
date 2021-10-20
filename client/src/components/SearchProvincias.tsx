@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { CircularProgress, Select, MenuItem, TextField } from '@mui/material';
-import { FormControl, InputLabel, Autocomplete } from '@material-ui/core';
+import { FormControl, InputLabel, Grid } from '@material-ui/core';
 import { departametsArray } from '../data/data';
 import { useDebounceValue } from '../hooks/useDebunceValue';
-import { getNombresProvincias } from '../provider/analysisServices';
+import { getNombresProvincias, getHottesSourcesByDepartamentProvince, getCountHottesSourcesByDepPro } from '../provider/analysisServices';
 import { Resp as ResProvincias } from '../interfaces/provinciasResponse.interface';
+import { Graficos } from './Graficos';
+import { DepartamentProvinciaResponse } from '../interfaces/departamensProvincia.interface';
+import { CountDepartamentProvinciaResponse } from '../interfaces/countProvinceDepartamento.interface';
 
 
 interface SearchProps {
@@ -20,7 +23,11 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
         departamentSelected: departametsArray[0].name,
         provinciaSelected: ''
     });
-
+    const [departamentProvincia, setDepartamentProvincia] = useState<DepartamentProvinciaResponse>();
+    const [countDepProv, setCountDepProv] = useState<CountDepartamentProvinciaResponse>({
+        ok: false,
+        resp: []
+    });
 
     useEffect(() => {
 
@@ -43,15 +50,35 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
             setLoading(true);
             const provinciasList = await getNombresProvincias(departamentoProvincia.departamentSelected);
             setArrayToElements(provinciasList.resp);
+            setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: provinciasList.resp[0].nombre_provincia })
             setLoading(false);
         }
         getProvinciasNamesService()
-    }, [departamentoProvincia.departamentSelected])
+    }, [departamentoProvincia.departamentSelected]);
 
-    if (loading) {
-        return (
-            <CircularProgress />
-        );
+    useEffect(() => {
+        const getProvinciasNamesService = async () => {
+            setLoading(true);
+            const depProvList = await getCountHottesSourcesByDepPro({
+                dateEnd: '2021-09-01',
+                dateStart: '2021-09-01',
+                departamento: departamentoProvincia.departamentSelected
+            });
+            setCountDepProv(depProvList);
+            setLoading(false);
+        }
+        getProvinciasNamesService()
+    }, [departamentoProvincia.departamentSelected]);
+
+
+    const query = async () => {
+        const res = await getHottesSourcesByDepartamentProvince({
+            dateEnd: '2021-09-01',
+            dateStart: '2021-09-01',
+            departamento: departamentoProvincia.departamentSelected,
+            provincia: departamentoProvincia.provinciaSelected,
+        });
+        setDepartamentProvincia(res);
     }
 
     return (
@@ -69,45 +96,56 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
                 ))}
 
             </select> */}
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="departamento"
-                    label="Age"
-                    value={departamentoProvincia.departamentSelected}
-                    onChange={(e) => setDepartamentoProvincia({ ...departamentoProvincia, departamentSelected: e.target.value })}
-                >
-                    {departametsArray.map((departament) => (
-                        <MenuItem
-                            key={departament.name}
-                            value={departament.name}>{departament.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+            <Grid container spacing={6}>
+                <Grid item xs={6}>
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">
+                            Seleccionar Departamento
+                        </InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            name="departamento"
+                            label="Age"
+                            value={departamentoProvincia.departamentSelected}
+                            onChange={(e) => setDepartamentoProvincia({ ...departamentoProvincia, departamentSelected: e.target.value })}
+                        >
+                            {departametsArray.map((departament) => (
+                                <MenuItem
+                                    key={departament.name}
+                                    value={departament.name}>{departament.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={6}>
+                    <FormControl fullWidth>
+                        <br />
 
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="departamento"
-                    label="Age"
-                    value={departamentoProvincia.provinciaSelected}
-                    onChange={(e) => setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: e.target.value })}
+                        <InputLabel id="demo-simple-select-label">Seleccionar Provincia</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            name="departamento"
+                            label="Age"
+                            value={departamentoProvincia.provinciaSelected}
+                            onChange={(e) => setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: e.target.value })}
+                        >
+                            {arrayToElements.map((departament) => (
+                                <MenuItem
+                                    key={departament.nombre_provincia}
+                                    value={departament.nombre_provincia}>{departament.nombre_provincia}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
 
-                >
-                    
-                    {arrayToElements.map((departament) => (
-                        <MenuItem
-                            key={departament.nombre_provincia}
-                            value={departament.nombre_provincia}>{departament.nombre_provincia}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+            <button onClick={query}>Consultar we</button>
+            <Graficos info={countDepProv} />
+
         </div >
     )
 }

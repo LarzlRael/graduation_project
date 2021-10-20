@@ -87,6 +87,15 @@ export class MapsController {
     const result = await this.mapsService.getHeatSourcesByDeparment(mapDto);
     return res.json(result);
   }
+  @Post('getheatsourcesbyprovincia')
+  async getHeatSourcesByProvincia(
+    @Res() res: Response,
+    @Body() mapDto: MapDto,
+  ) {
+    console.log(mapDto);
+    const result = await this.mapsService.getHeatSourcesByProvincia(mapDto);
+    return res.json(result);
+  }
 
   @Post('uploadcsvupdate')
   @UseInterceptors(

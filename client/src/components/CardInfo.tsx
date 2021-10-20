@@ -20,10 +20,10 @@ interface CardInfoInterface {
 }
 export const CardInfo = ({ departamento, numeroFocos, dateStart, dateEnd, imageUrl }: CardInfoInterface) => {
     return (
-        <Card sx={{ maxWidth: 345 }}>
+        <Card>
             <CardMedia
                 component="img"
-                height="140"
+                height="160"
                 image={imageUrl}
                 alt={departamento}
             />

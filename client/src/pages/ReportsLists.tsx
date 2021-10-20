@@ -1,7 +1,7 @@
 
-import { CustomDateRangePickerDay } from './DatePicker';
-import { Layout } from '../Layout';
-import ResponsiveDatePickers from '../CalendarPicker';
+import { CustomDateRangePickerDay } from '../components/public/DatePicker';
+import { Layout } from '../components/Layout';
+import ResponsiveDatePickers from '../components/CalendarPicker';
 
 export const ReportsLists = () => {
 

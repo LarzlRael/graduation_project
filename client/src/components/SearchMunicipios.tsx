@@ -1,4 +1,4 @@
-import { Autocomplete } from '@material-ui/core';
+import { Autocomplete, Grid } from '@material-ui/core';
 import { useState, useEffect } from 'react';
 import { departametsArray } from '../data/data';
 import { useDebounceValue } from '../hooks/useDebunceValue';
@@ -41,20 +41,21 @@ export const SearchMunicipios = ({ typo }: SearchProps) => {
     }, [arrayToElements, termSearch]);
 
     useEffect(() => {
-        const getProvinciasNames = async () => {
+        const getMunicipiosNames = async () => {
             setLoading(true);
             const provinciasList = await getNombresMunicipios(departamentoMunicipio.departamentSelected);
             setArrayToElements(provinciasList.resp);
+            setDepartamentoMunicipio({ ...departamentoMunicipio, municipioSelected: provinciasList.resp[0].nombre_municipio })
             setLoading(false);
         }
-        getProvinciasNames()
-    }, [departamentoMunicipio]);
+        getMunicipiosNames()
+    }, [departamentoMunicipio.departamentSelected]);
 
-    if (loading) {
-        return (
-            <CircularProgress />
-        );
-    }
+    /*  if (loading) {
+         return (
+             <CircularProgress />
+         );
+     } */
 
     return (
         <div>
@@ -71,44 +72,56 @@ export const SearchMunicipios = ({ typo }: SearchProps) => {
                 ))}
 
             </select> */}
+            <Grid container spacing={6}>
+                <Grid item xs={6}>
+                    <FormControl fullWidth>
+                        <br />
 
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="departamento"
-                    label="Age"
-                    value={departamentoMunicipio.departamentSelected}
-                    onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, departamentSelected: e.target.value })}
-                >
-                    {departametsArray.map((departament) => (
-                        <MenuItem
-                            key={departament.name}
-                            value={departament.name}>{departament.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+                        <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            name="departamento"
+                            label="Age"
+                            value={departamentoMunicipio.departamentSelected}
+                            onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, departamentSelected: e.target.value })}
+                        >
+                            {departametsArray.map((departament) => (
+                                <MenuItem
+                                    key={departament.name}
+                                    value={departament.name}>{departament.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
 
-            <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Seleccionar Municipio</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="departamento"
-                    label="Age"
-                    value={departamentoMunicipio.municipioSelected}
-                    onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, municipioSelected: e.target.value })}
-                >
-                    {arrayToElements.map((departament) => (
-                        <MenuItem
-                            key={departament.nombre_municipio}
-                            value={departament.nombre_municipio}>{departament.nombre_municipio}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+                <Grid item xs={6}>
+
+                    <FormControl fullWidth>
+                        <br />
+                        <br />
+                        <InputLabel id="demo-simple-select-label">
+                            Seleccionar Municipioo</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            name="departamento"
+                            label="Age"
+                            value={departamentoMunicipio.municipioSelected}
+                            onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, municipioSelected: e.target.value })}
+                        >
+                            {arrayToElements.map((departament) => (
+                                <MenuItem
+                                    key={departament.nombre_municipio}
+                                    value={departament.nombre_municipio}>{departament.nombre_municipio}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
+
 
             <Graficos />
         </div >

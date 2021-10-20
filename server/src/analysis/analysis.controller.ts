@@ -1,7 +1,7 @@
 import { Controller, Get, Res, Param, Body, Post } from '@nestjs/common';
 import { AnalysisService } from './analysis.service';
 import { Response } from 'express';
-import { AnalysisDto } from './analysis.dto';
+import { AnalysisDto } from './dto/analysis.dto';
 
 @Controller('analysis')
 export class AnalysisController {
@@ -47,6 +47,33 @@ export class AnalysisController {
     @Param('departamento') departamento,
   ) {
     const resp = await this.analysisService.getNamesMunicipios(departamento);
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+
+  @Post('getheatsourcesbyprovincia')
+  async getHeatSourcesByProvincia(
+    @Res() res: Response,
+    @Body() analysisDto: AnalysisDto,
+  ) {
+    const resp = await this.analysisService.getHeatSourcesByProvincia(
+      analysisDto,
+    );
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+  @Post('countdepartamentosprovincias')
+  async getCountDepartamentosProvincias(
+    @Res() res: Response,
+    @Body() analysisDto: AnalysisDto,
+  ) {
+    const resp = await this.analysisService.getCountDepartamentosProvincias(
+      analysisDto,
+    );
     return res.json({
       ok: true,
       resp,

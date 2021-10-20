@@ -58,6 +58,8 @@ const Calendario = () => {
   const [message, setMessage] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const [departamento, setDepartamento] = React.useState(departamentosBolivia[0]);
+  const [provinciasArray, setProvinciasArray] = React.useState([]);
+  const [provincia, setProvincia] = React.useState('');
 
   const getCurrentDate = (time) => {
     const date = new Date(dateState.dateStart);
@@ -91,7 +93,15 @@ const Calendario = () => {
 
   React.useEffect(() => {
     consultByRange('today');
-  }, [])
+  }, []);
+
+  React.useEffect(() => {
+    const loadProvincias = async () => {
+      const array = await getProvinciasNames(departamento);
+      setProvinciasArray(array);
+    }
+    loadProvincias();
+  }, [dateState.showMenu, departamento]);
 
   const onChange = async (value, campo) => {
     setDate({
@@ -99,7 +109,6 @@ const Calendario = () => {
       [campo]: value
     });
   }
-
 
   const consultByRange = async (range) => {
     let geoJsonData;
@@ -136,34 +145,62 @@ const Calendario = () => {
           break;
       }
     } else {
+      if (provincia.length !== 0) {
+        switch (range) {
+          case 'today':
+            geoJsonData = await getHeatSourcesByProvincia(getCurrentDate('today'), getCurrentDate('today'), provincia);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
 
-      switch (range) {
-        case 'today':
-          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('today'), getCurrentDate('today'), departamento);
-          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+            break;
 
-          break;
+          case '24hrs':
+            geoJsonData = await getHeatSourcesByProvincia(getCurrentDate('24hrs'), getCurrentDate('today'), provincia);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+            break;
 
-        case '24hrs':
-          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('24hrs'), getCurrentDate('today'), departamento);
-          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
-          break;
+          case 'week':
+            geoJsonData = await getHeatSourcesByProvincia(getCurrentDate('week'), getCurrentDate('today'), provincia);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+            break;
 
-        case 'week':
-          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('week'), getCurrentDate('today'), departamento);
-          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
-          break;
+          case 'twoWeeks':
+            geoJsonData = await getHeatSourcesByProvincia(getCurrentDate('twoWeeks'), getCurrentDate('today'), provincia);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+            break;
 
-        case 'twoWeeks':
-          geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('twoWeeks'), getCurrentDate('today'), departamento);
-          setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
-          break;
+          default:
+            break;
+        }
+      } else {
+        switch (range) {
+          case 'today':
+            geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('today'), getCurrentDate('today'), departamento);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
 
-        default:
-          break;
+            break;
+
+          case '24hrs':
+            geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('24hrs'), getCurrentDate('today'), departamento);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+            break;
+
+          case 'week':
+            geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('week'), getCurrentDate('today'), departamento);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+            break;
+
+          case 'twoWeeks':
+            geoJsonData = await getHeatSourcesByDeparment(getCurrentDate('twoWeeks'), getCurrentDate('today'), departamento);
+            setMessage(`Hoy ${moment(dateState.dateStart).format('LL')} del departamento de ${departamento}`);
+            break;
+
+          default:
+            break;
+        }
       }
-    }
 
+
+    }
 
     setLoading(false);
     /*     console.log(geoJsonData); */
@@ -219,11 +256,28 @@ const Calendario = () => {
         {dateState.showMenu &&
           <React.Fragment>
             <label htmlFor="">Seleccionar Departamento</label>
+
             <select name="departamento" id="" onChange={(e) => setDepartamento(e.target.value)}>
               {departamentosBolivia.map((departament) =>
               (<option
                 key={departament}
                 value={departament}>{departament}</option>))}
+            </select><br />
+
+            <select
+              onChange={(e) => setProvincia(e.target.value)}
+            >
+              <option
+                value=''>
+                Seleccionar provincia
+              </option>
+              {provinciasArray && provinciasArray.resp.map(option => (
+
+                <option
+                  value={option.nombre_provincia}>
+                  {option.nombre_provincia}
+                </option>
+              ))}
             </select>
           </React.Fragment>
         }
@@ -237,7 +291,6 @@ const Calendario = () => {
             <button onClick={consultarPorDepartamento}>Consultar por departamento</button>
           } */}
         </div>
-
 
         <div className="information">
           <span>Consultado focos de calor de {message}</span>

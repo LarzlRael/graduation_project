@@ -1,4 +1,4 @@
-import { Header } from './public/landingPage/Header';
+import { Header } from './Header';
 
 interface LayoutProps { children: any }
 export const Layout = ({ children }: LayoutProps) => {

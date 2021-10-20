@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
 import { departamentos, fire_history, municipios, provincias } from 'src/tables';
-import { AnalysisDto } from './analysis.dto';
+import { AnalysisDto } from './dto/analysis.dto';
 
 @Injectable()
 export class AnalysisService {
@@ -55,6 +55,39 @@ export class AnalysisService {
     where departamento = $1`;
 
     const res = await this.pool.query(query, [nombreDepartamento]);
+    return res.rows;
+  }
+
+  async getHeatSourcesByProvincia(analysisDto: AnalysisDto) {
+    const query = `
+    select a.longitude,a.latitude,a.brightness,b.nombre_provincia,b.departamento
+    from fire_history as a
+    join provincias as b
+    on ST_WITHIN(a.geometry, b.geom) 
+    where (a.acq_date BETWEEN $1
+    and $2 and b.departamento in ($3))
+    `;
+    const res = await this.pool.query(query, [
+      analysisDto.dateStart,
+      analysisDto.dateEnd,
+      analysisDto.departamento,
+    ]);
+    return res.rows;
+  }
+  async getCountDepartamentosProvincias(analysisDto: AnalysisDto) {
+    const query = `
+    select b.nombre_provincia, count(b.nombre_provincia) as focos_calor
+    from fire_history as a
+    join provincias as b
+    on ST_WITHIN(a.geometry, b.geom) 
+    where (a.acq_date BETWEEN $1
+    and $2 and b.departamento in ($3)) GROUP by(b.nombre_provincia) 
+    `;
+    const res = await this.pool.query(query, [
+      analysisDto.dateStart,
+      analysisDto.dateEnd,
+      analysisDto.departamento,
+    ]);
     return res.rows;
   }
 }

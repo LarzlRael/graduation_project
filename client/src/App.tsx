@@ -1,7 +1,7 @@
 import { Navigator } from './navigator/NavigatorAdmin';
 import { AuthProvider } from './context/AuthAdminContext';
 
-function App() {
+const App = () => {
   return (
     <AuthProvider>
       <Navigator />

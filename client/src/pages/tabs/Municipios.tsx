@@ -1,4 +1,4 @@
-import { SearchMunicipios } from '../SearchMunicipios';
+import { SearchMunicipios } from '../../components/SearchMunicipios';
 
 export const Municipios = () => {
 

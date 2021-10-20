@@ -1,5 +1,5 @@
 
-import { SearchProvincias } from '../SearchProvincias';
+import { SearchProvincias } from '../../components/SearchProvincias';
 
 export const Provincias = () => {
 
