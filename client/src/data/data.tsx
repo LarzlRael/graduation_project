@@ -21,3 +21,17 @@ export const departametsArray = [
     { name: 'Pando', imageUrl: 'https://web.senado.gob.bo/sites/default/files/styles/img-standard__800x600_/public/cobija2.jpg?itok=k2R_1uLY' },
     { name: 'Santa Cruz', imageUrl: 'https://i.ytimg.com/vi/QTDLMVXDvzs/maxresdefault.jpg' },
 ];
+
+
+
+
+export const cultureInfo = {
+    day: {
+        name: ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
+        abbr: ['Dom', 'Lun', 'Martes', 'Mie', 'Jue', 'Vie', 'Sab']
+    },
+    month: {
+        name: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Jului', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        abbr: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+    }
+};

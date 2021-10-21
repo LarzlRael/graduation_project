@@ -49,3 +49,10 @@ export const getRankDate = (time: string, dateTo: Date = new Date()): string => 
     return date.toISOString().slice(0, 10);
 
 }
+
+export const getRandomColor = (): string => {
+    const x = Math.floor(Math.random() * 256);
+    const y = 100 + Math.floor(Math.random() * 256);
+    const z = 50 + Math.floor(Math.random() * 256);
+    return `rgb(${x},${y},${z},0.6)`;
+}

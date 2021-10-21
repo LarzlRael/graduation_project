@@ -1,4 +1,4 @@
-export interface ProvinciasResponse {
+export interface    ProvinciasResponse {
     ok:   boolean;
     resp: Resp[];
 }

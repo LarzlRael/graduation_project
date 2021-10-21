@@ -27,7 +27,7 @@ export const getHottesSourcesByDepartamentProvince = async (provincia: Provincia
     });
     return resp.data;
 };
-export const getCountHottesSourcesByDepPro = async (provincia: Provincias) => {
+export const getCountByDepPro = async (provincia: Provincias) => {
     const resp = await serverAPI.post<CountDepartamentProvinciaResponse>(`/analysis/countdepartamentosprovincias`, {
         ...provincia,
     });

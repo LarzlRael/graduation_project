@@ -1,16 +1,17 @@
-
-import { useState } from 'react';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { departametsArray } from '../../data/data';
 
 interface ComboProps {
+    setState: React.Dispatch<React.SetStateAction<{
+        departamentSelected: string;
+        provinciaSelected: string;
+    }>>;
     nameDepartament: string;
+    
 }
-export const ComboBoxDepartamentos = ({ nameDepartament }: ComboProps) => {
+export const ComboBoxDepartamentos = ({ nameDepartament, setState }: ComboProps) => {
 
-    const [departament, setDepartament] = useState(nameDepartament);
-
-
+    /* setDepartamentoProvincia({ ...departamentoProvincia, departamentSelected: e.target.value }) */
     return (
         <div>
             <FormControl fullWidth>
@@ -20,8 +21,8 @@ export const ComboBoxDepartamentos = ({ nameDepartament }: ComboProps) => {
                     id="demo-simple-select"
                     name="departamento"
                     label="Age"
-                    value={departament}
-                    onChange={(e) => setDepartament(e.target.value)}
+                    value={nameDepartament}
+                    onChange={(e) => setState(previosState => ({ ...previosState, departamentSelected: e.target.value }))}
                 >
                     {departametsArray.map((departament) => (
                         <MenuItem
@@ -31,6 +32,6 @@ export const ComboBoxDepartamentos = ({ nameDepartament }: ComboProps) => {
                     ))}
                 </Select>
             </FormControl>
-        </div>
+        </div >
     )
 }

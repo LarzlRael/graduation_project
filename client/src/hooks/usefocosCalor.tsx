@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { departametsArray } from '../data/data';
 import { getRankDate } from '../utils/utils';
 import { consultByDeparments } from '../provider/services';
+import { getNombresProvincias, getNombresMunicipios } from '../provider/analysisServices';
+import { Resp as ResProv } from '../interfaces/provinciasResponse.interface';
+import { Resp as ResMun } from '../interfaces/municipiosResponse.interface';
 
 export const useFocosCalor = () => {
 
@@ -16,16 +19,26 @@ export const useFocosCalor = () => {
     const [loading, setLoading] = useState(false);
     const [focosDeCalor, setfocosDeCalor] = useState({});
     const [selecteDepartament, setSelecteDepartament] = useState({
-        departamentSelected: departametsArray[0].name,
-        image: departametsArray[0].imageUrl,
+        departamentSelected: '',
+        image: '',
     });
+
     const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState({
         departamentSelected: departametsArray[0].name,
         image: departametsArray[0].imageUrl,
     });
+
     const [selectedDate, setSelectedDay] = useState({
         selectedDate: new Date(),
         rank: getRankDate('today', new Date()),
+    });
+
+    const [stateArrMunProv, setArrMunProv] = useState<{
+        sArrayPro: ResProv[];
+        sArrayMu: ResMun[];
+    }>({
+        sArrayPro: [],
+        sArrayMu: [],
     });
 
 
@@ -53,9 +66,7 @@ export const useFocosCalor = () => {
             ],
             'circle-opacity': 0.8,
             'circle-color': 'rgb(145, 0, 16)'
-
         }
-
     };
     const consultar = async (rango = 'today') => {
 
@@ -79,8 +90,11 @@ export const useFocosCalor = () => {
         setLoading(true);
     }
 
-
     useEffect(() => {
+        setSelecteDepartament({
+            departamentSelected: departametsArray[0].name,
+            image: departametsArray[0].imageUrl,
+        })
         consultar()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -94,12 +108,39 @@ export const useFocosCalor = () => {
             setSelecteDepartamentCopy({ ...selecteDepartamentCopy, departamentSelected: selecteDepartament.departamentSelected, image: selecteDepartament.image });
         }
         if (loading === true) {
-
             consultar();
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
+
+    const [provMunSelected, setProvMunSelected] = useState({
+        provincia: '',
+        municipio: ''
+    });
+
+
+    useEffect(() => {
+        const getArray = async () => {
+            const arrayProvinciasList = await getNombresProvincias(selecteDepartament.departamentSelected);
+            const arrayMunicipiosList = await getNombresMunicipios(selecteDepartament.departamentSelected);
+            setArrMunProv({
+                ...stateArrMunProv,
+                sArrayMu: arrayMunicipiosList.resp,
+                sArrayPro: arrayProvinciasList.resp,
+            });
+        }
+        getArray();
+    }, [selecteDepartament.departamentSelected]);
+
+    useEffect(() => {
+        setProvMunSelected({
+            ...provMunSelected,
+            municipio: stateArrMunProv.sArrayMu[0] ? stateArrMunProv.sArrayMu[0].nombre_municipio : '',
+            provincia: stateArrMunProv.sArrayPro[0] ? stateArrMunProv.sArrayPro[0].nombre_provincia : '',
+        })
+
+    }, [selecteDepartament.departamentSelected]);
     return {
         viewport,
         setViewport,
@@ -107,11 +148,13 @@ export const useFocosCalor = () => {
         onChange,
         focosDeCalor,
         selecteDepartamentCopy,
-        setSelecteDepartamentCopy,
         selecteDepartament,
         selectedDate,
         setSelectedDay,
         layerStyle,
-        consultar
+        consultar,
+        stateArrMunProv,
+        provMunSelected,
+        setProvMunSelected
     }
 }

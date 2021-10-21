@@ -3,23 +3,24 @@ import { DepartamentProvinciaResponse } from '../interfaces/departamensProvincia
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { CountDepartamentProvinciaResponse } from '../interfaces/countProvinceDepartamento.interface';
-import { ChartData } from 'chart.js';
+import { ChartData, ChartOptions } from 'chart.js';
+import { getRandomColor } from '../utils/utils';
 
 
 interface GraphProps {
-    info?: CountDepartamentProvinciaResponse
+    info?: CountDepartamentProvinciaResponse,
+    nombreDepartamento: string;
 }
-export const Graficos = ({ info }: GraphProps) => {
+export const Graficos = ({ info, nombreDepartamento }: GraphProps) => {
+
+    const graphType = [
+        'pie',
+        'line',
+        'barVertical',
+        'barHorizontal'];
 
     const [stringTitle, setStringTitle] = useState<string[]>(['']);
-
-    function getRandomColor(): string {
-        
-        const x = Math.floor(Math.random() * 256);
-        const y = 100 + Math.floor(Math.random() * 256);
-        const z = 50 + Math.floor(Math.random() * 256);
-        return `rgb(${x},${y},${z},0.6)`;
-    }
+    const [graphic, setGraphic] = useState<string>(graphType[0]);
 
     useEffect(() => {
         const titlesArray: string[] = [];
@@ -37,76 +38,81 @@ export const Graficos = ({ info }: GraphProps) => {
         labels: stringTitle,
         datasets: [
             {
-                label: 'Departamento de La paz',
+                label: `Departamento de ${nombreDepartamento}`,
                 data: (info?.resp.map(ele => parseInt(ele.focos_calor))) ? (info?.resp.map(ele => parseInt(ele.focos_calor))) : [],
-                backgroundColor: stringTitle.map(random => (
+                backgroundColor: stringTitle.map(() => (
                     getRandomColor()
                 )),
-                borderColor: stringTitle.map(random => (
+                borderColor: stringTitle.map(() => (
                     getRandomColor()
                 )),
                 borderWidth: 1,
             },
+
         ],
     };
 
-    const data2 = {
-        labels: ['1', '2', '3', '4', '5', '6'],
-        datasets: [
-            {
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                fill: false,
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgba(255, 99, 132, 0.2)',
-            },
-        ],
-    };
-
-    const options = {
+    const options: ChartOptions = {
         scales: {
             y: {
                 beginAtZero: true
             }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: `Consultas del departamento de ${nombreDepartamento}`
+            }
         }
     };
-
-    const data3 = {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [
-            {
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                ],
-                borderWidth: 1,
+    const options2: ChartOptions = {
+        indexAxis: 'y',
+        // Elements options apply to all of the options unless overridden in a dataset
+        // In this case, we are setting the border of each horizontal bar to be 2px wide
+        elements: {
+            bar: {
+                borderWidth: 2,
             },
-        ],
+        },
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right',
+            },
+            title: {
+                display: true,
+                text: 'Chart.js Horizontal Bar Chart',
+            },
+        },
     };
 
+    const ShowGraphic = () => {
+        switch (graphic) {
+            case 'pie':
+                return <Pie data={data} />
+            case 'line':
+                return <Line data={data} options={options} />
+            case 'barHorizontal':
+                return <Bar data={data} options={options} />
+            case 'barVertical':
+                return <Bar data={data} options={options2} />
+            default:
+                return <Pie data={data} />
+        }
+
+    }
 
     return (
         <>
-            <Doughnut data={data}
-            width={400}
-            height={400}
-            />
-            {/* <Line data={data} options={options} />
-            <Pie data={data} /> */}
+            <select
+                onChange={(e) => setGraphic(e.target.value)}
+            >
+                {graphType.map(graph => (
+                    <option value={graph}>{graph}</option>
+                ))}
+            </select>
+            <ShowGraphic />
+
         </>
     )
 };

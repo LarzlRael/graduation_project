@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { CircularProgress, Select, MenuItem, TextField } from '@mui/material';
-import { FormControl, InputLabel, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { departametsArray } from '../data/data';
 import { useDebounceValue } from '../hooks/useDebunceValue';
-import { getNombresProvincias, getHottesSourcesByDepartamentProvince, getCountHottesSourcesByDepPro } from '../provider/analysisServices';
+import { getNombresProvincias, getHottesSourcesByDepartamentProvince, getCountByDepPro } from '../provider/analysisServices';
 import { Resp as ResProvincias } from '../interfaces/provinciasResponse.interface';
 import { Graficos } from './Graficos';
 import { DepartamentProvinciaResponse } from '../interfaces/departamensProvincia.interface';
 import { CountDepartamentProvinciaResponse } from '../interfaces/countProvinceDepartamento.interface';
+import { ComboBoxDepartamentos } from './widgets/ComboBoxDepartamentos';
+import { DatePickerWidget } from './widgets/DatePickerWidget';
 
 
 interface SearchProps {
@@ -28,6 +29,8 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
         ok: false,
         resp: []
     });
+    const [dateSelectedStart, setDateSelectedStart] = useState<Date>(new Date());
+    const [dateSelectedEnd, setDateSelectedEnd] = useState<Date>(new Date());
 
     useEffect(() => {
 
@@ -36,7 +39,6 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
         }
 
         if (isNaN(Number(termSearch))) {
-
             setArrayToSearch(
                 arrayToSearch.filter(
                     (elemento) => elemento.nombre_provincia.toLowerCase()
@@ -53,28 +55,30 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
             setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: provinciasList.resp[0].nombre_provincia })
             setLoading(false);
         }
-        getProvinciasNamesService()
+        getProvinciasNamesService();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [departamentoProvincia.departamentSelected]);
 
     useEffect(() => {
         const getProvinciasNamesService = async () => {
             setLoading(true);
-            const depProvList = await getCountHottesSourcesByDepPro({
-                dateEnd: '2021-09-01',
-                dateStart: '2021-09-01',
+            const depProvList = await getCountByDepPro({
+                dateStart: dateSelectedStart.toISOString().slice(0, 10),
+                dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
                 departamento: departamentoProvincia.departamentSelected
             });
             setCountDepProv(depProvList);
             setLoading(false);
         }
-        getProvinciasNamesService()
+        getProvinciasNamesService();
+        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [departamentoProvincia.departamentSelected]);
-
 
     const query = async () => {
         const res = await getHottesSourcesByDepartamentProvince({
-            dateEnd: '2021-09-01',
-            dateStart: '2021-09-01',
+            dateEnd: dateSelectedStart.toISOString().slice(0, 10),
+            dateStart: dateSelectedEnd.toISOString().slice(0, 10),
             departamento: departamentoProvincia.departamentSelected,
             provincia: departamentoProvincia.provinciaSelected,
         });
@@ -98,58 +102,33 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
             </select> */}
             <Grid container spacing={6}>
                 <Grid item xs={6}>
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">
-                            Seleccionar Departamento
-                        </InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name="departamento"
-                            label="Age"
-                            value={departamentoProvincia.departamentSelected}
-                            onChange={(e) => setDepartamentoProvincia({ ...departamentoProvincia, departamentSelected: e.target.value })}
-                        >
-                            {departametsArray.map((departament) => (
-                                <MenuItem
-                                    key={departament.name}
-                                    value={departament.name}>{departament.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <ComboBoxDepartamentos
+                        nameDepartament={departamentoProvincia.departamentSelected}
+                        setState={setDepartamentoProvincia}
+                    />
                 </Grid>
                 <Grid item xs={6}>
-                    <FormControl fullWidth>
-                        <br />
-
-                        <InputLabel id="demo-simple-select-label">Seleccionar Provincia</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name="departamento"
-                            label="Age"
-                            value={departamentoProvincia.provinciaSelected}
-                            onChange={(e) => setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: e.target.value })}
-                        >
-                            {arrayToElements.map((departament) => (
-                                <MenuItem
-                                    key={departament.nombre_provincia}
-                                    value={departament.nombre_provincia}>{departament.nombre_provincia}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <DatePickerWidget
+                        state={dateSelectedStart}
+                        setDate={setDateSelectedStart}
+                        title="Inicio"
+                    />
+                    <DatePickerWidget
+                        state={dateSelectedEnd}
+                        setDate={setDateSelectedEnd}
+                        title="Fin"
+                    />
                 </Grid>
             </Grid>
 
             <button onClick={query}>Consultar we</button>
-            <Graficos info={countDepProv} />
+            <Graficos
+                info={countDepProv}
+                nombreDepartamento={departamentoProvincia.departamentSelected} />
 
         </div >
     )
 }
-
 
 interface Props {
     onDebounce: (value: string) => void,
@@ -166,7 +145,6 @@ export const SearchInput = ({ onDebounce }: Props) => {
     }, [debouncedValue, onDebounce]);
 
     return (
-
         <>
             <input type="text"
                 placeholder="Buscar elemento"

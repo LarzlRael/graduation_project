@@ -81,7 +81,7 @@ export class AnalysisService {
     join provincias as b
     on ST_WITHIN(a.geometry, b.geom) 
     where (a.acq_date BETWEEN $1
-    and $2 and b.departamento in ($3)) GROUP by(b.nombre_provincia) 
+    and $2 and b.departamento in ($3)) GROUP by(b.nombre_provincia) order by b.nombre_provincia
     `;
     const res = await this.pool.query(query, [
       analysisDto.dateStart,

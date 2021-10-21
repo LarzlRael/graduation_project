@@ -25,13 +25,10 @@ export const SearchMunicipios = ({ typo }: SearchProps) => {
 
 
     useEffect(() => {
-
         if (termSearch.length === 0) {
             return setArrayToSearch(arrayToElements);
         }
-
         if (isNaN(Number(termSearch))) {
-
             setArrayToSearch(
                 arrayToSearch.filter(
                     (elemento) => elemento.nombre_municipio.toLowerCase()
@@ -51,11 +48,6 @@ export const SearchMunicipios = ({ typo }: SearchProps) => {
         getMunicipiosNames()
     }, [departamentoMunicipio.departamentSelected]);
 
-    /*  if (loading) {
-         return (
-             <CircularProgress />
-         );
-     } */
 
     return (
         <div>
@@ -76,13 +68,12 @@ export const SearchMunicipios = ({ typo }: SearchProps) => {
                 <Grid item xs={6}>
                     <FormControl fullWidth>
                         <br />
-
                         <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             name="departamento"
-                            label="Age"
+                            label="Seleccionar Departamento"
                             value={departamentoMunicipio.departamentSelected}
                             onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, departamentSelected: e.target.value })}
                         >
@@ -109,8 +100,7 @@ export const SearchMunicipios = ({ typo }: SearchProps) => {
                             name="departamento"
                             label="Age"
                             value={departamentoMunicipio.municipioSelected}
-                            onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, municipioSelected: e.target.value })}
-                        >
+                            onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, municipioSelected: e.target.value })}>
                             {arrayToElements.map((departament) => (
                                 <MenuItem
                                     key={departament.nombre_municipio}
@@ -122,8 +112,6 @@ export const SearchMunicipios = ({ typo }: SearchProps) => {
                 </Grid>
             </Grid>
 
-
-            <Graficos />
         </div >
     )
 }
