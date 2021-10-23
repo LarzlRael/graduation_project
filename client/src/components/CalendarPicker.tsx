@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useContext } from 'react';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import Stack from '@mui/material/Stack';
 import { Box, InputLabel, FormControl, MenuItem, Button, TextField } from '@mui/material';
@@ -12,9 +12,11 @@ import {
 } from '@mui/lab';
 import moment from 'moment'
 import 'moment/locale/es'  // without this line it didn't work
-moment.locale('es')
+import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
+moment.locale('es');
 
-export default function ResponsiveDatePickers() {
+export const ResponsiveDatePickers = () => {
+    const { datesAvailable } = useContext(HeatSourcesContext)
     const {
         generateCVSreport,
         generateGeoJsonReport,
@@ -22,8 +24,8 @@ export default function ResponsiveDatePickers() {
         generateShapeFile,
     } = useReport();
 
-    const [startDate, setStartDate] = useState<Date | null>(new Date());
-    const [endDate, setEndDate] = useState<Date | null>(new Date());
+    const [startDate, setStartDate] = useState<Date | null>(datesAvailable[1]);
+    const [endDate, setEndDate] = useState<Date | null>(datesAvailable[1]);
 
     const [typeFile, setTypeFile] = useState('');
 
@@ -35,7 +37,6 @@ export default function ResponsiveDatePickers() {
         switch (typeFile) {
             case 'PDF':
                 return generatePdfReport(new Date());
-
             case 'CSV':
                 return generateCVSreport(startDate!, endDate!);
 
@@ -59,7 +60,8 @@ export default function ResponsiveDatePickers() {
                             inputFormat="dd/MM/yyyy"
                             label="Desde"
                             value={startDate}
-                            minDate={new Date('2017-01-01')}
+                            maxDate={datesAvailable[1]}
+                            minDate={datesAvailable[0]}
                             onChange={(newValue) => {
                                 setStartDate(newValue);
                             }}
@@ -70,13 +72,13 @@ export default function ResponsiveDatePickers() {
                             inputFormat="dd/MM/yyyy"
                             label="Hasta"
                             value={endDate}
-                            minDate={new Date('2017-01-01')}
+                            minDate={datesAvailable[0]}
+                            maxDate={datesAvailable[1]}
                             onChange={(newValue) => {
                                 setEndDate(newValue);
                             }}
                             renderInput={(params) => <TextField {...params} />}
                         />
-
                     </Stack>
                 </LocalizationProvider>
             </Grid>
@@ -102,7 +104,7 @@ export default function ResponsiveDatePickers() {
                             Descargar Archivo {typeFile} <br />
                             Desde: <b>{moment(startDate).format('LL')}</b>
                             <br />
-                            hasta: 
+                            hasta:
                             <b> {moment(endDate).format('LL')}</b>
                             <br />
                             <Button

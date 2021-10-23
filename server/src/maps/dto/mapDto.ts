@@ -6,6 +6,7 @@ export class MapDto {
   dateStart: Date;
   dateEnd: Date;
   provincia: string;
+  municipio: string;
   @IsOptional()
   @IsEnum(Departamento)
   departament: Departamento;

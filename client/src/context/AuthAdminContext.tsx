@@ -57,8 +57,6 @@ export const AuthProvider = ({ children }: any) => {
         });
     };
 
-
-
     const singIn = async ({ username, password }: LoginData) => {
         try {
             const { data } = await serverAPI.post<LoginResponse>('/auth/signin', {
@@ -127,7 +125,6 @@ export const AuthProvider = ({ children }: any) => {
         dispatch({
             type: 'removeError',
         });
-
     };
 
 

@@ -66,6 +66,22 @@ export class AnalysisController {
       resp,
     });
   }
+
+  @Post('getheatsourcesbymunicio')
+  async getHeatSourcesByMunicio(
+    @Res() res: Response,
+    @Body() analysisDto: AnalysisDto,
+  ) {
+    console.log(analysisDto);
+    const resp = await this.analysisService.getHeatSourcesByMunicio(
+      analysisDto,
+    );
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+
   @Post('countdepartamentosprovincias')
   async getCountDepartamentosProvincias(
     @Res() res: Response,
@@ -74,6 +90,32 @@ export class AnalysisController {
     const resp = await this.analysisService.getCountDepartamentosProvincias(
       analysisDto,
     );
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+
+  @Post('countdepartamentosmunicipios')
+  async getCountDepartamentosMunicipios(
+    @Res() res: Response,
+    @Body() analysisDto: AnalysisDto,
+  ) {
+    const resp = await this.analysisService.getCountDepartamentosMunicipios(
+      analysisDto,
+    );
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+
+  @Post('getcountdepartamentos')
+  async getCountDepartamentos(
+    @Res() res: Response,
+    @Body() analysisDto: AnalysisDto,
+  ) {
+    const resp = await this.analysisService.getCountDepartamentos(analysisDto);
     return res.json({
       ok: true,
       resp,

@@ -7,8 +7,9 @@ import ReactMapGL, { Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { departametsArray } from "../../data/data";
 import { useFocosCalor } from "../../hooks/usefocosCalor";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getNombresProvincias } from "../../provider/analysisServices";
+import { HeatSourcesContext } from "../../context/HeatSources/HeatSourceContext";
 
 const apikey = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -22,20 +23,23 @@ export const MapBoxLayer = () => {
         focosDeCalor,
         selecteDepartamentCopy,
         selectedDate,
-        selecteDepartament,
+        selectedDepartament,
         layerStyle,
         setSelectedDay,
         consultar,
 
         stateArrMunProv,
         provMunSelected,
-        setProvMunSelected
+        setProvMunSelected,
+
+        // menu controls
+        showHide,
+        setShowHide,
+        //state from usestate
+        datesAvailable,
+        loadingState
     } = useFocosCalor();
 
-    const [showHide, setShowHide] = useState({
-        showOptions: false,
-        showProvMun: false
-    });
 
     return (
         <>
@@ -55,11 +59,12 @@ export const MapBoxLayer = () => {
                             Seleccionar Departamento
                         </InputLabel>
                         <Select
+                            renderValue={() => selectedDepartament.departamentSelected}
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             name="departamento"
                             label="Age"
-                            value={selecteDepartament.departamentSelected}
+                            value={selectedDepartament.departamentSelected}
                             onChange={onChange}>
                             {departametsArray.map((_, i) => (
                                 <MenuItem
@@ -94,99 +99,104 @@ export const MapBoxLayer = () => {
                                         name="provincia"
                                         label="Age"
                                         value={provMunSelected.provincia}
-                                        onChange={ (e) => setProvMunSelected(prevState => ({ ...prevState, provincia: e.target.value }))}>
-                                    {stateArrMunProv.sArrayPro.map((provincia) => (
-                                        <MenuItem
-                                            key={provincia.nombre_provincia}
-                                            value={provincia.nombre_provincia}>{provincia.nombre_provincia}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                                        renderValue={() => provMunSelected.provincia}
+                                        onChange={(e) => setProvMunSelected(prevState => ({ ...prevState, provincia: e.target.value }))}>
+                                        {stateArrMunProv.sArrayPro.map((provincia) => (
+                                            <MenuItem
+                                                key={provincia.nombre_provincia}
+                                                value={provincia.nombre_provincia}>{provincia.nombre_provincia}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
                                 </FormControl>
                                 :
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">
-                            Seleccionar Municipio
-                        </InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name="municipio"
-                            label="Age"
-                            value={provMunSelected.municipio}
-                            onChange={ (e) => setProvMunSelected(prevState => ({ ...prevState, municipio: e.target.value }))}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">
+                                        Seleccionar Municipio
+                                    </InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        name="municipio"
+                                        label="Age"
+                                        value={provMunSelected.municipio}
+                                        renderValue={() => provMunSelected.municipio}
+                                        onChange={(e) => setProvMunSelected(prevState => ({ ...prevState, municipio: e.target.value }))}>
 
-                        {stateArrMunProv.sArrayMu.map(municipios => (
-                            <MenuItem
-                                key={municipios.nombre_municipio}
-                                value={municipios.nombre_municipio}>{municipios.nombre_municipio}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                                        {stateArrMunProv.sArrayMu.map(municipios => (
+                                            <MenuItem
+                                                key={municipios.nombre_municipio}
+                                                value={municipios.nombre_municipio}>{municipios.nombre_municipio}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             }
-            </>
+                        </>
                     }
-            <br />
-            <br />
+                    <br />
+                    <br />
 
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                    /* cultureInfo={cultureInfo} */
-                    label="Seleccionar fecha"
-                    value={selectedDate.selectedDate}
-                    inputFormat="dd/MM/yyyy"
-                    maxDate={new Date()}
-                    onChange={(newValue) => {
-                        setSelectedDay({ ...selectedDate, selectedDate: newValue });
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                />
-            </LocalizationProvider>
-            <br />
-            <br />
-            <Button
-                onClick={() => consultar('today')}
-                variant="contained"
-                disabled={loading}
-            >
-                Hoy
-            </Button>
-            <Button
-                onClick={() => consultar('24hrs')}
-                disabled={loading}
-                variant="contained" >
-                24 horas
-            </Button>
-            <Button
-                onClick={() => consultar('week')}
-                disabled={loading}
-                variant="contained" >
-                1 semana
-            </Button>
-            <Button
-                onClick={() => consultar('oneMounth')}
-                disabled={loading}
-                variant="contained"
-            >
-                1 mes
-            </Button>
-        </Grid>
+                    {loadingState ?
+                        <CircularProgress />
+                        :
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                /* cultureInfo={cultureInfo} */
+                                label="Seleccionar fecha"
+                                value={selectedDate.selectedDate}
+                                inputFormat="dd/MM/yyyy"
+                                //toDO
+                                maxDate={datesAvailable[1]}
+                                onChange={(newValue) => {
+                                    setSelectedDay({ ...selectedDate, selectedDate: newValue });
+                                }}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </LocalizationProvider>
+                    }
+                    <br />
+                    <br />
+                    <Button
+                        onClick={() => consultar('today')}
+                        variant="contained"
+                        disabled={loading}>
+                        Hoy
+                    </Button>
+                    <Button
+                        onClick={() => consultar('24hrs')}
+                        disabled={loading}
+                        variant="contained" >
+                        24 horas
+                    </Button>
+                    <Button
+                        onClick={() => consultar('week')}
+                        disabled={loading}
+                        variant="contained">
+                        1 semana
+                    </Button>
+                    <Button
+                        onClick={() => consultar('oneMounth')}
+                        disabled={loading}
+                        variant="contained">
+                        1 mes
+                    </Button>
+                </Grid>
 
             </Grid >
 
-    <ReactMapGL
-        minZoom={viewport.zoom}
-        mapboxApiAccessToken={apikey}
-        {...viewport}
-        mapStyle='mapbox://styles/mapbox/light-v10'
-        onViewportChange={nextViewport => setViewport(nextViewport)}
-    >
-        <Source id="my-data" type="geojson" data={focosDeCalor}>
-            <Layer {...layerStyle} />
-        </Source>
+            <ReactMapGL
+                minZoom={viewport.zoom}
+                mapboxApiAccessToken={apikey}
+                {...viewport}
+                mapStyle='mapbox://styles/mapbox/light-v10'
+                onViewportChange={nextViewport => setViewport(nextViewport)}
+            >
+                <Source id="my-data" type="geojson" data={focosDeCalor}>
+                    <Layer {...layerStyle} />
+                </Source>
 
-    </ReactMapGL>
+            </ReactMapGL>
 
 
 

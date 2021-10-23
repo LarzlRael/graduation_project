@@ -1,4 +1,4 @@
-import { getnHeatSourceByDepartament } from '../provider/services';
+import { getnHeatSourceByDepartament } from '../provider/heatSourcesservices';
 import { useEffect } from 'react';
 
 export const HottesSources = () => {

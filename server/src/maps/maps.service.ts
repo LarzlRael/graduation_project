@@ -46,6 +46,7 @@ export class MapsService {
     `;
     return this.saveJsonAndParseAsGeoJson(query);
   }
+
   async getHeatSourcesByProvincia(mapDTO: MapDto): Promise<MapResponse> {
     const query = `
     select a.longitude,a.latitude,a.longitude as lng, a.latitude as lat, a.brightness
@@ -55,6 +56,18 @@ export class MapsService {
     where (a.acq_date BETWEEN '${mapDTO.dateStart}'
     and '${mapDTO.dateEnd}'
     and b.nombre_provincia in ('${mapDTO.provincia}')); 
+    `;
+    return this.saveJsonAndParseAsGeoJson(query);
+  }
+  async getHeatSourcesByMunicipio(mapDTO: MapDto): Promise<MapResponse> {
+    const query = `
+    select a.longitude,a.latitude,a.longitude as lng, a.latitude as lat, a.brightness
+    from fire_history as a
+    join provincias as b
+    on ST_WITHIN(a.geometry, b.geom) 
+    where (a.acq_date BETWEEN '${mapDTO.dateStart}'
+    and '${mapDTO.dateEnd}'
+    and b.nombre_provincia in ('${mapDTO.municipio}')); 
     `;
     return this.saveJsonAndParseAsGeoJson(query);
   }

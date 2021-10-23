@@ -1,6 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
-import { departamentos, fire_history, municipios, provincias } from 'src/tables';
+import {
+  departamentos,
+  fire_history,
+  municipios,
+  provincias,
+} from 'src/tables';
 import { AnalysisDto } from './dto/analysis.dto';
 
 @Injectable()
@@ -74,9 +79,26 @@ export class AnalysisService {
     ]);
     return res.rows;
   }
+
+  async getHeatSourcesByMunicio(analysisDto: AnalysisDto) {
+    const query = `
+    select a.longitude as lng, a.latitude as lat, a.brightness
+    from fire_history as a
+    join municipios as b
+    on ST_WITHIN(a.geometry, b.geom) where
+    (a.acq_date BETWEEN $1 and $2 and b.nombre_municipio in ($3));
+    `;
+    const res = await this.pool.query(query, [
+      analysisDto.dateStart,
+      analysisDto.dateEnd,
+      analysisDto.municipio,
+    ]);
+    return res.rows;
+  }
+
   async getCountDepartamentosProvincias(analysisDto: AnalysisDto) {
     const query = `
-    select b.nombre_provincia, count(b.nombre_provincia) as focos_calor
+    select b.nombre_provincia as nombre, count(b.nombre_provincia) as focos_calor
     from fire_history as a
     join provincias as b
     on ST_WITHIN(a.geometry, b.geom) 
@@ -90,19 +112,44 @@ export class AnalysisService {
     ]);
     return res.rows;
   }
+
+  async getCountDepartamentosMunicipios(analysisDto: AnalysisDto) {
+    const query = `
+    select b.nombre_municipio as nombre, count(b.nombre_municipio) as focos_calor
+    from fire_history as a
+    join municipios as b
+    on ST_WITHIN(a.geometry, b.geom) 
+    where (a.acq_date BETWEEN 
+    $1 and $2 and b.departamento in ($3)) 
+    GROUP by(b.nombre_municipio) order by b.nombre_municipio
+    `;
+    const res = await this.pool.query(query, [
+      analysisDto.dateStart,
+      analysisDto.dateEnd,
+      analysisDto.municipio,
+    ]);
+    return res.rows;
+  }
+  async getCountDepartamentos(analysisDto: AnalysisDto) {
+    const query = `
+    select b.nombre_departamento as nombre, count(b.nombre_departamento) as focos_calor
+    from fire_history as a
+    join departamentos as b
+    on ST_WITHIN(a.geometry, b.geom) 
+    where (a.acq_date BETWEEN $1 and $2) 
+    GROUP by(b.nombre_departamento) order by b.nombre_departamento ASC
+    `;
+    const res = await this.pool.query(query, [
+      analysisDto.dateStart,
+      analysisDto.dateEnd,
+    ]);
+    return res.rows;
+  }
 }
 
 /* select a.geometry, a.longitude as lng, a.latitude as lat, a.brightness
     from fire_history as a
     join provincias as b
-    on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '2021-08-01'
+    on  (a.geometry, b.geom) where (a.acq_date BETWEEN '2021-08-01'
   and '2021-08-01'
     and b.nombre_provincia in ('Cordillera')); */
-
-/* select a.geometry, a.longitude as lng, a.latitude as lat, a.brightness
-from fire_history as a
-join municipios as b
-on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '2021-08-01'
-and '2021-08-01'
-and b.nombre_municipio in ('Warnes')); */
-

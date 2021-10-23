@@ -5,9 +5,10 @@ interface ComboProps {
     setState: React.Dispatch<React.SetStateAction<{
         departamentSelected: string;
         provinciaSelected: string;
+        todosDepartamentos: boolean;
     }>>;
     nameDepartament: string;
-    
+
 }
 export const ComboBoxDepartamentos = ({ nameDepartament, setState }: ComboProps) => {
 
@@ -22,8 +23,15 @@ export const ComboBoxDepartamentos = ({ nameDepartament, setState }: ComboProps)
                     name="departamento"
                     label="Age"
                     value={nameDepartament}
-                    onChange={(e) => setState(previosState => ({ ...previosState, departamentSelected: e.target.value }))}
+                    onChange={(e) => setState(previosState => ({
+                        ...previosState,
+                        departamentSelected: e.target.value,
+                        todosDepartamentos: e.target.value === 'Bolivia' ? true : false
+                    }))}
                 >
+                    <MenuItem
+                        key="Bolivia"
+                        value="Bolivia">Bolivia</MenuItem>
                     {departametsArray.map((departament) => (
                         <MenuItem
                             key={departament.name}

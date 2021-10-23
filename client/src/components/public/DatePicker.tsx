@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import { Button, Box, TextField } from '@mui/material';
 
@@ -16,6 +16,7 @@ import { VscJson } from "react-icons/vsc";
 import { CircularProgress } from '@material-ui/core';
 import moment from 'moment'
 import 'moment/locale/es'  // without this line it didn't work
+import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext';
 moment.locale('es')
 
 
@@ -41,7 +42,9 @@ const DateRangePickerDay = styled(MuiDateRangePickerDay)(
 ) as React.ComponentType<DateRangePickerDayProps<Date>>;
 
 export const CustomDateRangePickerDay = () => {
-    const [dates, setValue] = useState<DateRange<Date>>([new Date(), new Date()]);
+    const { datesAvailable } = useContext(HeatSourcesContext);
+
+    const [dates, setValue] = useState<DateRange<Date>>([datesAvailable[1], datesAvailable[1]]);
     const {
         generateCVSreport,
         generateGeoJsonReport,
@@ -61,10 +64,7 @@ export const CustomDateRangePickerDay = () => {
         console.log(value[0].toISOString().slice(0, 10));
         setValue(value);
     }
-    /* const transformDate = (date: Date) => {
-        convertirFecha(date);
-    } */
-    const date = new Date();
+    
     const size = '1.2rem';
     return (
         <div className="calendar-buttons">
@@ -74,15 +74,16 @@ export const CustomDateRangePickerDay = () => {
                     displayStaticWrapperAs="desktop"
                     label="date range"
                     value={dates}
-                    maxDate={date}
+                    minDate={datesAvailable[0]}
+                    maxDate={datesAvailable[1]}
                     onChange={(newValue) => onChange(newValue)}
                     renderDay={renderWeekPickerDay}
                     renderInput={(startProps, endProps) => (
-                        <Fragment>
+                        <>
                             <TextField {...startProps} />
                             <Box sx={{ mx: 2 }}> to </Box>
                             <TextField {...endProps} />
-                        </Fragment>
+                        </>
                     )}
                 />
             </LocalizationProvider>

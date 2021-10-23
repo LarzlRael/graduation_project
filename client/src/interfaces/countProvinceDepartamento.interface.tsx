@@ -1,9 +1,8 @@
-export interface CountDepartamentProvinciaResponse {
+export interface CountDepProMun {
     ok: boolean;
     resp: Resp[];
 }
-
 export interface Resp {
-    nombre_provincia: string;
+    nombre: string;
     focos_calor: string;
 }

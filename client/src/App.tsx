@@ -1,10 +1,13 @@
 import { Navigator } from './navigator/NavigatorAdmin';
 import { AuthProvider } from './context/AuthAdminContext';
+import { HeatProvider } from './context/HeatSources/HeatSourceContext';
 
 const App = () => {
   return (
     <AuthProvider>
-      <Navigator />
+      <HeatProvider>
+        <Navigator />
+      </HeatProvider>
     </AuthProvider>
   );
 }

@@ -2,13 +2,13 @@ import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
 import { DepartamentProvinciaResponse } from '../interfaces/departamensProvincia.interface';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { CountDepartamentProvinciaResponse } from '../interfaces/countProvinceDepartamento.interface';
+import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interface';
 import { ChartData, ChartOptions } from 'chart.js';
 import { getRandomColor } from '../utils/utils';
 
 
 interface GraphProps {
-    info?: CountDepartamentProvinciaResponse,
+    info?:  CountDepProMun,
     nombreDepartamento: string;
 }
 export const Graficos = ({ info, nombreDepartamento }: GraphProps) => {
@@ -24,11 +24,11 @@ export const Graficos = ({ info, nombreDepartamento }: GraphProps) => {
 
     useEffect(() => {
         const titlesArray: string[] = [];
-        info?.resp.map(res => (
-            titlesArray.push(res.nombre_provincia)
+        info?.resp.map(resp => (
+            titlesArray.push(resp.nombre)
         ));
         const arrayTitles: string[] = [];
-        info?.resp.map(resp => (arrayTitles.push(resp.nombre_provincia)))
+        info?.resp.map(resp => (arrayTitles.push(resp.nombre)))
 
         setStringTitle(arrayTitles);
 

@@ -1,8 +1,10 @@
 import { serverAPI } from './serverConfig';
 import { ProvinciasResponse } from '../interfaces/provinciasResponse.interface';
 import { MunicipiosResponse } from '../interfaces/municipiosResponse.interface';
-import { DepartamentProvinciaResponse } from '../interfaces/departamensProvincia.interface';
-import { CountDepartamentProvinciaResponse } from '../interfaces/countProvinceDepartamento.interface';
+
+import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interface';
+import { ProvMun } from '../interfaces/provMun.interface';
+import { DatesResponse } from '../interfaces/datesResponse';
 
 
 export const getNombresMunicipios = async (departamento: string) => {
@@ -15,21 +17,30 @@ export const getNombresProvincias = async (departamento: string) => {
     const resp = await serverAPI.get<ProvinciasResponse>(`/analysis/nombres_provincias/${departamento}`);
     return resp.data;
 };
-interface Provincias {
-    dateStart: string;
-    dateEnd: string;
-    departamento: string;
-    provincia?: string;
-}
-export const getHottesSourcesByDepartamentProvince = async (provincia: Provincias) => {
-    const resp = await serverAPI.post<DepartamentProvinciaResponse>(`/analysis/getheatsourcesbyprovincia`, {
+
+
+export const getCountByDepartamaments = async (departamentos: ProvMun) => {
+    const resp = await serverAPI.post<CountDepProMun>(`/analysis/getcountdepartamentos`, {
+        ...departamentos,
+    });
+    return resp.data;
+};
+
+export const getCountByDepPro = async (provincia: ProvMun) => {
+    const resp = await serverAPI.post<CountDepProMun>(`/analysis/countdepartamentosprovincias`, {
         ...provincia,
     });
     return resp.data;
 };
-export const getCountByDepPro = async (provincia: Provincias) => {
-    const resp = await serverAPI.post<CountDepartamentProvinciaResponse>(`/analysis/countdepartamentosprovincias`, {
-        ...provincia,
+
+export const getCountByDeMun = async (municipcio: ProvMun) => {
+    const resp = await serverAPI.post<CountDepProMun>(`/analysis/countdepartamentosprovincias`, {
+        ...municipcio,
     });
+    return resp.data;
+};
+
+export const getAvailableDatesServer = async () => {
+    const resp = await serverAPI.get<DatesResponse>(`/analysis/dates`);
     return resp.data;
 };

@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import jsPDF from 'jspdf';
-import { getDates, } from '../provider/services';
 import { convertirFecha } from '../utils/utils';
 import { getCVSreport, getReportGeoJsonByDate, downloadShapeFile } from '../provider/reportsServices';
+import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 // Create Document Component
 
 export const useReport = () => {
 
+    const { datesAvailable: dates } = useContext(HeatSourcesContext);
     const [dateFromTo, setDates] = useState<Date[]>();
     const [loading, setLoading] = useState<boolean>();
-    const [diffDays, setdiffDays] = useState<number>(0);
-
 
     useEffect(() => {
         setStatus();
@@ -18,19 +17,10 @@ export const useReport = () => {
     }, []);
 
     const setStatus = async () => {
-        setLoading(true);
-        const dates = await getDates();
-        setLoading(false);
 
         if (!loading) {
-            const date1 = new Date(dates.dates[0]);
-            const date2 = new Date(dates.dates[1]);
-            setDates([date1, date2]);
-            const diff = Math.abs(date1.getTime() - date2.getTime());
-            const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
-            setdiffDays(diffDays)
+            setDates([new Date(dates[0]), new Date(dates[1])]);
         }
-
     }
 
 
@@ -77,7 +67,6 @@ export const useReport = () => {
         generateShapeFile,
         loading,
         dateFromTo,
-        diffDays
     }
 
 

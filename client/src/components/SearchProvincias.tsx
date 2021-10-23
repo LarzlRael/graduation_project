@@ -1,36 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Grid } from '@material-ui/core';
 import { departametsArray } from '../data/data';
 import { useDebounceValue } from '../hooks/useDebunceValue';
-import { getNombresProvincias, getHottesSourcesByDepartamentProvince, getCountByDepPro } from '../provider/analysisServices';
+import { getNombresProvincias, getCountByDepPro, getCountByDepartamaments } from '../provider/analysisServices';
 import { Resp as ResProvincias } from '../interfaces/provinciasResponse.interface';
 import { Graficos } from './Graficos';
-import { DepartamentProvinciaResponse } from '../interfaces/departamensProvincia.interface';
-import { CountDepartamentProvinciaResponse } from '../interfaces/countProvinceDepartamento.interface';
+import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interface';
 import { ComboBoxDepartamentos } from './widgets/ComboBoxDepartamentos';
 import { DatePickerWidget } from './widgets/DatePickerWidget';
-
+import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 
 interface SearchProps {
     typo: string,
 }
 export const SearchProvincias = ({ typo }: SearchProps) => {
 
+    const { datesAvailable } = useContext(HeatSourcesContext);
+
+
     const [termSearch, setTermSearch] = useState('');
     const [arrayToSearch, setArrayToSearch] = useState<ResProvincias[]>([]);
     const [arrayToElements, setArrayToElements] = useState<ResProvincias[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+
     const [departamentoProvincia, setDepartamentoProvincia] = useState({
         departamentSelected: departametsArray[0].name,
-        provinciaSelected: ''
+        provinciaSelected: '',
+        todosDepartamentos: false,
     });
-    const [departamentProvincia, setDepartamentProvincia] = useState<DepartamentProvinciaResponse>();
-    const [countDepProv, setCountDepProv] = useState<CountDepartamentProvinciaResponse>({
+
+    const [countDepProv, setCountDepProv] = useState<CountDepProMun>({
         ok: false,
         resp: []
     });
-    const [dateSelectedStart, setDateSelectedStart] = useState<Date>(new Date());
-    const [dateSelectedEnd, setDateSelectedEnd] = useState<Date>(new Date());
+    const [dateSelectedStart, setDateSelectedStart] = useState<Date>(datesAvailable[1]);
+    const [dateSelectedEnd, setDateSelectedEnd] = useState<Date>(datesAvailable[1]);
 
     useEffect(() => {
 
@@ -55,8 +59,10 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
             setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: provinciasList.resp[0].nombre_provincia })
             setLoading(false);
         }
-        getProvinciasNamesService();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (!departamentoProvincia.todosDepartamentos) {
+            getProvinciasNamesService();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [departamentoProvincia.departamentSelected]);
 
     useEffect(() => {
@@ -65,25 +71,30 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
             const depProvList = await getCountByDepPro({
                 dateStart: dateSelectedStart.toISOString().slice(0, 10),
                 dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
-                departamento: departamentoProvincia.departamentSelected
+                departamento: departamentoProvincia.departamentSelected,
             });
             setCountDepProv(depProvList);
             setLoading(false);
         }
-        getProvinciasNamesService();
-        
+        const getDepartamentosNamesService = async () => {
+            setLoading(true);
+            const depList = await getCountByDepartamaments({
+                dateStart: dateSelectedStart.toISOString().slice(0, 10),
+                dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
+            });
+            setCountDepProv(depList);
+            setLoading(false);
+        }
+        if (departamentoProvincia.todosDepartamentos) {
+            getDepartamentosNamesService();
+        } else {
+            getProvinciasNamesService();
+
+        }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [departamentoProvincia.departamentSelected]);
 
-    const query = async () => {
-        const res = await getHottesSourcesByDepartamentProvince({
-            dateEnd: dateSelectedStart.toISOString().slice(0, 10),
-            dateStart: dateSelectedEnd.toISOString().slice(0, 10),
-            departamento: departamentoProvincia.departamentSelected,
-            provincia: departamentoProvincia.provinciaSelected,
-        });
-        setDepartamentProvincia(res);
-    }
 
     return (
         <div>
@@ -121,7 +132,6 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
                 </Grid>
             </Grid>
 
-            <button onClick={query}>Consultar we</button>
             <Graficos
                 info={countDepProv}
                 nombreDepartamento={departamentoProvincia.departamentSelected} />

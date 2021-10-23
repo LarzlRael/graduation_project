@@ -1,7 +1,7 @@
 
 import { CustomDateRangePickerDay } from '../components/public/DatePicker';
 import { Layout } from '../components/Layout';
-import ResponsiveDatePickers from '../components/CalendarPicker';
+import {ResponsiveDatePickers} from '../components/CalendarPicker';
 
 export const ReportsLists = () => {
 
@@ -14,7 +14,6 @@ export const ReportsLists = () => {
             <h3>Escribir fecha manualmente</h3>
         <br />
             <ResponsiveDatePickers />
-
         </Layout>
     )
 }
