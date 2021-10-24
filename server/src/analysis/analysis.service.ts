@@ -126,7 +126,7 @@ export class AnalysisService {
     const res = await this.pool.query(query, [
       analysisDto.dateStart,
       analysisDto.dateEnd,
-      analysisDto.municipio,
+      analysisDto.departamento,
     ]);
     return res.rows;
   }

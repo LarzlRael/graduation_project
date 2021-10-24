@@ -1,16 +1,22 @@
 import { createContext, useEffect, useReducer } from 'react';
-import { heatSourcesReducer, HottestState as HeatSourcestState } from './HeatSourcesReducer';
+import { heatSourcesReducer, HeatSourcestState } from './HeatSourcesReducer';
 import { getAvailableDatesServer } from '../../provider/analysisServices';
 
 
 type HeatSourcesStateProps = {
     datesAvailable: Date[],
     loadingState: boolean,
+    showProvinvicaMun: (newState: boolean) => void,
+    setShowOptions: (newState: boolean) => void,
+    showProvMun: boolean,
+    showOptions: boolean,
 }
 
 const HeatSourcesInitialState: HeatSourcestState = {
     datesAvailable: [],
     loadingState: false,
+    showProvMun: false,
+    showOptions: false,
 };
 
 export const HeatSourcesContext = createContext({} as HeatSourcesStateProps);
@@ -22,6 +28,7 @@ export const HeatProvider = ({ children }: any) => {
     useEffect(() => {
         getDatesAvailable();
     }, []);
+    
 
     const getDatesAvailable = async () => {
         try {
@@ -45,9 +52,25 @@ export const HeatProvider = ({ children }: any) => {
         }
     };
 
+    const showProvinvicaMun = (state: boolean) => {
+        console.log(state);
+        dispatch({
+            type: 'showProvMun',
+            payload: state,
+        })
+    }
+    const setShowOptions = (state: boolean) => {
+        dispatch({
+            type: 'showOptions',
+            payload: state,
+        })
+    }
+
     return (
         <HeatSourcesContext.Provider value={{
             ...state,
+            showProvinvicaMun,
+            setShowOptions
         }}>
             {children}
         </HeatSourcesContext.Provider>

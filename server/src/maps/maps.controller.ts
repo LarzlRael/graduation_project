@@ -17,18 +17,12 @@ import { join } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { cvsFilter, editFileName } from './utils/utils';
 import { diskStorage } from 'multer';
-import {
-  readFile,
-  writeFile,
-  createReadStream,
-  unlink,
-  createWriteStream,
-  readFileSync,
-  writeFileSync,
-} from 'fs';
+import { readFile, writeFile, unlink, readFileSync, writeFileSync } from 'fs';
+
 /* import parse from 'csv-parse/lib/sync'; */
 import * as csv from 'csv/lib/sync';
 import { Report } from 'src/reports/interfaces/report.interface';
+
 @Controller('maps')
 export class MapsController {
   constructor(private mapsService: MapsService) { }
@@ -97,6 +91,7 @@ export class MapsController {
     const result = await this.mapsService.getHeatSourcesByProvincia(mapDto);
     return res.json(result);
   }
+
   @Post('getheatsourcesbymunicipio')
   async getHeatSourcesByMunicipio(
     @Res() res: Response,

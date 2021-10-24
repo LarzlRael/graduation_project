@@ -1,15 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool } from 'pg';
 import { MapDto } from './dto/mapDto';
-import {
-  createFileInfoRequest,
-  getCurrentDate,
-  convertDepartmentsToString,
-} from './utils/utils';
+import { createFileInfoRequest } from './utils/utils';
+
 import { MapResponse } from './interfaces/mapsResponse';
 import { departamentos, fire_history } from 'src/tables';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const GeoJSON = require('geojson');
+
 @Injectable()
 export class MapsService {
   constructor(@Inject('DATABASE_POOL') private pool: Pool) { }
@@ -72,7 +70,6 @@ export class MapsService {
     return this.saveJsonAndParseAsGeoJson(query);
   }
 
-
   /* select a.geometry, a.longitude as lng, a.latitude as lat, a.brightness
       from fire_history as a
       join provincias as b
@@ -98,7 +95,6 @@ export class MapsService {
     const res = await this.pool.query(query);
     return res.rows[0].jsonb_build_object;
   }
-
 
   async saveNewData(path: string): Promise<boolean> {
     try {
@@ -135,4 +131,5 @@ export class MapsService {
       console.log(error);
     }
   }
+
 }

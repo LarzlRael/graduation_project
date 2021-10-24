@@ -1,27 +1,22 @@
 import { useState, useEffect, useContext } from 'react';
 import { Grid } from '@material-ui/core';
 import { departametsArray } from '../data/data';
-import { useDebounceValue } from '../hooks/useDebunceValue';
-import { getNombresProvincias, getCountByDepPro, getCountByDepartamaments } from '../provider/analysisServices';
-import { Resp as ResProvincias } from '../interfaces/provinciasResponse.interface';
+import { getNombresProvincias, getCountByDepPro, getCountByDepartamaments, getCountByDeMun } from '../provider/analysisServices';
 import { Graficos } from './Graficos';
 import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interface';
 import { ComboBoxDepartamentos } from './widgets/ComboBoxDepartamentos';
 import { DatePickerWidget } from './widgets/DatePickerWidget';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
+import { SwitchWidget } from './widgets/SwitchWidget';
 
 interface SearchProps {
     typo: string,
 }
 export const SearchProvincias = ({ typo }: SearchProps) => {
 
-    const { datesAvailable } = useContext(HeatSourcesContext);
-
-
-    const [termSearch, setTermSearch] = useState('');
-    const [arrayToSearch, setArrayToSearch] = useState<ResProvincias[]>([]);
-    const [arrayToElements, setArrayToElements] = useState<ResProvincias[]>([]);
+    const { datesAvailable, showProvMun } = useContext(HeatSourcesContext);
     const [loading, setLoading] = useState<boolean>(false);
+    const [showSwitch, setShowSwitch] = useState<boolean>(true);
 
     const [departamentoProvincia, setDepartamentoProvincia] = useState({
         departamentSelected: departametsArray[0].name,
@@ -36,26 +31,11 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
     const [dateSelectedStart, setDateSelectedStart] = useState<Date>(datesAvailable[1]);
     const [dateSelectedEnd, setDateSelectedEnd] = useState<Date>(datesAvailable[1]);
 
-    useEffect(() => {
-
-        if (termSearch.length === 0) {
-            return setArrayToSearch(arrayToElements);
-        }
-
-        if (isNaN(Number(termSearch))) {
-            setArrayToSearch(
-                arrayToSearch.filter(
-                    (elemento) => elemento.nombre_provincia.toLowerCase()
-                        .includes(termSearch.toLowerCase())));
-        }
-
-    }, [arrayToElements, termSearch]);
 
     useEffect(() => {
         const getProvinciasNamesService = async () => {
             setLoading(true);
             const provinciasList = await getNombresProvincias(departamentoProvincia.departamentSelected);
-            setArrayToElements(provinciasList.resp);
             setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: provinciasList.resp[0].nombre_provincia })
             setLoading(false);
         }
@@ -85,9 +65,22 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
             setCountDepProv(depList);
             setLoading(false);
         }
+        const getMunicipiosServices = async () => {
+            setLoading(true);
+            const depMunList = await getCountByDeMun({
+                dateStart: dateSelectedStart.toISOString().slice(0, 10),
+                dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
+                departamento: departamentoProvincia.departamentSelected,
+
+            });
+            setCountDepProv(depMunList);
+            setLoading(false);
+        }
         if (departamentoProvincia.todosDepartamentos) {
             getDepartamentosNamesService();
-        } else {
+        } else if(showProvMun){
+            getMunicipiosServices();
+        }else {
             getProvinciasNamesService();
 
         }
@@ -98,25 +91,14 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
 
     return (
         <div>
-            {/* {elementsToSearch} */}
-            {/* <SearchInput
-                onDebounce={(value) => setTermSearch(value)}
-            /> */}
-            {/*  <select
-                value={deparmentSelected}
-                onChange={(e) => SetDeparmentSelected(e.target.value)}
-            >
-                {departametsArray.map(departament => (
-                    <option value={departament.name}>{departament.name}</option>
-                ))}
-
-            </select> */}
             <Grid container spacing={6}>
                 <Grid item xs={6}>
                     <ComboBoxDepartamentos
                         nameDepartament={departamentoProvincia.departamentSelected}
                         setState={setDepartamentoProvincia}
                     />
+                    {showSwitch && <SwitchWidget />}
+                    
                 </Grid>
                 <Grid item xs={6}>
                     <DatePickerWidget
@@ -134,34 +116,10 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
 
             <Graficos
                 info={countDepProv}
-                nombreDepartamento={departamentoProvincia.departamentSelected} />
-
+                loading={loading}
+                nombreDepartamento={
+                    departamentoProvincia.departamentSelected}
+            />
         </div >
     )
 }
-
-interface Props {
-    onDebounce: (value: string) => void,
-}
-
-export const SearchInput = ({ onDebounce }: Props) => {
-
-    const [textValue, setTextValue] = useState('');
-
-    const { debouncedValue } = useDebounceValue(textValue, 750);
-
-    useEffect(() => {
-        onDebounce(debouncedValue);
-    }, [debouncedValue, onDebounce]);
-
-    return (
-        <>
-            <input type="text"
-                placeholder="Buscar elemento"
-                autoCapitalize="none"
-                value={textValue}
-                onChange={(e) => setTextValue(e.target.value)}
-            />
-        </>
-    );
-};

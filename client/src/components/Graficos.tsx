@@ -1,106 +1,21 @@
-import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
-import { DepartamentProvinciaResponse } from '../interfaces/departamensProvincia.interface';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interface';
-import { ChartData, ChartOptions } from 'chart.js';
-import { getRandomColor } from '../utils/utils';
+import { CircularProgress } from '@material-ui/core';
+import { useGraficos } from '../hooks/useGraficos';
 
-
-interface GraphProps {
-    info?:  CountDepProMun,
+export interface GraphProps {
+    info?: CountDepProMun,
     nombreDepartamento: string;
+    loading: boolean;
 }
-export const Graficos = ({ info, nombreDepartamento }: GraphProps) => {
+export const Graficos = (graph: GraphProps) => {
 
-    const graphType = [
-        'pie',
-        'line',
-        'barVertical',
-        'barHorizontal'];
-
-    const [stringTitle, setStringTitle] = useState<string[]>(['']);
-    const [graphic, setGraphic] = useState<string>(graphType[0]);
-
-    useEffect(() => {
-        const titlesArray: string[] = [];
-        info?.resp.map(resp => (
-            titlesArray.push(resp.nombre)
-        ));
-        const arrayTitles: string[] = [];
-        info?.resp.map(resp => (arrayTitles.push(resp.nombre)))
-
-        setStringTitle(arrayTitles);
-
-    }, [info])
-
-    const data: ChartData = {
-        labels: stringTitle,
-        datasets: [
-            {
-                label: `Departamento de ${nombreDepartamento}`,
-                data: (info?.resp.map(ele => parseInt(ele.focos_calor))) ? (info?.resp.map(ele => parseInt(ele.focos_calor))) : [],
-                backgroundColor: stringTitle.map(() => (
-                    getRandomColor()
-                )),
-                borderColor: stringTitle.map(() => (
-                    getRandomColor()
-                )),
-                borderWidth: 1,
-            },
-
-        ],
-    };
-
-    const options: ChartOptions = {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        },
-        plugins: {
-            title: {
-                display: true,
-                text: `Consultas del departamento de ${nombreDepartamento}`
-            }
-        }
-    };
-    const options2: ChartOptions = {
-        indexAxis: 'y',
-        // Elements options apply to all of the options unless overridden in a dataset
-        // In this case, we are setting the border of each horizontal bar to be 2px wide
-        elements: {
-            bar: {
-                borderWidth: 2,
-            },
-        },
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'right',
-            },
-            title: {
-                display: true,
-                text: 'Chart.js Horizontal Bar Chart',
-            },
-        },
-    };
-
-    const ShowGraphic = () => {
-        switch (graphic) {
-            case 'pie':
-                return <Pie data={data} />
-            case 'line':
-                return <Line data={data} options={options} />
-            case 'barHorizontal':
-                return <Bar data={data} options={options} />
-            case 'barVertical':
-                return <Bar data={data} options={options2} />
-            default:
-                return <Pie data={data} />
-        }
-
-    }
+    const {
+        setGraphic,
+        ShowGraphic,
+        loading,
+        graphType,
+        info
+    } = useGraficos(graph);
 
     return (
         <>
@@ -111,8 +26,18 @@ export const Graficos = ({ info, nombreDepartamento }: GraphProps) => {
                     <option value={graph}>{graph}</option>
                 ))}
             </select>
-            <ShowGraphic />
+            {loading ?
+                <CircularProgress />
+                :
+                info?.resp.length === 0 ?
+                    <div>
+                        No se encontraron datos
+                    </div> :
+                    <div className="grafic">
+                        <ShowGraphic />
 
+                    </div>
+            }
         </>
     )
 };

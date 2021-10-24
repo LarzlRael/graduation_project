@@ -34,9 +34,10 @@ export const getCountByDepPro = async (provincia: ProvMun) => {
 };
 
 export const getCountByDeMun = async (municipcio: ProvMun) => {
-    const resp = await serverAPI.post<CountDepProMun>(`/analysis/countdepartamentosprovincias`, {
+    const resp = await serverAPI.post<CountDepProMun>(`/analysis/countdepartamentosmunicipios`, {
         ...municipcio,
     });
+    console.log(resp.data);
     return resp.data;
 };
 

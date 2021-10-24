@@ -1,4 +1,4 @@
-import { Button, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, Switch, TextField } from "@material-ui/core";
+import { Button, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
 import { CircularProgress } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -7,9 +7,8 @@ import ReactMapGL, { Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { departametsArray } from "../../data/data";
 import { useFocosCalor } from "../../hooks/usefocosCalor";
-import { useContext, useEffect, useState } from "react";
-import { getNombresProvincias } from "../../provider/analysisServices";
-import { HeatSourcesContext } from "../../context/HeatSources/HeatSourceContext";
+
+import { SwitchWidget } from "../widgets/SwitchWidget";
 
 const apikey = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -32,12 +31,13 @@ export const MapBoxLayer = () => {
         provMunSelected,
         setProvMunSelected,
 
-        // menu controls
-        showHide,
-        setShowHide,
         //state from usestate
         datesAvailable,
-        loadingState
+        loadingState,
+        // menu controls
+        showProvMun,
+        showOptions,
+        setShowOptions,
     } = useFocosCalor();
 
 
@@ -76,19 +76,14 @@ export const MapBoxLayer = () => {
                     </FormControl>
 
                     <FormControlLabel control={
-                        <Checkbox value={showHide.showOptions} onChange={(e) => setShowHide({ ...showHide, showOptions: e.target.checked })} />
+                        <Checkbox
+                            checked={showOptions} onChange={({target}) => setShowOptions(target.checked)} />
                     } label="Provincias/municipios" />
 
-                    {showHide.showOptions &&
+                    {showOptions &&
                         <>
-                            <FormControlLabel control={
-                                <Switch value={showHide.showProvMun}
-                                    onChange={(e) => setShowHide({ ...showHide, showProvMun: e.target.checked })}
-                                />
-                            } label={`Buscar por ${showHide.showProvMun ? 'Provincia' : 'Municipio'}`} />
-
-                            {showHide.showProvMun ?
-
+                            <SwitchWidget />
+                            {showProvMun ?
                                 <FormControl fullWidth>
                                     <InputLabel id="demo-simple-select-label">
                                         Seleccionar Provincia
@@ -100,7 +95,13 @@ export const MapBoxLayer = () => {
                                         label="Age"
                                         value={provMunSelected.provincia}
                                         renderValue={() => provMunSelected.provincia}
-                                        onChange={(e) => setProvMunSelected(prevState => ({ ...prevState, provincia: e.target.value }))}>
+                                        onChange={
+                                            ({ target }) => {
+                                                setProvMunSelected(prevState => ({
+                                                    ...prevState,
+                                                    provincia: target.value
+                                                }))
+                                            }}>
                                         {stateArrMunProv.sArrayPro.map((provincia) => (
                                             <MenuItem
                                                 key={provincia.nombre_provincia}
@@ -121,7 +122,7 @@ export const MapBoxLayer = () => {
                                         label="Age"
                                         value={provMunSelected.municipio}
                                         renderValue={() => provMunSelected.municipio}
-                                        onChange={(e) => setProvMunSelected(prevState => ({ ...prevState, municipio: e.target.value }))}>
+                                        onChange={({target}) => setProvMunSelected(prevState => ({ ...prevState, municipio: target.value }))}>
 
                                         {stateArrMunProv.sArrayMu.map(municipios => (
                                             <MenuItem
@@ -146,7 +147,6 @@ export const MapBoxLayer = () => {
                                 label="Seleccionar fecha"
                                 value={selectedDate.selectedDate}
                                 inputFormat="dd/MM/yyyy"
-                                //toDO
                                 maxDate={datesAvailable[1]}
                                 onChange={(newValue) => {
                                     setSelectedDay({ ...selectedDate, selectedDate: newValue });
@@ -197,9 +197,6 @@ export const MapBoxLayer = () => {
                 </Source>
 
             </ReactMapGL>
-
-
-
         </>
     );
 }

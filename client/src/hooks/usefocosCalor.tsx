@@ -29,8 +29,8 @@ export const useFocosCalor = () => {
         municipio: ''
     });
 
-    const { datesAvailable, loadingState } = useContext(HeatSourcesContext);
-    
+    const { datesAvailable, loadingState, showProvMun, showOptions, setShowOptions } = useContext(HeatSourcesContext);
+
     function usePrevious(value: string) {
         const ref = useRef<string>('');
         useEffect(() => {
@@ -39,11 +39,6 @@ export const useFocosCalor = () => {
         return ref.current;
     }
     const prevCount = usePrevious(selectedDepartament.departamentSelected)
-
-    const [showHide, setShowHide] = useState({
-        showOptions: false,
-        showProvMun: false
-    });
 
 
     const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState({
@@ -63,7 +58,6 @@ export const useFocosCalor = () => {
         sArrayPro: [],
         sArrayMu: [],
     });
-
 
     const onChange = (e: any) => {
         const index = e.target.value;
@@ -125,7 +119,7 @@ export const useFocosCalor = () => {
                 selectedDate.selectedDate.toISOString().slice(0, 10),
                 selectedDate.rank,
                 selectedDepartament.departamentSelected);
-                
+
             setfocosDeCalor(queryResult);
 
             setLoading(false);
@@ -164,8 +158,8 @@ export const useFocosCalor = () => {
         }
 
         if (loading === true) {
-            if (showHide.showOptions) {
-                if (showHide.showProvMun) {
+            if (showOptions) {
+                if (showProvMun) {
                     /* /? consultar por provincia */
                     consultarProvincias();
                 } else {
@@ -226,10 +220,11 @@ export const useFocosCalor = () => {
         stateArrMunProv,
         provMunSelected,
         setProvMunSelected,
-        showHide,
-        setShowHide,
+        showOptions,
+        setShowOptions,
         /* States from provider usestate */
         datesAvailable,
-        loadingState
+        loadingState,
+        showProvMun
     }
 }
