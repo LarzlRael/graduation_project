@@ -35,3 +35,15 @@ export const cultureInfo = {
         abbr: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
     }
 };
+
+
+export const mapType = [
+    'streets-v11',
+    'outdoors-v11',
+    'light-v10',
+    'dark-v10',
+    'satellite-v9',
+    'satellite-streets-v11',
+    'navigation-day-v1',
+    'navigation-night-v1',
+]

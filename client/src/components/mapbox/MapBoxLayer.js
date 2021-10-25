@@ -5,10 +5,12 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { CardInfo } from "../CardInfo";
 import ReactMapGL, { Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { departametsArray } from "../../data/data";
+import { departametsArray, mapType } from "../../data/data";
 import { useFocosCalor } from "../../hooks/usefocosCalor";
 
 import { SwitchWidget } from "../widgets/SwitchWidget";
+import { HeatSourcesContext } from "../../context/HeatSources/HeatSourceContext";
+
 
 const apikey = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -38,6 +40,9 @@ export const MapBoxLayer = () => {
         showProvMun,
         showOptions,
         setShowOptions,
+        //style maps
+        setChangeMapType, 
+        mapStyle
     } = useFocosCalor();
 
 
@@ -52,6 +57,14 @@ export const MapBoxLayer = () => {
                         dateEnd={selectedDate.rank}
                         imageUrl={selecteDepartamentCopy.image}
                     />
+                    <select
+                        value={mapStyle}
+                        onChange={(e) => setChangeMapType(e.target.value)}
+                    >
+                        {mapType.map(option => (
+                            <option value={option}>{option}</option>
+                        ))}
+                    </select>
                 </Grid>
                 <Grid item xs={6}>
                     <FormControl fullWidth>
@@ -77,7 +90,7 @@ export const MapBoxLayer = () => {
 
                     <FormControlLabel control={
                         <Checkbox
-                            checked={showOptions} onChange={({target}) => setShowOptions(target.checked)} />
+                            checked={showOptions} onChange={({ target }) => setShowOptions(target.checked)} />
                     } label="Provincias/municipios" />
 
                     {showOptions &&
@@ -122,7 +135,7 @@ export const MapBoxLayer = () => {
                                         label="Age"
                                         value={provMunSelected.municipio}
                                         renderValue={() => provMunSelected.municipio}
-                                        onChange={({target}) => setProvMunSelected(prevState => ({ ...prevState, municipio: target.value }))}>
+                                        onChange={({ target }) => setProvMunSelected(prevState => ({ ...prevState, municipio: target.value }))}>
 
                                         {stateArrMunProv.sArrayMu.map(municipios => (
                                             <MenuItem
@@ -189,7 +202,7 @@ export const MapBoxLayer = () => {
                 minZoom={viewport.zoom}
                 mapboxApiAccessToken={apikey}
                 {...viewport}
-                mapStyle='mapbox://styles/mapbox/light-v10'
+                mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
                 onViewportChange={nextViewport => setViewport(nextViewport)}
             >
                 <Source id="my-data" type="geojson" data={focosDeCalor}>
@@ -200,18 +213,3 @@ export const MapBoxLayer = () => {
         </>
     );
 }
-
-
-
-// eslint-disable-next-line no-lone-blocks
-{/* <br />
-            {
-                !loading &&
-                JSON.stringify(focosDeCalor.features[0].properties)
-            }
-            {
-                !loading &&
-                focosDeCalor.features.map(foco => (
-                    <li>{foco.properties.brightness} {foco.properties.longitude} {foco.properties.latitude}</li>
-                ))
-            } */}

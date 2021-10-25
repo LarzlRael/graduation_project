@@ -35,18 +35,8 @@ export const Graficos = (graph: GraphProps) => {
                     </div> :
                     <div className="grafic">
                         <ShowGraphic />
-
                     </div>
             }
         </>
     )
 };
-
-
-
-/* select b.nombre_provincia, count(b.nombre_provincia) as focos_calor,sum(count(b.nombre_provincia))
-    from fire_history as a
-    join provincias as b
-    on ST_WITHIN(a.geometry, b.geom)
-    where (a.acq_date BETWEEN '2021-09-01'
-    and '2021-09-01' and b.departamento in ('Santa Cruz')) GROUP by(b.nombre_provincia) */

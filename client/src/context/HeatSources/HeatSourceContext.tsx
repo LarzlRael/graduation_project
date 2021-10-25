@@ -1,15 +1,18 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { heatSourcesReducer, HeatSourcestState } from './HeatSourcesReducer';
 import { getAvailableDatesServer } from '../../provider/analysisServices';
+import { mapType } from '../../data/data';
 
 
 type HeatSourcesStateProps = {
     datesAvailable: Date[],
     loadingState: boolean,
-    showProvinvicaMun: (newState: boolean) => void,
-    setShowOptions: (newState: boolean) => void,
     showProvMun: boolean,
     showOptions: boolean,
+    mapStyle: string,
+    showProvinvicaMun: (newState: boolean) => void,
+    setShowOptions: (newState: boolean) => void,
+    setChangeMapType: (map: string) => void,
 }
 
 const HeatSourcesInitialState: HeatSourcestState = {
@@ -17,6 +20,7 @@ const HeatSourcesInitialState: HeatSourcestState = {
     loadingState: false,
     showProvMun: false,
     showOptions: false,
+    mapStyle: mapType[2],
 };
 
 export const HeatSourcesContext = createContext({} as HeatSourcesStateProps);
@@ -28,7 +32,7 @@ export const HeatProvider = ({ children }: any) => {
     useEffect(() => {
         getDatesAvailable();
     }, []);
-    
+
 
     const getDatesAvailable = async () => {
         try {
@@ -66,11 +70,19 @@ export const HeatProvider = ({ children }: any) => {
         })
     }
 
+    const setChangeMapType = (map: string) => {
+        dispatch({
+            type: 'changeMapType',
+            payload: map,
+        })
+    }
+
     return (
         <HeatSourcesContext.Provider value={{
             ...state,
             showProvinvicaMun,
-            setShowOptions
+            setShowOptions,
+            setChangeMapType
         }}>
             {children}
         </HeatSourcesContext.Provider>

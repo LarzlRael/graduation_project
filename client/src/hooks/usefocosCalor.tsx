@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { departametsArray } from '../data/data';
 import { getRankDate } from '../utils/utils';
 import { consultByDeparments, getHotSourcesByDepMun, getHotSourcesByDepProv } from '../provider/heatSourcesservices';
@@ -9,12 +9,21 @@ import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 
 export const useFocosCalor = () => {
 
+    const { datesAvailable,
+        loadingState,
+        showProvMun,
+        showOptions,
+        mapStyle,
+        setShowOptions,
+        setChangeMapType,
+    } = useContext(HeatSourcesContext);
+
     const [viewport, setViewport] = useState({
-        width: "fit",
+        width: 'fit',
         height: 800,
         longitude: -66.2137434,
         latitude: -17.390915,
-        zoom: 5
+        zoom: 5.2
     });
 
     const [loading, setLoading] = useState(false);
@@ -29,16 +38,6 @@ export const useFocosCalor = () => {
         municipio: ''
     });
 
-    const { datesAvailable, loadingState, showProvMun, showOptions, setShowOptions } = useContext(HeatSourcesContext);
-
-    function usePrevious(value: string) {
-        const ref = useRef<string>('');
-        useEffect(() => {
-            ref.current = value;
-        });
-        return ref.current;
-    }
-    const prevCount = usePrevious(selectedDepartament.departamentSelected)
 
 
     const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState({
@@ -79,7 +78,7 @@ export const useFocosCalor = () => {
                 10,
                 ['/', ['-', 2017, ['number', ['get', 'brightness'], 2017]], 750],
                 13,
-                ['/', ['-', 2017, ['number', ['get', 'brightness'], 2017]], 30]
+                ['/', ['-', 2017, ['number', ['get', 'brightness'], 2017]], 50]
             ],
             'circle-opacity': 0.8,
             'circle-color': 'rgb(145, 0, 16)'
@@ -225,6 +224,8 @@ export const useFocosCalor = () => {
         /* States from provider usestate */
         datesAvailable,
         loadingState,
-        showProvMun
+        showProvMun,
+        setChangeMapType,
+        mapStyle
     }
 }

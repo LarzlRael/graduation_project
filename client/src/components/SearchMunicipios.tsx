@@ -1,13 +1,12 @@
-import { Autocomplete, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { useState, useEffect } from 'react';
 import { departametsArray } from '../data/data';
 import { useDebounceValue } from '../hooks/useDebunceValue';
 import { Resp as RespMunicipios } from '../interfaces/municipiosResponse.interface';
 import { getNombresMunicipios } from '../provider/analysisServices';
 
-import { CircularProgress, Select, MenuItem, TextField } from '@mui/material';
+import {  Select, MenuItem } from '@mui/material';
 import { FormControl, InputLabel } from '@material-ui/core';
-import { Graficos } from './Graficos';
 
 interface SearchProps {
     typo: string,

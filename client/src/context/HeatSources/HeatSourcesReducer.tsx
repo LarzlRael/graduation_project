@@ -4,6 +4,7 @@ export interface HeatSourcestState {
     loadingState: boolean;
     showProvMun: boolean;
     showOptions: boolean;
+    mapStyle: string;
 
 }
 
@@ -12,6 +13,7 @@ type HeatSourceAction =
     | { type: 'loading', payload: boolean }
     | { type: 'showProvMun', payload: boolean }
     | { type: 'showOptions', payload: boolean }
+    | { type: 'changeMapType', payload: string }
 
 /* | { type: 'addError', payload: string }
 | { type: 'noAuthenticated' }
@@ -39,6 +41,11 @@ export const heatSourcesReducer = (state: HeatSourcestState, action: HeatSourceA
             return {
                 ...state,
                 showOptions: action.payload
+            }
+        case 'changeMapType':
+            return {
+                ...state,
+                mapStyle: action.payload
             }
 
         default:
