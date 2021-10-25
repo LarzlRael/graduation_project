@@ -14,7 +14,8 @@ export const Graficos = (graph: GraphProps) => {
         ShowGraphic,
         loading,
         graphType,
-        info
+        countFocos,
+        sortInfo,
     } = useGraficos(graph);
 
     return (
@@ -27,14 +28,18 @@ export const Graficos = (graph: GraphProps) => {
                 ))}
             </select>
             {loading ?
-                <CircularProgress />
+                <>
+                    <CircularProgress />
+                    
+                </>
                 :
-                info?.resp.length === 0 ?
+                graph.info?.resp.length === 0 ?
                     <div>
                         No se encontraron datos
                     </div> :
                     <div className="grafic">
                         <ShowGraphic />
+                        <button onClick={() => sortInfo()}>Ordenar</button>
                     </div>
             }
         </>

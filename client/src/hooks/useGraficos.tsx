@@ -3,6 +3,7 @@ import { getRandomColor } from '../utils/utils';
 import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
 import { ChartData, ChartOptions } from 'chart.js';
 import { GraphProps } from '../components/Graficos';
+import { Resp } from '../interfaces/countProvinceDepartamento.interface';
 
 
 export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) => {
@@ -14,28 +15,30 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
         'line',
         'doughnut',
     ];
-    
+
     const [stringTitle, setStringTitle] = useState<string[]>(['']);
     const [graphic, setGraphic] = useState<string>(graphType[0]);
+    const [countFocos, setCountFocos] = useState<Resp[]>(info?.resp!);
 
     useEffect(() => {
         const titlesArray: string[] = [];
-        info?.resp.map(resp => (
+        countFocos.map(resp => (
             titlesArray.push(resp.nombre)
         ));
         const arrayTitles: string[] = [];
-        info?.resp.map(resp => (arrayTitles.push(resp.nombre)))
+        countFocos.map(resp => (arrayTitles.push(resp.nombre)))
 
         setStringTitle(arrayTitles);
 
-    }, [info])
+    }, [info, countFocos])
 
     const data: ChartData = {
         labels: stringTitle,
         datasets: [
             {
                 label: `Departamento de ${nombreDepartamento}`,
-                data: (info?.resp.map(ele => parseInt(ele.focos_calor))) ? (info?.resp.map(ele => parseInt(ele.focos_calor))) : [],
+                data: (countFocos.map(ele => parseInt(ele.focos_calor))) ? 
+                (countFocos.map(ele => parseInt(ele.focos_calor)))! : [],
                 backgroundColor: stringTitle.map(() => (
                     getRandomColor()
                 )),
@@ -98,11 +101,18 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
         }
     }
 
+    const sortInfo = () => {
+        const sorted = countFocos.sort((a, b) => {
+            return parseInt(b.focos_calor) - parseInt(a.focos_calor);
+        });
+        setCountFocos(sorted!)
+    }
     return {
         setGraphic,
         ShowGraphic,
         loading,
         graphType,
-        info
+        countFocos,
+        sortInfo,
     };
 };
