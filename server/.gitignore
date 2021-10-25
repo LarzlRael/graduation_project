@@ -37,6 +37,6 @@ lerna-debug.log*
 .env
 # exclude everything
 files/*
-
+client/
 # exception to the rule
 !files/.gitkeep 
