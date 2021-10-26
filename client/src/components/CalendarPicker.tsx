@@ -10,9 +10,9 @@ import {
     LocalizationProvider,
     DesktopDatePicker
 } from '@mui/lab';
-import moment from 'moment'
 import 'moment/locale/es'  // without this line it didn't work
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
+import moment from 'moment'
 moment.locale('es');
 
 export const ResponsiveDatePickers = () => {

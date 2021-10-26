@@ -1,22 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { getRandomColor } from '../utils/utils';
 import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
 import { ChartData, ChartOptions } from 'chart.js';
 import { GraphProps } from '../components/Graficos';
+import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 
 
 export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) => {
 
-    const graphType = [
+    const { changeTypeGraph, graphType } = useContext(HeatSourcesContext);
+    const graphTypeArray = [
         'barVertical',
         'barHorizontal',
         'pie',
         'line',
         'doughnut',
     ];
-    
+
     const [stringTitle, setStringTitle] = useState<string[]>(['']);
-    const [graphic, setGraphic] = useState<string>(graphType[0]);
+
 
     useEffect(() => {
         const titlesArray: string[] = [];
@@ -28,7 +30,7 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
 
         setStringTitle(arrayTitles);
 
-    }, [info])
+    }, [info]);
 
     const data: ChartData = {
         labels: stringTitle,
@@ -60,6 +62,7 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
             }
         }
     };
+    
     const options2: ChartOptions = {
         indexAxis: 'y',
         // Elements options apply to all of the options unless overridden in a dataset
@@ -76,13 +79,13 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
             },
             title: {
                 display: true,
-                text: 'Chart.js Horizontal Bar Chart',
+                text: nombreDepartamento,
             },
         },
     };
 
     const ShowGraphic = () => {
-        switch (graphic) {
+        switch (graphType) {
             case 'pie':
                 return <Pie data={data} />
             case 'line':
@@ -99,10 +102,11 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
     }
 
     return {
-        setGraphic,
+        changeTypeGraph,
         ShowGraphic,
         loading,
         graphType,
-        info
+        info,
+        graphTypeArray,
     };
 };

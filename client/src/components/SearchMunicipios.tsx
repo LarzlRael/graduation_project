@@ -1,144 +1,75 @@
-import { Grid } from '@material-ui/core';
-import { useState, useEffect } from 'react';
-import { departametsArray } from '../data/data';
-import { useDebounceValue } from '../hooks/useDebunceValue';
-import { Resp as RespMunicipios } from '../interfaces/municipiosResponse.interface';
-import { getNombresMunicipios } from '../provider/analysisServices';
+import { useEffect, useContext } from 'react';
+import { ChartData, ChartOptions } from 'chart.js';
+import { getRandomColor } from '../utils/utils';
+import { Line } from 'react-chartjs-2';
 
-import {  Select, MenuItem } from '@mui/material';
-import { FormControl, InputLabel } from '@material-ui/core';
+import { meses } from '../data/data';
+import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
+import moment from 'moment'
+moment.locale('es');
 
-interface SearchProps {
-    typo: string,
-}
-export const SearchMunicipios = ({ typo }: SearchProps) => {
-
-    const [termSearch, setTermSearch] = useState('');
-    const [arrayToSearch, setArrayToSearch] = useState<RespMunicipios[]>([]);
-    const [arrayToElements, setArrayToElements] = useState<RespMunicipios[]>([]);
-    const [departamentoMunicipio, setDepartamentoMunicipio] = useState({
-        departamentSelected: departametsArray[0].name,
-        municipioSelected: ''
-    });
-    const [loading, setLoading] = useState<boolean>(false);
+export const SearchMunicipios = () => {
+    const { setMounthSelected, getHeatSources, mounthSelected, titleArray, countByDates } = useContext(HeatSourcesContext);
 
 
     useEffect(() => {
-        if (termSearch.length === 0) {
-            return setArrayToSearch(arrayToElements);
-        }
-        if (isNaN(Number(termSearch))) {
-            setArrayToSearch(
-                arrayToSearch.filter(
-                    (elemento) => elemento.nombre_municipio.toLowerCase()
-                        .includes(termSearch.toLowerCase())));
-        }
 
-    }, [arrayToElements, termSearch]);
+        getHeatSources(mounthSelected.dateStart, mounthSelected.dateEnd,);
 
-    useEffect(() => {
-        const getMunicipiosNames = async () => {
-            setLoading(true);
-            const provinciasList = await getNombresMunicipios(departamentoMunicipio.departamentSelected);
-            setArrayToElements(provinciasList.resp);
-            setDepartamentoMunicipio({ ...departamentoMunicipio, municipioSelected: provinciasList.resp[0].nombre_municipio })
-            setLoading(false);
-        }
-        getMunicipiosNames()
-    }, [departamentoMunicipio.departamentSelected]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mounthSelected.numberMounth]);
 
+
+    const data: ChartData = {
+        labels: titleArray,
+        datasets: [
+            {
+                label: `Focos de calor`,
+                data: (countByDates?.resp.map(ele => parseInt(ele.focos_calor))) ? (countByDates?.resp.map(ele => parseInt(ele.focos_calor))) : [],
+                backgroundColor: titleArray.map(() => (
+                    getRandomColor()
+                )),
+                borderColor: titleArray.map(() => (
+                    getRandomColor()
+                )),
+                borderWidth: 3,
+            },
+        ],
+    };
+    const options: ChartOptions = {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: `Focos de calor en el mes de ${meses[mounthSelected.numberMounth]}`
+            },
+        },
+        elements: {
+            bar: {
+                borderWidth: 5,
+            },
+        },
+    };
 
     return (
-        <div>
-            {/* {elementsToSearch} */}
-            {/* <SearchInput
-                onDebounce={(value) => setTermSearch(value)}
-            /> */}
-            {/*  <select
-                value={deparmentSelected}
-                onChange={(e) => setDeparmentSelected(e.target.value)}
-            >
-                {departametsArray.map(departament => (
-                    <option value={departament.name}>{departament.name}</option>
-                ))}
-
-            </select> */}
-            <Grid container spacing={6}>
-                <Grid item xs={6}>
-                    <FormControl fullWidth>
-                        <br />
-                        <InputLabel id="demo-simple-select-label">Seleccionar Departamento</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name="departamento"
-                            label="Seleccionar Departamento"
-                            value={departamentoMunicipio.departamentSelected}
-                            onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, departamentSelected: e.target.value })}
-                        >
-                            {departametsArray.map((departament) => (
-                                <MenuItem
-                                    key={departament.name}
-                                    value={departament.name}>{departament.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={6}>
-
-                    <FormControl fullWidth>
-                        <br />
-                        <br />
-                        <InputLabel id="demo-simple-select-label">
-                            Seleccionar Municipioo</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name="departamento"
-                            label="Age"
-                            value={departamentoMunicipio.municipioSelected}
-                            onChange={(e) => setDepartamentoMunicipio({ ...departamentoMunicipio, municipioSelected: e.target.value })}>
-                            {arrayToElements.map((departament) => (
-                                <MenuItem
-                                    key={departament.nombre_municipio}
-                                    value={departament.nombre_municipio}>{departament.nombre_municipio}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-            </Grid>
-
-        </div >
-    )
-}
-
-
-interface Props {
-    onDebounce: (value: string) => void,
-}
-
-export const SearchInput = ({ onDebounce }: Props) => {
-
-    const [textValue, setTextValue] = useState('');
-
-    const { debouncedValue } = useDebounceValue(textValue, 750);
-
-    useEffect(() => {
-        onDebounce(debouncedValue);
-    }, [debouncedValue, onDebounce]);
-
-    return (
-
         <>
-            <input type="text"
-                placeholder="Buscar elemento"
-                autoCapitalize="none"
-                value={textValue}
-                onChange={(e) => setTextValue(e.target.value)}
-            />
+            <select
+                value={mounthSelected.numberMounth}
+                onChange={(e) => setMounthSelected(parseInt(e.target.value))}
+            >
+                {meses.map((mes, i) => (
+                    <option value={i}>{mes}</option>
+                ))}
+            </select>
+            <Line data={data} options={options} />
         </>
-    );
-};
+    )
+
+
+}
+
+

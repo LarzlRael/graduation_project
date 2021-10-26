@@ -5,10 +5,7 @@ export const Municipios = () => {
     
     return (
         <div>
-            <SearchMunicipios
-                typo='municipios'
-            />
-
+            <SearchMunicipios/>
         </div>
     )
 }

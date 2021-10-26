@@ -7,22 +7,24 @@ export interface GraphProps {
     nombreDepartamento: string;
     loading: boolean;
 }
-export const Graficos = (graph: GraphProps) => {
+export const Graficos = (graphProps: GraphProps) => {
 
     const {
-        setGraphic,
+        changeTypeGraph,
         ShowGraphic,
-        loading,
         graphType,
-        info
-    } = useGraficos(graph);
+        graphTypeArray,
+    } = useGraficos(graphProps);
+
+    const { loading, info } = graphProps;
 
     return (
         <>
             <select
-                onChange={(e) => setGraphic(e.target.value)}
+                value={graphType}
+                onChange={(e) => changeTypeGraph(e.target.value)}
             >
-                {graphType.map(graph => (
+                {graphTypeArray.map(graph => (
                     <option value={graph}>{graph}</option>
                 ))}
             </select>

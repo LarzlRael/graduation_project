@@ -122,4 +122,17 @@ export class AnalysisController {
       resp,
     });
   }
+  @Post('getcountheatsourcesbydates')
+  async getCountHeatSourcesByDates(
+    @Res() res: Response,
+    @Body() analysisDto: AnalysisDto,
+  ) {
+    const resp = await this.analysisService.getCountHeatSourcesByDates(
+      analysisDto,
+    );
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
 }

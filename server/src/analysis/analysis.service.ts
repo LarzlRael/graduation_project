@@ -103,7 +103,7 @@ export class AnalysisService {
     join provincias as b
     on ST_WITHIN(a.geometry, b.geom) 
     where (a.acq_date BETWEEN $1
-    and $2 and b.departamento in ($3)) GROUP by(b.nombre_provincia) order by b.nombre_provincia
+    and $2 and b.departamento in ($3)) GROUP by(b.nombre_provincia) order by focos_calor DESC 
     `;
     const res = await this.pool.query(query, [
       analysisDto.dateStart,
@@ -121,7 +121,7 @@ export class AnalysisService {
     on ST_WITHIN(a.geometry, b.geom) 
     where (a.acq_date BETWEEN 
     $1 and $2 and b.departamento in ($3)) 
-    GROUP by(b.nombre_municipio) order by b.nombre_municipio
+    GROUP by(b.nombre_municipio) order by focos_calor DESC
     `;
     const res = await this.pool.query(query, [
       analysisDto.dateStart,
@@ -137,7 +137,18 @@ export class AnalysisService {
     join departamentos as b
     on ST_WITHIN(a.geometry, b.geom) 
     where (a.acq_date BETWEEN $1 and $2) 
-    GROUP by(b.nombre_departamento) order by b.nombre_departamento ASC
+    GROUP by(b.nombre_departamento) order by focos_calor DESC
+    `;
+    const res = await this.pool.query(query, [
+      analysisDto.dateStart,
+      analysisDto.dateEnd,
+    ]);
+    return res.rows;
+  }
+  async getCountHeatSourcesByDates(analysisDto: AnalysisDto) {
+    const query = `
+    select acq_date,count(brightness)as focos_calor from fire_history
+    where acq_date BETWEEN $1 and $2 GROUP by(acq_date);
     `;
     const res = await this.pool.query(query, [
       analysisDto.dateStart,
@@ -147,9 +158,3 @@ export class AnalysisService {
   }
 }
 
-/* select a.geometry, a.longitude as lng, a.latitude as lat, a.brightness
-    from fire_history as a
-    join provincias as b
-    on  (a.geometry, b.geom) where (a.acq_date BETWEEN '2021-08-01'
-  and '2021-08-01'
-    and b.nombre_provincia in ('Cordillera')); */

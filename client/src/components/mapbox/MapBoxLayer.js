@@ -5,7 +5,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { CardInfo } from "../CardInfo";
 import ReactMapGL, { Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { departametsArray, mapType } from "../../data/data";
+import { departametsArray, mapType, mapTypeStyle } from "../../data/data";
 import { useFocosCalor } from "../../hooks/usefocosCalor";
 
 import { SwitchWidget } from "../widgets/SwitchWidget";
@@ -41,7 +41,7 @@ export const MapBoxLayer = () => {
         showOptions,
         setShowOptions,
         //style maps
-        setChangeMapType, 
+        setChangeMapType,
         mapStyle
     } = useFocosCalor();
 
@@ -61,8 +61,8 @@ export const MapBoxLayer = () => {
                         value={mapStyle}
                         onChange={(e) => setChangeMapType(e.target.value)}
                     >
-                        {mapType.map(option => (
-                            <option value={option}>{option}</option>
+                        {mapTypeStyle.map(option => (
+                            <option value={option.mapStyle}>{option.mapName}</option>
                         ))}
                     </select>
                 </Grid>
