@@ -36,7 +36,6 @@ export const cultureInfo = {
     }
 };
 
-
 export const mapType = [
     'streets-v11',
     'outdoors-v11',
@@ -47,3 +46,52 @@ export const mapType = [
     'navigation-day-v1',
     'navigation-night-v1',
 ]
+interface MapStyleInt {
+    mapStyle: string,
+    mapName: string
+}
+export const mapTypeStyle: MapStyleInt[] = [
+    {
+        mapName: 'Mapa de Calles',
+        mapStyle: 'streets-v11'
+    },
+    {
+        mapStyle: 'outdoors-v11',
+        mapName: 'Mapa de Puertas'
+    },
+    {
+        mapStyle: 'light-v10',
+        mapName: 'Mapa Light'
+    },
+    {
+        mapStyle: 'dark-v10',
+        mapName: 'Mapa Dark'
+    },
+    {
+        mapStyle: 'satellite-v9',
+        mapName: 'Mapa de satellite'
+    },
+    {
+        mapStyle: 'satellite-streets-v11',
+        mapName: 'Mapa de satelites y calles'
+    },
+    {
+        mapStyle: 'navigation-day-v1',
+        mapName: 'Mapa de navegación'
+    },
+    {
+        mapStyle: 'navigation-night-v1',
+        mapName: 'Mapa de noche'
+    },
+]
+
+export const graphType = [
+    'barVertical',
+    'barHorizontal',
+    'pie',
+    'line',
+    'doughnut',
+];
+
+
+export const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',];

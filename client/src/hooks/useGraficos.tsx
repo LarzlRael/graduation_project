@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { getRandomColor } from '../utils/utils';
 import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
 import { ChartData, ChartOptions } from 'chart.js';
 import { GraphProps } from '../components/Graficos';
-import { Resp } from '../interfaces/countProvinceDepartamento.interface';
+import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 
 
 export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) => {
 
-    const graphType = [
+    const { changeTypeGraph, graphType } = useContext(HeatSourcesContext);
+    const graphTypeArray = [
         'barVertical',
         'barHorizontal',
         'pie',
@@ -18,27 +19,27 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
 
     const [stringTitle, setStringTitle] = useState<string[]>(['']);
     const [graphic, setGraphic] = useState<string>(graphType[0]);
-    const [countFocos, setCountFocos] = useState<Resp[]>(info?.resp!);
+    
 
     useEffect(() => {
         const titlesArray: string[] = [];
-        countFocos.map(resp => (
+        info?.resp.map(resp => (
             titlesArray.push(resp.nombre)
         ));
         const arrayTitles: string[] = [];
-        countFocos.map(resp => (arrayTitles.push(resp.nombre)))
+        info?.resp.map(resp => (arrayTitles.push(resp.nombre)))
 
         setStringTitle(arrayTitles);
 
-    }, [info, countFocos])
+    }, [info])
 
     const data: ChartData = {
         labels: stringTitle,
         datasets: [
             {
                 label: `Departamento de ${nombreDepartamento}`,
-                data: (countFocos.map(ele => parseInt(ele.focos_calor))) ? 
-                (countFocos.map(ele => parseInt(ele.focos_calor)))! : [],
+                data: (info?.resp.map(ele => parseInt(ele.focos_calor))) ? 
+                (info?.resp.map(ele => parseInt(ele.focos_calor)))! : [],
                 backgroundColor: stringTitle.map(() => (
                     getRandomColor()
                 )),
@@ -63,6 +64,7 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
             }
         }
     };
+    
     const options2: ChartOptions = {
         indexAxis: 'y',
         // Elements options apply to all of the options unless overridden in a dataset
@@ -79,13 +81,13 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
             },
             title: {
                 display: true,
-                text: 'Chart.js Horizontal Bar Chart',
+                text: nombreDepartamento,
             },
         },
     };
 
     const ShowGraphic = () => {
-        switch (graphic) {
+        switch (graphType) {
             case 'pie':
                 return <Pie data={data} />
             case 'line':
@@ -101,18 +103,13 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
         }
     }
 
-    const sortInfo = () => {
-        const sorted = countFocos.sort((a, b) => {
-            return parseInt(b.focos_calor) - parseInt(a.focos_calor);
-        });
-        setCountFocos(sorted!)
-    }
+   
     return {
-        setGraphic,
+        changeTypeGraph,
         ShowGraphic,
         loading,
         graphType,
-        countFocos,
-        sortInfo,
+        info,
+        graphTypeArray,
     };
 };

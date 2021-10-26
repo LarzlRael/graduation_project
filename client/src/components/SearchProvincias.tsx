@@ -9,13 +9,9 @@ import { DatePickerWidget } from './widgets/DatePickerWidget';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 import { SwitchWidget } from './widgets/SwitchWidget';
 
-interface SearchProps {
-    typo: string,
-}
-export const SearchProvincias = ({ typo }: SearchProps) => {
+export const SearchProvincias = () => {
 
     const { datesAvailable, showProvMun } = useContext(HeatSourcesContext);
-    const [loading, setLoading] = useState<boolean>(false);
     const [showSwitch, setShowSwitch] = useState<boolean>(true);
 
     const [departamentoProvincia, setDepartamentoProvincia] = useState({
@@ -24,65 +20,54 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
         todosDepartamentos: false,
     });
 
-    const [countDepProv, setCountDepProv] = useState<CountDepProMun>({
+    const [countDepProvState, setCountDepProvState] = useState<CountDepProMun>({
         ok: false,
         resp: []
     });
     const [dateSelectedStart, setDateSelectedStart] = useState<Date>(datesAvailable[1]);
     const [dateSelectedEnd, setDateSelectedEnd] = useState<Date>(datesAvailable[1]);
+    const [loading, setLoading] = useState(false);
 
-
-    useEffect(() => {
-        const getProvinciasNamesService = async () => {
-            setLoading(true);
-            const provinciasList = await getNombresProvincias(departamentoProvincia.departamentSelected);
-            setDepartamentoProvincia({ ...departamentoProvincia, provinciaSelected: provinciasList.resp[0].nombre_provincia })
-            setLoading(false);
-        }
-        if (!departamentoProvincia.todosDepartamentos) {
-            getProvinciasNamesService();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [departamentoProvincia.departamentSelected]);
-
-    useEffect(() => {
-        const getProvinciasNamesService = async () => {
-            setLoading(true);
-            const depProvList = await getCountByDepPro({
+    const getProvinciasNamesService = async () => {
+        setLoading(true);
+        setCountDepProvState(
+            await getCountByDepPro({
                 dateStart: dateSelectedStart.toISOString().slice(0, 10),
                 dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
                 departamento: departamentoProvincia.departamentSelected,
-            });
-            setCountDepProv(depProvList);
-            setLoading(false);
-        }
-        const getDepartamentosNamesService = async () => {
-            setLoading(true);
-            const depList = await getCountByDepartamaments({
-                dateStart: dateSelectedStart.toISOString().slice(0, 10),
-                dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
-            });
-            setCountDepProv(depList);
-            setLoading(false);
-        }
-        const getMunicipiosServices = async () => {
-            setLoading(true);
-            const depMunList = await getCountByDeMun({
-                dateStart: dateSelectedStart.toISOString().slice(0, 10),
-                dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
-                departamento: departamentoProvincia.departamentSelected,
+            })
+        );
+        setLoading(false);
 
-            });
-            setCountDepProv(depMunList);
-            setLoading(false);
-        }
+    }
+
+    const getDepartamentosNamesService = async () => {
+        setLoading(true);
+
+        setCountDepProvState(await getCountByDepartamaments({
+            dateStart: dateSelectedStart.toISOString().slice(0, 10),
+            dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
+        }));
+        setLoading(false);
+
+    }
+    const getMunicipiosServices = async () => {
+        setLoading(true);
+        setCountDepProvState(await getCountByDeMun({
+            dateStart: dateSelectedStart.toISOString().slice(0, 10),
+            dateEnd: dateSelectedEnd.toISOString().slice(0, 10),
+            departamento: departamentoProvincia.departamentSelected,
+        }))
+        setLoading(false);
+    }
+    useEffect(() => {
+
         if (departamentoProvincia.todosDepartamentos) {
             getDepartamentosNamesService();
-        } else if(showProvMun){
+        } else if (showProvMun) {
             getMunicipiosServices();
-        }else {
+        } else {
             getProvinciasNamesService();
-
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,7 +83,7 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
                         setState={setDepartamentoProvincia}
                     />
                     {showSwitch && <SwitchWidget />}
-                    
+
                 </Grid>
                 <Grid item xs={6}>
                     <DatePickerWidget
@@ -115,7 +100,7 @@ export const SearchProvincias = ({ typo }: SearchProps) => {
             </Grid>
 
             <Graficos
-                info={countDepProv}
+                info={countDepProvState}
                 loading={loading}
                 nombreDepartamento={
                     departamentoProvincia.departamentSelected}
