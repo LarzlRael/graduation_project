@@ -4,27 +4,28 @@ import { ChangeEvent } from 'react';
 import { IoCloseCircleSharp } from 'react-icons/io5';
 import { MdFileUpload } from "react-icons/md";
 import { uploadFileCVS } from '../../provider/reportsServices';
+import { MapBoxLayer } from '../../components/mapbox/MapBoxLayer';
+
 export const UpdateInformation = () => {
 
-    const [selectedFile, setSelectedFile] = useState<File>();
+    const [selectedFiles, setSelectedFiles] = useState<FileList>();
     const [isSelected, setIsSelected] = useState(false);
 
     const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        setSelectedFile(e.target.files[0]);
+        setSelectedFiles(e.target.files);
         setIsSelected(true);
     }
 
     const uploadFile = async () => {
 
-        if (!selectedFile) return;
-        const message = await uploadFileCVS(selectedFile);
+        if (!selectedFiles) return;
+        const message = await uploadFileCVS(selectedFiles);
         console.log(message);
 
     }
     const clearFile = () => {
-
-        setSelectedFile(undefined);
+        setSelectedFiles(undefined);
         setIsSelected(false);
     }
 
@@ -48,8 +49,12 @@ export const UpdateInformation = () => {
                     Seleccionar archivo CVS
                 </Button>
             </label>
-            {selectedFile?.name && selectedFile?.name}
-            <br />
+            {/*  {
+                selectedFiles!.map(file => (
+                    <span>{file?.name && file?.name}</span>
+                ))
+            } */}
+            < br />
             {isSelected &&
                 <>
                     <Button

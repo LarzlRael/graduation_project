@@ -12,7 +12,7 @@ import { Provincias } from './Provincias';
 import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext';
 
 export const TabNavigator = () => {
-    const { tab, setChangeTab} = useContext(HeatSourcesContext);
+    const { tab, setChangeTab } = useContext(HeatSourcesContext);
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setChangeTab(parseInt(newValue));
@@ -24,18 +24,18 @@ export const TabNavigator = () => {
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChange} aria-label="lab API tabs example">
                         <Tab label="Departamentos" value="1" />
-                        <Tab label="Provincias" value="2" />
-                        <Tab label="Municipios" value="3" />
+                        <Tab label="Graficos por meses" value="2" />
+                        <Tab label="Graficos por departamentos" value="3" />
                     </TabList>
                 </Box>
                 <TabPanel value="1">
                     <MapBoxLayer />
                 </TabPanel>
                 <TabPanel value="2">
-                    <Provincias />
+                    <Municipios />
                 </TabPanel>
                 <TabPanel value="3">
-                    <Municipios />
+                    <Provincias />
                 </TabPanel>
             </TabContext>
         </Box>

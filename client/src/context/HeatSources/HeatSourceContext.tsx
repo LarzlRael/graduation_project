@@ -1,7 +1,7 @@
 import { createContext, useEffect, useReducer } from 'react';
-import { heatSourcesReducer, HeatSourcestState, MounthSelected } from './HeatSourcesReducer';
-import { getAvailableDatesServer, getCountHeatSourcesBydates } from '../../provider/analysisServices';
-import { graphType, mapTypeStyle } from '../../data/data';
+import { heatSourcesReducer, HeatSourcestState } from './HeatSourcesReducer';
+import { getAvailableDatesServer, getCountHeatSourcesByMonth, getCountHeatSourcesByMonths } from '../../provider/analysisServices';
+import { graphType, mapTypeStyle, meses } from '../../data/data';
 
 import moment from 'moment'
 import { CountByDates } from '../../interfaces/countProvinceDepartamento.interface';
@@ -15,7 +15,7 @@ type HeatSourcesStateProps = {
     mapStyle: string,
     tab: number,
     graphType: string,
-    mounthSelected: MounthSelected,
+    mounthSelected: number,
     titleArray: string[],
     countByDates: CountByDates,
     showProvinvicaMun: (newState: boolean) => void,
@@ -24,7 +24,7 @@ type HeatSourcesStateProps = {
     setChangeTab: (value: number) => void,
     changeTypeGraph: (value: string) => void,
     setMounthSelected: (value: number) => void,
-    getHeatSources: (dateStart: string, dateEnd: string) => void,
+    getHeatSources: (monthNumber: number) => void,
 
 }
 
@@ -36,11 +36,7 @@ const HeatSourcesInitialState: HeatSourcestState = {
     mapStyle: mapTypeStyle[2].mapStyle,
     tab: 1,
     graphType: graphType[0],
-    mounthSelected: {
-        dateEnd: '',
-        dateStart: '',
-        numberMounth: 1
-    },
+    mounthSelected: 0,
     countByDates: {
         ok: false,
         resp: []
@@ -116,37 +112,36 @@ export const HeatProvider = ({ children }: any) => {
     }
 
     const setMounthSelected = (mes: number) => {
-        console.log(mes);
-        const yearWith29 = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        const days2021 = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-        const finalday = days2021[mes];
-        const initialMount = `2021-${mes + 1}-1`
-        const finalMounth = `2021-${mes + 1}-${finalday}`;
 
         dispatch({
             type: 'changeMounth',
-            payload: {
-                dateStart: initialMount,
-                dateEnd: finalMounth,
-                numberMounth: mes,
-            },
+            payload: mes,
         });
     }
-    const getHeatSources = async (dateStart: string, dateEnd: string) => {
-        const getInformation = await getCountHeatSourcesBydates({
-            dateStart,
-            dateEnd,
-        });
+    const getHeatSources = async (month: number) => {
+
+        let getInformation: CountByDates;
+        const arrayTitles: string[] = [];
+        if (month === 0) {
+            getInformation = await getCountHeatSourcesByMonths({
+                year: 2021,
+            });
+            getInformation?.resp.map((_, i) => (arrayTitles.push(
+                meses[i + 1],
+            )));
+        } else {
+            getInformation = await getCountHeatSourcesByMonth({
+                month: month,
+                year: 2021,
+            });
+            getInformation?.resp.map(resp => (arrayTitles.push(moment(resp.acq_date).format('L'))));
+        }
 
         dispatch({
             type: 'changeCountByDates',
             payload: getInformation,
         });
 
-        const arrayTitles: string[] = [];
-
-        getInformation?.resp.map(resp => (arrayTitles.push(moment(resp.acq_date).format('L'))));
 
         dispatch({
             type: 'setTitlesArray',

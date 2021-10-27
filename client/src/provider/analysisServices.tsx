@@ -3,7 +3,7 @@ import { ProvinciasResponse } from '../interfaces/provinciasResponse.interface';
 import { MunicipiosResponse } from '../interfaces/municipiosResponse.interface';
 
 import { CountDepProMun, CountByDates } from '../interfaces/countProvinceDepartamento.interface';
-import { ProvMun } from '../interfaces/provMun.interface';
+import { ProvMun, CountInterface } from '../interfaces/provMun.interface';
 import { DatesResponse } from '../interfaces/datesResponse';
 
 
@@ -44,9 +44,17 @@ export const getAvailableDatesServer = async () => {
     const resp = await serverAPI.get<DatesResponse>(`/analysis/dates`);
     return resp.data;
 };
-export const getCountHeatSourcesBydates = async (municipcio: ProvMun) => {
-    const resp = await serverAPI.post<CountByDates>(`/analysis/getcountheatsourcesbydates`, {
-        ...municipcio
+
+export const getCountHeatSourcesByMonth = async (countInterface: CountInterface) => {
+    const resp = await serverAPI.post<CountByDates>(`/analysis/getcountheatsourcesbymonth`, {
+        ...countInterface
+    });
+    return resp.data;
+};
+
+export const getCountHeatSourcesByMonths = async (countInterface: CountInterface) => {
+    const resp = await serverAPI.post<CountByDates>(`/analysis/getcountheatsourcesbymonths`, {
+        ...countInterface
     });
     return resp.data;
 };

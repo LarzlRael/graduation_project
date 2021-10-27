@@ -48,7 +48,10 @@ export const AdminDashboard = () => {
                                         key={uuidv4()}
                                         className="dash-item"
                                         activeClassName="active"
-                                        to={link.to}>{link.title}
+                                        
+                                        to={link.to}>
+                                            {link.icon}
+                                            <span>{link.title}</span>
                                     </NavLink>
                                 ))}
                             </div>

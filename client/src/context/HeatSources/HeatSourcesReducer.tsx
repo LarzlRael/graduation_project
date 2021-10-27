@@ -1,10 +1,6 @@
 import { CountByDates } from '../../interfaces/countProvinceDepartamento.interface';
 
-export interface MounthSelected {
-    numberMounth: number;
-    dateStart: string;
-    dateEnd: string;
-}
+
 export interface HeatSourcestState {
     datesAvailable: Date[];
     loadingState: boolean;
@@ -13,7 +9,7 @@ export interface HeatSourcestState {
     mapStyle: string;
     tab: number;
     graphType: string;
-    mounthSelected: MounthSelected;
+    mounthSelected: number;
     countByDates: CountByDates;
     titleArray: string[];
 
@@ -27,7 +23,7 @@ type HeatSourceAction =
     | { type: 'changeMapType', payload: string }
     | { type: 'changeTab', payload: number }
     | { type: 'changeGraphType', payload: string }
-    | { type: 'changeMounth', payload: MounthSelected }
+    | { type: 'changeMounth', payload: number }
     | { type: 'changeCountByDates', payload: CountByDates }
     | { type: 'setTitlesArray', payload: string[] }
 

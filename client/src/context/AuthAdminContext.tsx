@@ -3,6 +3,7 @@ import { createContext, useEffect, useReducer } from 'react';
 import { authReducer, AuthState } from './AuthAdminReducer';
 import { ErrorResponse, LoginData, LoginResponse, RegisterData } from './login.admin.interfaces';
 import { serverAPI } from '../provider/serverConfig';
+import { singInAdmin } from '../provider/authServices';
 
 type AuthContextProps = {
     errorMessage: string;
@@ -21,7 +22,7 @@ const AuthInitialState: AuthState = {
     status: 'checking',
     token: null,
     user: null,
-    logged: true,
+    logged: false,
     errorMessage: '',
 };
 
@@ -59,13 +60,7 @@ export const AuthProvider = ({ children }: any) => {
 
     const singIn = async ({ username, password }: LoginData) => {
         try {
-            const { data } = await serverAPI.post<LoginResponse>('/auth/signin', {
-                username,
-                password,
-            });
-
-            console.log(data);
-            console.log(data.accessToken);
+            const data = await singInAdmin(username, password);
             dispatch({
                 type: 'signUp',
                 payload: {

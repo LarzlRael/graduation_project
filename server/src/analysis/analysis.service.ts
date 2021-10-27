@@ -6,7 +6,7 @@ import {
   municipios,
   provincias,
 } from 'src/tables';
-import { AnalysisDto } from './dto/analysis.dto';
+import { AnalysisDto, CountDto } from './dto/analysis.dto';
 
 @Injectable()
 export class AnalysisService {
@@ -145,15 +145,20 @@ export class AnalysisService {
     ]);
     return res.rows;
   }
-  async getCountHeatSourcesByDates(analysisDto: AnalysisDto) {
+  async getCountHeatSourcesByMonth(countDto: CountDto) {
     const query = `
-    select acq_date,count(brightness)as focos_calor from fire_history
-    where acq_date BETWEEN $1 and $2 GROUP by(acq_date);
+    select count(brightness) as focos_calor ,acq_date from fire_history 
+    where extract(year from acq_date) = $1 and extract(month from acq_date) = $2 group by acq_date;
     `;
-    const res = await this.pool.query(query, [
-      analysisDto.dateStart,
-      analysisDto.dateEnd,
-    ]);
+    const res = await this.pool.query(query, [countDto.year, countDto.month]);
+    return res.rows;
+  }
+  async getCountHeatSourceByMonths(countDto: CountDto) {
+    const query = `
+    select count(brightness) as focos_calor,extract(MONTH from acq_date) as mes  from fire_history 
+    where  extract(year from acq_date) = $1 group by mes
+    `;
+    const res = await this.pool.query(query, [countDto.year]);
     return res.rows;
   }
 }

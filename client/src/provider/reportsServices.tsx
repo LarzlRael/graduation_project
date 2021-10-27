@@ -31,9 +31,12 @@ export const getCVSreport = async (dateStart: string, dateEnd?: string) => {
     saveAs(blob, `reporte ${setFileName(dateStart, dateEnd)}.csv`);
 }
 
-export const uploadFileCVS = async (file: File): Promise<string> => {
+export const uploadFileCVS = async (files: FileList): Promise<string> => {
     let formData = new FormData();
-    formData.append('csv', file);
+
+    for (let i = 0; i < files.length; i++) {
+        formData.append('csv', files[i]);
+    }
     try {
         const response = await serverAPI.post('maps/uploadcsvupdate', formData, {
             headers: {

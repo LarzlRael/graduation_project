@@ -18,8 +18,8 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
     ];
 
     const [stringTitle, setStringTitle] = useState<string[]>(['']);
-    const [graphic, setGraphic] = useState<string>(graphType[0]);
-    
+    const [tipoGrafico, setTipoGrafico] = useState<string>();
+
 
     useEffect(() => {
         const titlesArray: string[] = [];
@@ -38,8 +38,8 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
         datasets: [
             {
                 label: `Departamento de ${nombreDepartamento}`,
-                data: (info?.resp.map(ele => parseInt(ele.focos_calor))) ? 
-                (info?.resp.map(ele => parseInt(ele.focos_calor)))! : [],
+                data: (info?.resp.map(ele => parseInt(ele.focos_calor))) ?
+                    (info?.resp.map(ele => parseInt(ele.focos_calor)))! : [],
                 backgroundColor: stringTitle.map(() => (
                     getRandomColor()
                 )),
@@ -64,7 +64,7 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
             }
         }
     };
-    
+
     const options2: ChartOptions = {
         indexAxis: 'y',
         // Elements options apply to all of the options unless overridden in a dataset
@@ -89,21 +89,27 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
     const ShowGraphic = () => {
         switch (graphType) {
             case 'pie':
+                setTipoGrafico('circular')
                 return <Pie data={data} />
             case 'line':
+                setTipoGrafico('cuadrado')
                 return <Line data={data} options={options} />
             case 'barHorizontal':
+                setTipoGrafico('cuadrado')
                 return <Bar data={data} options={options} />
             case 'barVertical':
+                setTipoGrafico('cuadrado')
                 return <Bar data={data} options={options2} />
             case 'doughnut':
+                setTipoGrafico('circular')
                 return <Doughnut data={data} options={options} />
             default:
+                setTipoGrafico('cuadrado')
                 return <Pie data={data} />
         }
     }
 
-   
+
     return {
         changeTypeGraph,
         ShowGraphic,
@@ -111,5 +117,6 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
         graphType,
         info,
         graphTypeArray,
+        tipoGrafico,
     };
 };

@@ -1,24 +1,27 @@
+import { useState } from 'react';
 import { useEffect, useContext } from 'react';
 import { ChartData, ChartOptions } from 'chart.js';
 import { getRandomColor } from '../utils/utils';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 
 import { meses } from '../data/data';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 import moment from 'moment'
+import { Switch } from '@mui/material'
+import { FormControlLabel } from '@material-ui/core';
+
 moment.locale('es');
+
 
 export const SearchMunicipios = () => {
     const { setMounthSelected, getHeatSources, mounthSelected, titleArray, countByDates } = useContext(HeatSourcesContext);
 
-
     useEffect(() => {
+        getHeatSources(mounthSelected);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mounthSelected]);
 
-        getHeatSources(mounthSelected.dateStart, mounthSelected.dateEnd,);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mounthSelected.numberMounth]);
-
+    const [lineGraph, setLineGraph] = useState(false);
 
     const data: ChartData = {
         labels: titleArray,
@@ -45,7 +48,7 @@ export const SearchMunicipios = () => {
         plugins: {
             title: {
                 display: true,
-                text: `Focos de calor en el mes de ${meses[mounthSelected.numberMounth]}`
+                text: `Focos de calor en ${meses[mounthSelected]}`
             },
         },
         elements: {
@@ -57,15 +60,25 @@ export const SearchMunicipios = () => {
 
     return (
         <>
+            <FormControlLabel control={
+                <Switch
+                    checked={lineGraph}
+                    onChange={(e) => setLineGraph(e.target.checked)}
+                />
+            } label={`Grafico de ${!lineGraph ? 'Lineas' : 'Puntos'}`} />
             <select
-                value={mounthSelected.numberMounth}
+                value={mounthSelected}
                 onChange={(e) => setMounthSelected(parseInt(e.target.value))}
             >
                 {meses.map((mes, i) => (
                     <option value={i}>{mes}</option>
                 ))}
             </select>
-            <Line data={data} options={options} />
+            {lineGraph ?
+                <Line data={data} options={options} />
+                :
+                <Bar data={data} options={options} />
+            }
         </>
     )
 

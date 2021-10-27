@@ -1,4 +1,5 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import { AuthAdminContext } from '../context/AuthAdminContext';
 /* import ErrorLabel from '../error-label';
 import LoginContext from '../login/LoginContext'; */
@@ -10,19 +11,15 @@ import { v4 as uuidv4 } from 'uuid'; */
 export const AdminLogin = () => {
     const loginContext = useContext(AuthAdminContext);
 
-    const { singIn } = loginContext;
+    const { singIn, logged } = loginContext;
+    const { push } = useHistory();
 
-    /*  useEffect(() => {
-         if (s_admin_auth) {
- 
-             const lastPath = localStorage.getItem('lastPath') || '/admin/profile';
- 
-             // console.log(lastPath);
- 
-             history.replace(lastPath);
-         }
-         // eslint-disable-next-line
-     }, [s_admin_auth]); */
+    useEffect(() => {
+        if (logged) {
+            push('/dashboard');
+        }
+        // eslint-disable-next-line
+    }, [logged]);
 
     const [userAdmin, setUserAdmin] = useState({
         email: 'admin@admin.com',

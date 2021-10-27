@@ -1,7 +1,7 @@
 import { Controller, Get, Res, Param, Body, Post } from '@nestjs/common';
 import { AnalysisService } from './analysis.service';
 import { Response } from 'express';
-import { AnalysisDto } from './dto/analysis.dto';
+import { AnalysisDto, CountDto } from './dto/analysis.dto';
 
 @Controller('analysis')
 export class AnalysisController {
@@ -122,13 +122,27 @@ export class AnalysisController {
       resp,
     });
   }
-  @Post('getcountheatsourcesbydates')
-  async getCountHeatSourcesByDates(
+  @Post('getcountheatsourcesbymonth')
+  async getCountHeatSourcesByMonth(
     @Res() res: Response,
-    @Body() analysisDto: AnalysisDto,
+    @Body() countDto: CountDto,
   ) {
-    const resp = await this.analysisService.getCountHeatSourcesByDates(
-      analysisDto,
+    const resp = await this.analysisService.getCountHeatSourcesByMonth(
+      countDto,
+    );
+    return res.json({
+      ok: true,
+      resp,
+    });
+  }
+
+  @Post('getcountheatsourcesbymonths')
+  async getCountHeatSourcesByMonths(
+    @Res() res: Response,
+    @Body() countDto: CountDto,
+  ) {
+    const resp = await this.analysisService.getCountHeatSourceByMonths(
+      countDto,
     );
     return res.json({
       ok: true,

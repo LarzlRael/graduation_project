@@ -9,12 +9,13 @@ import {
   HttpStatus,
   UploadedFile,
   UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MapsService } from './maps.service';
 import { MapDto } from './dto/mapDto';
 import { join } from 'path';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { cvsFilter, editFileName } from './utils/utils';
 import { diskStorage } from 'multer';
 import { readFile, writeFile, unlink, readFileSync, writeFileSync } from 'fs';
@@ -104,7 +105,7 @@ export class MapsController {
 
   @Post('uploadcsvupdate')
   @UseInterceptors(
-    FileInterceptor('csv', {
+    FilesInterceptor('csv', 3, {
       fileFilter: cvsFilter,
       storage: diskStorage({
         filename: editFileName,
@@ -114,65 +115,70 @@ export class MapsController {
   )
   async uploadcsvupdated(
     @Res() res: Response,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
   ) {
-    console.log('loading.....');
-    const pathIn = join(__dirname, '../../', `files/${file.filename}`);
-
-    // Load
-    const strcsv = readFileSync(pathIn, 'utf-8');
-    const data: Report[] = (csv.parse as any)(strcsv, {
-      bom: true,
-      cast: false,
-      columns: true,
-    });
-    data.forEach((simpleData) => {
-      if (simpleData.type) {
-        delete simpleData.type;
-      }
-      if (parseInt(simpleData.daynight) === 0) {
-        simpleData.daynight = 'N';
-      } else if (parseInt(simpleData.daynight) === 1) {
-        simpleData.daynight = 'D';
-      }
-      if (typeof simpleData.confidence !== 'number') {
-        simpleData.confidence = 0;
-      }
-    });
-    //Save
-    const pathOut = join(__dirname, '../../', `files/cvsconvertido.csv`);
-    writeFileSync(
-      pathOut,
-      (csv.stringify as any)(data, { header: true, quoted: false }),
-      'utf-8',
-    );
-
-    readFile(pathOut, 'utf8', function (err, data) {
-      if (err) {
-        console.log(err);
-      }
-      const linesExceptFirst = data.split('\n').slice(1).join('\n');
-      writeFile(pathOut, linesExceptFirst, function (e) {
-        console.log(e);
+    files.forEach(async (file) => {
+      const pathIn = join(__dirname, '../../', `files/${file.filename}`);
+      // Load
+      const strcsv = readFileSync(pathIn, 'utf-8');
+      const data: Report[] = (csv.parse as any)(strcsv, {
+        bom: true,
+        cast: false,
+        columns: true,
       });
-    });
-
-    const response = await this.mapsService.saveNewData(pathOut);
-
-    unlink(pathOut, (err) => {
-      console.log(err);
-    });
-
-    if (response) {
-      res.json({
-        ok: true,
-        msg: 'datos actualizados correctamente',
+      data.forEach((simpleData) => {
+        if (simpleData.type) {
+          delete simpleData.type;
+        }
+        if (parseInt(simpleData.daynight) === 0) {
+          simpleData.daynight = 'N';
+        } else if (parseInt(simpleData.daynight) === 1) {
+          simpleData.daynight = 'D';
+        }
+        if (typeof simpleData.confidence !== 'number') {
+          simpleData.confidence = 0;
+        }
       });
-    } else {
-      res.json({
-        ok: false,
-        msg: 'Los datos ya fueron actualizados',
+      //Save
+      const pathOut = join(__dirname, '../../', `files/cvsconvertido.csv`);
+      writeFileSync(
+        pathOut,
+        (csv.stringify as any)(data, { header: true, quoted: false }),
+        'utf-8',
+      );
+
+      readFile(pathOut, 'utf8', function (err, data) {
+        if (err !== null) {
+          console.log(err);
+        }
+
+        const linesExceptFirst = data.split('\n').slice(1).join('\n');
+        writeFile(pathOut, linesExceptFirst, () =>
+          console.log('archivo creado'),
+        );
       });
-    }
+
+      const response = await this.mapsService.saveNewData(pathOut);
+
+      unlink(pathIn, (err) => {
+        if (err) console.log(err)
+        console.log('archivo eliminado corretamente');
+      });
+      unlink(pathOut, (err) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log('archivo eliminado corretamente');
+      });
+      if (response) {
+        console.log('subido correctamente');
+      } else {
+        console.log('hubo un error al subir we');
+      }
+    });
+    res.json({
+      ok: true,
+      msg: 'datos subidos',
+    });
   }
 }

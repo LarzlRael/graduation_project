@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Grid } from '@material-ui/core';
 import { departametsArray } from '../data/data';
-import { getNombresProvincias, getCountByDepPro, getCountByDepartamaments, getCountByDeMun } from '../provider/analysisServices';
+import { getCountByDepPro, getCountByDepartamaments, getCountByDeMun } from '../provider/analysisServices';
 import { Graficos } from './Graficos';
 import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interface';
 import { ComboBoxDepartamentos } from './widgets/ComboBoxDepartamentos';
@@ -38,7 +38,6 @@ export const SearchProvincias = () => {
             })
         );
         setLoading(false);
-
     }
 
     const getDepartamentosNamesService = async () => {
@@ -64,15 +63,17 @@ export const SearchProvincias = () => {
 
         if (departamentoProvincia.todosDepartamentos) {
             getDepartamentosNamesService();
+            setShowSwitch(false);
         } else if (showProvMun) {
             getMunicipiosServices();
+            setShowSwitch(true);
+
         } else {
             getProvinciasNamesService();
+            setShowSwitch(true);
         }
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [departamentoProvincia.departamentSelected]);
-
+    }, [departamentoProvincia.departamentSelected, showProvMun, showProvMun, dateSelectedEnd]);
 
     return (
         <div>

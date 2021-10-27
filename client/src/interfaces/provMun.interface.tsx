@@ -4,5 +4,10 @@ export interface ProvMun {
     provincia?: string;
     municipio?: string;
     departamento?: string;
-    
+
+}
+
+export interface CountInterface {
+    year?: number;
+    month?: number;
 }
