@@ -20,6 +20,17 @@ export class AnalysisService {
     const res2 = await this.pool.query(to);
     return [res2.rows[0].acq_date, res1.rows[0].acq_date];
   }
+  async verifyDatesDB(datestart: Date, dateEnd: Date, instrument: string) {
+    const verify = `select count(acq_date) as cantidad from fire_history where instrument=$1 and acq_date BETWEEN $2 and $3`;
+
+    const resp = await this.pool.query(verify, [
+      instrument,
+      datestart,
+      dateEnd,
+    ]);
+    console.log(resp.rows[0]);
+    return resp.rows[0].cantidad == 0;
+  }
 
   async getDateFromDatabase(count: number, from: number): Promise<string[]> {
     const queryText = `SELECT distinct acq_date from ${fire_history} order by acq_date DESC limit $1 offset $2;`;

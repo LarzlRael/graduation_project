@@ -4,7 +4,6 @@ import { ChangeEvent } from 'react';
 import { IoCloseCircleSharp } from 'react-icons/io5';
 import { MdFileUpload } from "react-icons/md";
 import { uploadFileCVS } from '../../provider/reportsServices';
-import { MapBoxLayer } from '../../components/mapbox/MapBoxLayer';
 
 export const UpdateInformation = () => {
 

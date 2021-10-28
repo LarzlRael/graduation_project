@@ -4,6 +4,7 @@ import { authReducer, AuthState } from './AuthAdminReducer';
 import { ErrorResponse, LoginData, LoginResponse, RegisterData } from './login.admin.interfaces';
 import { serverAPI } from '../provider/serverConfig';
 import { singInAdmin } from '../provider/authServices';
+import tokenAuth from '../utils/token_auth';
 
 type AuthContextProps = {
     errorMessage: string;
@@ -37,25 +38,32 @@ export const AuthProvider = ({ children }: any) => {
     }, []);
 
     const checkToken = async () => {
-        const token = await localStorage.getItem('token');
-
+        console.log('checking token we');
+        const token = localStorage.getItem('token');
+        if (token) {
+            tokenAuth(token);
+        }
         // if there is not token
         if (!token) return dispatch({ type: 'noAuthenticated' });
 
         // There is token:
-
-        const resp = await serverAPI.get<LoginResponse>('/auth/checktoken');
-        if (resp.status !== 200) {
+        try {
+            const resp = await serverAPI.get<LoginResponse>('/auth/checktoken');
+            /* if (resp.status !== 200) {
+                return dispatch({ type: 'noAuthenticated' });
+            } */
+            dispatch({
+                type: 'signUp',
+                payload: {
+                    token: resp.data.accessToken,
+                    usuario: resp.data.usuario,
+                },
+            });
+            localStorage.setItem('token', resp.data.accessToken);
+        } catch (error) {
             return dispatch({ type: 'noAuthenticated' });
         }
 
-        dispatch({
-            type: 'signUp',
-            payload: {
-                token: resp.data.accessToken,
-                usuario: resp.data.usuario,
-            },
-        });
     };
 
     const singIn = async ({ username, password }: LoginData) => {
@@ -68,8 +76,7 @@ export const AuthProvider = ({ children }: any) => {
                     usuario: data.usuario,
                 },
             });
-            await localStorage.setItem('token', data.accessToken);
-
+            localStorage.setItem('token', data.accessToken);
 
         } catch (error: any) {
 
@@ -97,7 +104,7 @@ export const AuthProvider = ({ children }: any) => {
                     usuario: data.usuario,
                 },
             });
-            await localStorage.setItem('token', data.accessToken);
+            localStorage.setItem('token', data.accessToken);
 
 
         } catch (error: any) {
@@ -112,9 +119,7 @@ export const AuthProvider = ({ children }: any) => {
     };
 
     const logOut = async () => {
-        await localStorage.removeItem('token');
         dispatch({ type: 'logout' });
-
     };
     const removeError = () => {
         dispatch({

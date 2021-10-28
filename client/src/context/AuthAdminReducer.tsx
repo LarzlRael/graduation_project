@@ -43,6 +43,7 @@ export const authReducer = (state: AuthState, action: AuthAction): AuthState => 
 
         case 'logout':
         case 'noAuthenticated':
+            localStorage.removeItem('token');
             return {
                 ...state,
                 status: 'not-authenticated',

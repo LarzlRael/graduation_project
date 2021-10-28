@@ -7,7 +7,7 @@ import { Line, Bar } from 'react-chartjs-2';
 import { meses } from '../data/data';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 import moment from 'moment'
-import { Switch } from '@mui/material'
+import { Switch, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { FormControlLabel } from '@material-ui/core';
 
 moment.locale('es');
@@ -66,14 +66,38 @@ export const SearchMunicipios = () => {
                     onChange={(e) => setLineGraph(e.target.checked)}
                 />
             } label={`Grafico de ${!lineGraph ? 'Lineas' : 'Puntos'}`} />
-            <select
+            {/*  <select
                 value={mounthSelected}
                 onChange={(e) => setMounthSelected(parseInt(e.target.value))}
             >
                 {meses.map((mes, i) => (
-                    <option value={i}>{mes}</option>
+                    <option
+                        key={mes}
+                        value={i}>{mes}</option>
                 ))}
-            </select>
+            </select> */}
+
+            <FormControl>
+                <InputLabel id="demo-simple-select-label">
+                    Tipo de grafico
+                </InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Age"
+                    value={mounthSelected}
+                    onChange={({ target }) => setMounthSelected(
+                        parseInt(target.value.toString()))}
+                >
+                    {meses.map((mes, i) => (
+                        <MenuItem
+                            key={mes}
+                            value={i}>{mes}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
             {lineGraph ?
                 <Line data={data} options={options} />
                 :

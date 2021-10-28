@@ -24,6 +24,11 @@
 .layout_page {
     width: 1200px;
     margin: 1rem auto;
+    @include media(sm) {
+        width: 100%;
+        margin: 0;
+        position: relative;
+    }
 }
 
 .buttons-groups {
@@ -54,9 +59,20 @@
 
 .grafic-square {
     margin: auto;
-    width: 800;
+    width: 800px;
+    @include media(sm) {
+        width: 100%;
+    }
 }
 .grafic-circle {
     margin: auto;
     width: 550px;
+    @include media(sm) {
+        width: 100%;
+    }
+}
+.css-heg063-MuiTabs-flexContainer {
+    @include media(sm) {
+        margin-top: 4rem;
+    }
 }

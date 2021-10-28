@@ -1,5 +1,9 @@
 import { MapResponse, Feature } from '../interfaces/mapsResponse';
 import { extname } from 'path';
+import { Report } from '../../reports/interfaces/report.interface';
+import { readFileSync } from 'fs';
+
+import * as csv from 'csv/lib/sync';
 
 export const createFileInfoRequest = (features: Feature[]) => {
   const data: MapResponse = {
@@ -70,3 +74,30 @@ export const convertDepartmentsToString = (departamentos: string): string => {
     return query.substring(0, query.length - 1);
   }
 };
+
+export const formatFileCsv = async (pathIn: string) => {
+  const strcsv = readFileSync(pathIn, 'utf-8');
+  const data: Report[] = (csv.parse as any)(strcsv, {
+    bom: true,
+    cast: false,
+    columns: true,
+  });
+  data.forEach((simpleData) => {
+    if (simpleData.type) {
+      delete simpleData.type;
+    }
+    if (parseInt(simpleData.satellite) === 1) {
+      simpleData.instrument = 'VIIRSC2';
+    }
+    if (typeof simpleData.confidence !== 'number') {
+      simpleData.confidence = 0;
+    }
+  });
+  const lastAcqDate = data[data.length - 1];
+  const firstAcqDate = data[0];
+  return { data, fechas: [firstAcqDate, lastAcqDate] };
+
+};
+/* select count(acq_date) from fire_history where instrument='VIIRS' and  acq_date BETWEEN '2021-11-01' and '2021-11-01' ; */
+
+

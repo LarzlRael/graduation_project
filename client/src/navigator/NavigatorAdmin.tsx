@@ -20,6 +20,7 @@ export const LoadingScreen = () => {
 
 export const Navigator = () => {
     const { status } = useContext(AuthAdminContext);
+    console.log(status);
     if (status === 'checking') {
         return <LoadingScreen />
     }

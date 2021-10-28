@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MapsService } from './maps.service';
 import { MapsController } from './maps.controller';
+import { AnalysisService } from '../analysis/analysis.service';
 import {
   ConfigModule,
   databasePoolFactory,
@@ -18,6 +19,7 @@ import { MulterModule } from '@nestjs/platform-express';
     },
 
     MapsService,
+    AnalysisService,
   ],
   controllers: [MapsController],
 })

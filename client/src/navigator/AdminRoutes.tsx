@@ -13,6 +13,7 @@ interface PrivateRouteProps extends RouteProps {
 }
 
 const token = localStorage.getItem('token');
+
 if (token) {
     tokenAuth(token);
 }

@@ -1,6 +1,7 @@
 import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interface';
 import { CircularProgress } from '@material-ui/core';
 import { useGraficos } from '../hooks/useGraficos';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 export interface GraphProps {
     info?: CountDepProMun,
@@ -21,14 +22,37 @@ export const Graficos = (graphProps: GraphProps) => {
 
     return (
         <>
-            <select
+            {/* <select
                 value={graphType}
                 onChange={(e) => changeTypeGraph(e.target.value)}
             >
                 {graphTypeArray.map(graph => (
-                    <option value={graph}>{graph}</option>
+                    <option
+                        key={graph}
+                        value={graph}>{graph}</option>
                 ))}
-            </select>
+            </select> */}
+            <br />
+            <FormControl>
+                <InputLabel id="demo-simple-select-label">
+                    Tipo de grafico
+                </InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Age"
+                    value={graphType}
+                    onChange={(e) => changeTypeGraph(e.target.value)}
+                >
+                    {graphTypeArray.map((graph) => (
+                        <MenuItem
+                            key={graph}
+                            value={graph}>{graph}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
             {loading ?
                 <>
                     <CircularProgress />

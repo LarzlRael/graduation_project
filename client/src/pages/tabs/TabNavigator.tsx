@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -19,7 +19,7 @@ export const TabNavigator = () => {
     };
 
     return (
-        <Box sx={{ width: '100%', typography: 'body1' }}>
+        <div className="tabContext">
             <TabContext value={tab.toString()}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChange} aria-label="lab API tabs example">
@@ -38,6 +38,6 @@ export const TabNavigator = () => {
                     <Provincias />
                 </TabPanel>
             </TabContext>
-        </Box>
+        </div>
     );
 }

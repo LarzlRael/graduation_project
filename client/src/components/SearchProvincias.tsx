@@ -71,10 +71,11 @@ export const SearchProvincias = () => {
         } else {
             getProvinciasNamesService();
             setShowSwitch(true);
+            setShowSwitch(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [departamentoProvincia.departamentSelected, showProvMun, showProvMun, dateSelectedEnd]);
-
+    
     return (
         <div>
             <Grid container spacing={6}>

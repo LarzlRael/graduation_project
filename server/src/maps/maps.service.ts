@@ -70,13 +70,6 @@ export class MapsService {
     return this.saveJsonAndParseAsGeoJson(query);
   }
 
-  /* select a.geometry, a.longitude as lng, a.latitude as lat, a.brightness
-      from fire_history as a
-      join provincias as b
-      on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '2021-08-01'
-    and '2021-08-01'
-      and b.nombre_provincia in ('Cordillera')); */
-
   async getDepartamentPolygon(nombre_departamento: string) {
     const query = `
         SELECT jsonb_build_object(

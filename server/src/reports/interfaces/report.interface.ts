@@ -10,16 +10,13 @@ export interface Report {
   acq_date: Date;
   acq_time: number;
   satellite: Satellite;
-  instrument: Instrument;
+  instrument: string;
   version: Version;
   bright_t31: number;
   confidence: number;
   frp: number;
   type?: string | number;
   daynight?: string;
-}
-export enum Instrument {
-  Modis = 'MODIS',
 }
 
 export enum Satellite {

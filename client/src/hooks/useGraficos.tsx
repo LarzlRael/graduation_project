@@ -10,11 +10,11 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
 
     const { changeTypeGraph, graphType } = useContext(HeatSourcesContext);
     const graphTypeArray = [
-        'barVertical',
-        'barHorizontal',
-        'pie',
-        'line',
-        'doughnut',
+        'Barras Vertical',
+        'Barras Horizontal',
+        'Pie',
+        'Lineas',
+        'Dona',
     ];
 
     const [stringTitle, setStringTitle] = useState<string[]>(['']);
@@ -88,19 +88,19 @@ export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) =
 
     const ShowGraphic = () => {
         switch (graphType) {
-            case 'pie':
+            case 'Pie':
                 setTipoGrafico('circular')
                 return <Pie data={data} />
-            case 'line':
+            case 'Lineas':
                 setTipoGrafico('cuadrado')
                 return <Line data={data} options={options} />
-            case 'barHorizontal':
+            case 'Barras Horizontal':
                 setTipoGrafico('cuadrado')
                 return <Bar data={data} options={options} />
-            case 'barVertical':
+            case 'Barras Vertical':
                 setTipoGrafico('cuadrado')
                 return <Bar data={data} options={options2} />
-            case 'doughnut':
+            case 'Dona':
                 setTipoGrafico('circular')
                 return <Doughnut data={data} options={options} />
             default:

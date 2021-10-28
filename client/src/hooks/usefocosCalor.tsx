@@ -193,6 +193,7 @@ export const useFocosCalor = () => {
         }
         getArray();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDepartament.departamentSelected]);
 
     useEffect(() => {
@@ -201,7 +202,7 @@ export const useFocosCalor = () => {
             municipio: stateArrMunProv.sArrayMu[0] ? stateArrMunProv.sArrayMu[0].nombre_municipio : '',
             provincia: stateArrMunProv.sArrayPro[0] ? stateArrMunProv.sArrayPro[0].nombre_provincia : '',
         })
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDepartament.departamentSelected]);
 
     return {

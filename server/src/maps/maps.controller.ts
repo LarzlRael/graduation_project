@@ -16,17 +16,21 @@ import { MapsService } from './maps.service';
 import { MapDto } from './dto/mapDto';
 import { join } from 'path';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { cvsFilter, editFileName } from './utils/utils';
+import { cvsFilter, editFileName, formatFileCsv } from './utils/utils';
 import { diskStorage } from 'multer';
 import { readFile, writeFile, unlink, readFileSync, writeFileSync } from 'fs';
 
 /* import parse from 'csv-parse/lib/sync'; */
 import * as csv from 'csv/lib/sync';
 import { Report } from 'src/reports/interfaces/report.interface';
+import { AnalysisService } from '../analysis/analysis.service';
 
 @Controller('maps')
 export class MapsController {
-  constructor(private mapsService: MapsService) { }
+  constructor(
+    private mapsService: MapsService,
+    private analisysServices: AnalysisService,
+  ) { }
 
   /* @Get('*')
   showMenu(@Res() res: Response) {
@@ -119,27 +123,17 @@ export class MapsController {
   ) {
     files.forEach(async (file) => {
       const pathIn = join(__dirname, '../../', `files/${file.filename}`);
-      // Load
-      const strcsv = readFileSync(pathIn, 'utf-8');
-      const data: Report[] = (csv.parse as any)(strcsv, {
-        bom: true,
-        cast: false,
-        columns: true,
-      });
-      data.forEach((simpleData) => {
-        if (simpleData.type) {
-          delete simpleData.type;
-        }
-        if (parseInt(simpleData.daynight) === 0) {
-          simpleData.daynight = 'N';
-        } else if (parseInt(simpleData.daynight) === 1) {
-          simpleData.daynight = 'D';
-        }
-        if (typeof simpleData.confidence !== 'number') {
-          simpleData.confidence = 0;
-        }
-      });
+      // Load and parsing data
+      const { data, fechas } = await formatFileCsv(pathIn);
       //Save
+      console.log(data[0]);
+
+      const verify = await this.analisysServices.verifyDatesDB(
+        new Date(fechas[0].acq_date),
+        new Date(fechas[1].acq_date),
+        fechas[1].instrument,
+      );
+
       const pathOut = join(__dirname, '../../', `files/cvsconvertido.csv`);
       writeFileSync(
         pathOut,
@@ -151,17 +145,27 @@ export class MapsController {
         if (err !== null) {
           console.log(err);
         }
-
         const linesExceptFirst = data.split('\n').slice(1).join('\n');
         writeFile(pathOut, linesExceptFirst, () =>
           console.log('archivo creado'),
         );
       });
 
-      const response = await this.mapsService.saveNewData(pathOut);
+      if (verify) {
+        await this.mapsService.saveNewData(pathOut);
+        res.json({
+          ok: true,
+          msg: 'datos subidos y actualizdos correctamente',
+        });
+      } else {
+        res.json({
+          ok: false,
+          msg: 'Error, la base de datos ya fue actualizada',
+        });
+      }
 
       unlink(pathIn, (err) => {
-        if (err) console.log(err)
+        if (err) console.log(err);
         console.log('archivo eliminado corretamente');
       });
       unlink(pathOut, (err) => {
@@ -170,15 +174,11 @@ export class MapsController {
         }
         console.log('archivo eliminado corretamente');
       });
-      if (response) {
+      /* if (response) {
         console.log('subido correctamente');
       } else {
         console.log('hubo un error al subir we');
-      }
-    });
-    res.json({
-      ok: true,
-      msg: 'datos subidos',
+      } */
     });
   }
 }

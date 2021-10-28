@@ -9,6 +9,7 @@ export const images = [
     { name: 'Pando', source: 'pando.png' },
     { name: 'Santa Cruz', source: 'santacruz.png' }
 ];
+export const namesDepartamentos = ['La Paz','Oruro','Potosi','Tarija','Chuquisica','Cochabamba','Beni','Pando','Santa Cruz',];
 
 export const departametsArray = [
     { name: 'La Paz', imageUrl: 'https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/06/6f/46/31.jpg' },

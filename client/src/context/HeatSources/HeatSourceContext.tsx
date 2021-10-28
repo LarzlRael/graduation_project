@@ -53,20 +53,31 @@ export const HeatProvider = ({ children }: any) => {
     useEffect(() => {
         getDatesAvailable();
         setMounthSelected(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const addHours = (h: number, date: Date) => {
+        date.setHours(date.getHours() + h);
+        return date;
+    }
+
+
     const getDatesAvailable = async () => {
+
+
         try {
 
             dispatch({ type: 'loading', payload: true });
             const dates = await getAvailableDatesServer();
-
+            console.log(new Date(dates.dates[0]),
+                new Date(dates.dates[1]));
             dispatch({
                 type: 'dates',
                 payload: {
                     dates: [
-                        new Date(dates.dates[0]),
-                        new Date(dates.dates[1])
+                        addHours(4, new Date(dates.dates[0])),
+                        addHours(4, new Date(dates.dates[1])),
+                        
                     ]
                 },
             });

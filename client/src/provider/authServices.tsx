@@ -13,5 +13,6 @@ export const singUp = async (correo: string, password: string, nombre: string) =
     const { data } = await serverAPI.post<LoginResponse>('/usuarios', {
         correo, password, nombre,
     });
+    return data;
 }
 

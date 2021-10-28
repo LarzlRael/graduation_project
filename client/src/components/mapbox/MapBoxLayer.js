@@ -5,11 +5,11 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { CardInfo } from "../CardInfo";
 import ReactMapGL, { Layer, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { departametsArray, mapType, mapTypeStyle } from "../../data/data";
+import { departametsArray, mapTypeStyle } from "../../data/data";
 import { useFocosCalor } from "../../hooks/usefocosCalor";
 
 import { SwitchWidget } from "../widgets/SwitchWidget";
-import { HeatSourcesContext } from "../../context/HeatSources/HeatSourceContext";
+
 
 
 const apikey = process.env.REACT_APP_MAPBOX_KEY;
@@ -47,7 +47,7 @@ export const MapBoxLayer = () => {
 
 
     return (
-        <>
+        <div className="mapContainer">
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                 <Grid item xs={6}>
                     <CardInfo
@@ -62,7 +62,9 @@ export const MapBoxLayer = () => {
                         onChange={(e) => setChangeMapType(e.target.value)}
                     >
                         {mapTypeStyle.map(option => (
-                            <option value={option.mapStyle}>{option.mapName}</option>
+                            <option
+                                key={option.mapName}
+                                value={option.mapStyle}>{option.mapName}</option>
                         ))}
                     </select>
                 </Grid>
@@ -210,6 +212,6 @@ export const MapBoxLayer = () => {
                 </Source>
 
             </ReactMapGL>
-        </>
+        </div>
     );
 }
