@@ -47,7 +47,7 @@ export const mapType = [
     'navigation-day-v1',
     'navigation-night-v1',
 ]
-interface MapStyleInt {
+export interface MapStyleInt {
     mapStyle: string,
     mapName: string
 }
@@ -86,13 +86,13 @@ export const mapTypeStyle: MapStyleInt[] = [
     },
 ]
 
-export const graphType = [
-    'barVertical',
-    'barHorizontal',
-    'pie',
-    'line',
-    'doughnut',
-];
-
 
 export const meses = ['El Año Entero', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',];
+
+export const graphTypeArray = [
+    'Barras Vertical',
+    'Barras Horizontal',
+    'Pie',
+    'Lineas',
+    'Dona',
+];

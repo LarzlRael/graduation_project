@@ -1,10 +1,10 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { heatSourcesReducer, HeatSourcestState } from './HeatSourcesReducer';
 import { getAvailableDatesServer, getCountHeatSourcesByMonth, getCountHeatSourcesByMonths } from '../../provider/analysisServices';
-import { graphType, mapTypeStyle, meses } from '../../data/data';
+import { graphTypeArray, mapTypeStyle, meses, MapStyleInt } from '../../data/data';
 
 import moment from 'moment'
-import { CountByDates } from '../../interfaces/countProvinceDepartamento.interface';
+import { CountByDates, LatLngInt } from '../../interfaces/countProvinceDepartamento.interface';
 moment.locale('es');
 
 type HeatSourcesStateProps = {
@@ -12,19 +12,21 @@ type HeatSourcesStateProps = {
     loadingState: boolean,
     showProvMun: boolean,
     showOptions: boolean,
-    mapStyle: string,
+    mapStyle: MapStyleInt,
     tab: number,
     graphType: string,
     mounthSelected: number,
     titleArray: string[],
     countByDates: CountByDates,
+    currentLatLong: LatLngInt,
     showProvinvicaMun: (newState: boolean) => void,
     setShowOptions: (newState: boolean) => void,
-    setChangeMapType: (map: string) => void,
+    setChangeMapType: (mapStyle: MapStyleInt) => void,
     setChangeTab: (value: number) => void,
     changeTypeGraph: (value: string) => void,
     setMounthSelected: (value: number) => void,
     getHeatSources: (monthNumber: number) => void,
+    changeCurrentLatLng: (currentLatLong: LatLngInt) => void,
 
 }
 
@@ -33,15 +35,20 @@ const HeatSourcesInitialState: HeatSourcestState = {
     loadingState: false,
     showProvMun: false,
     showOptions: false,
-    mapStyle: mapTypeStyle[2].mapStyle,
+    mapStyle: mapTypeStyle[2],
     tab: 1,
-    graphType: graphType[0],
+    graphType: graphTypeArray[0],
     mounthSelected: 0,
     countByDates: {
         ok: false,
         resp: []
     },
     titleArray: [],
+    currentLatLong: {
+        longitude: -66.2137434,
+        latitude: -17.390915,
+    }
+
 };
 
 export const HeatSourcesContext = createContext({} as HeatSourcesStateProps);
@@ -53,7 +60,7 @@ export const HeatProvider = ({ children }: any) => {
     useEffect(() => {
         getDatesAvailable();
         setMounthSelected(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const addHours = (h: number, date: Date) => {
@@ -77,7 +84,7 @@ export const HeatProvider = ({ children }: any) => {
                     dates: [
                         addHours(4, new Date(dates.dates[0])),
                         addHours(4, new Date(dates.dates[1])),
-                        
+
                     ]
                 },
             });
@@ -102,10 +109,10 @@ export const HeatProvider = ({ children }: any) => {
         })
     }
 
-    const setChangeMapType = (map: string) => {
+    const setChangeMapType = (mapStyle: MapStyleInt) => {
         dispatch({
             type: 'changeMapType',
-            payload: map,
+            payload: mapStyle,
         })
     }
 
@@ -160,6 +167,12 @@ export const HeatProvider = ({ children }: any) => {
         });
 
     }
+    const changeCurrentLatLng = async (latLng: LatLngInt) => {
+        dispatch({
+            type: 'setLatLong',
+            payload: latLng,
+        });
+    }
 
     return (
         <HeatSourcesContext.Provider value={{
@@ -170,7 +183,8 @@ export const HeatProvider = ({ children }: any) => {
             setChangeTab,
             changeTypeGraph,
             setMounthSelected,
-            getHeatSources
+            getHeatSources,
+            changeCurrentLatLng,
         }}>
             {children}
         </HeatSourcesContext.Provider>

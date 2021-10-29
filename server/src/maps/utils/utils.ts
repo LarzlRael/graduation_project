@@ -82,6 +82,7 @@ export const formatFileCsv = async (pathIn: string) => {
     cast: false,
     columns: true,
   });
+
   data.forEach((simpleData) => {
     if (simpleData.type) {
       delete simpleData.type;
@@ -98,6 +99,3 @@ export const formatFileCsv = async (pathIn: string) => {
   return { data, fechas: [firstAcqDate, lastAcqDate] };
 
 };
-/* select count(acq_date) from fire_history where instrument='VIIRS' and  acq_date BETWEEN '2021-11-01' and '2021-11-01' ; */
-
-

@@ -152,11 +152,18 @@ export class MapsController {
       });
 
       if (verify) {
-        await this.mapsService.saveNewData(pathOut);
-        res.json({
-          ok: true,
-          msg: 'datos subidos y actualizdos correctamente',
-        });
+        const verifyInsertion = await this.mapsService.saveNewData(pathOut);
+        if (verifyInsertion) {
+          res.json({
+            ok: true,
+            msg: 'Datos subidos y actualizados correctamente',
+          });
+        } else {
+          res.json({
+            ok: false,
+            msg: 'Hubo con error, intenenlo nuevamente',
+          });
+        }
       } else {
         res.json({
           ok: false,

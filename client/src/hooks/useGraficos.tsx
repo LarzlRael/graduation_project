@@ -4,18 +4,12 @@ import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
 import { ChartData, ChartOptions } from 'chart.js';
 import { GraphProps } from '../components/Graficos';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
-
+import { graphTypeArray } from '../data/data';
 
 export const useGraficos = ({ info, nombreDepartamento, loading }: GraphProps) => {
 
     const { changeTypeGraph, graphType } = useContext(HeatSourcesContext);
-    const graphTypeArray = [
-        'Barras Vertical',
-        'Barras Horizontal',
-        'Pie',
-        'Lineas',
-        'Dona',
-    ];
+    
 
     const [stringTitle, setStringTitle] = useState<string[]>(['']);
     const [tipoGrafico, setTipoGrafico] = useState<string>();

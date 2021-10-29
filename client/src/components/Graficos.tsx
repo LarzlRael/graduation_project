@@ -15,7 +15,7 @@ export const Graficos = (graphProps: GraphProps) => {
         ShowGraphic,
         graphType,
         graphTypeArray,
-        tipoGrafico
+        tipoGrafico,
     } = useGraficos(graphProps);
 
     const { loading, info } = graphProps;
@@ -41,8 +41,9 @@ export const Graficos = (graphProps: GraphProps) => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Age"
+                    renderValue={(value) => `${graphType}`}
                     value={graphType}
-                    onChange={(e) => changeTypeGraph(e.target.value)}
+                    onChange={({target}) => changeTypeGraph(target.value)}
                 >
                     {graphTypeArray.map((graph) => (
                         <MenuItem

@@ -56,3 +56,12 @@ export const getRandomColor = (): string => {
     const z = 50 + Math.floor(Math.random() * 256);
     return `rgb(${x},${y},${z},0.6)`;
 }
+
+export const capitalizeFirstLetter = (word: string = ""): string => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+
+export const getRandomArbitrary = (min: number, max: number): number => {
+    return Math.round(Math.random() * (max - min) + min);
+}

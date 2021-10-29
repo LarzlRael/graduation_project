@@ -6,6 +6,7 @@ import { accountsLink } from './dataMenu';
 import { UpdateInformation } from './dashboard/UpdateInformation';
 import { CVSTutorial } from './dashboard/CVSTutorial';
 import { AuthAdminContext } from '../context/AuthAdminContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const AdminDashboard = () => {
 
@@ -15,6 +16,9 @@ export const AdminDashboard = () => {
     const handleToogleMenu = () => {
         setOpenMenu(!openMenu);
     }
+
+    useDocumentTitle('dashboard');
+
     return (
         <Router>
             <div className="toolbar">

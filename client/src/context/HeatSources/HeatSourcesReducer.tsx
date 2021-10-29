@@ -1,4 +1,5 @@
-import { CountByDates } from '../../interfaces/countProvinceDepartamento.interface';
+import { CountByDates, LatLngInt } from '../../interfaces/countProvinceDepartamento.interface';
+import { MapStyleInt } from '../../data/data';
 
 
 export interface HeatSourcestState {
@@ -6,12 +7,13 @@ export interface HeatSourcestState {
     loadingState: boolean;
     showProvMun: boolean;
     showOptions: boolean;
-    mapStyle: string;
+    mapStyle: MapStyleInt;
     tab: number;
     graphType: string;
     mounthSelected: number;
     countByDates: CountByDates;
     titleArray: string[];
+    currentLatLong: LatLngInt;
 
 }
 
@@ -20,12 +22,13 @@ type HeatSourceAction =
     | { type: 'loading', payload: boolean }
     | { type: 'showProvMun', payload: boolean }
     | { type: 'showOptions', payload: boolean }
-    | { type: 'changeMapType', payload: string }
+    | { type: 'changeMapType', payload: MapStyleInt }
     | { type: 'changeTab', payload: number }
     | { type: 'changeGraphType', payload: string }
     | { type: 'changeMounth', payload: number }
     | { type: 'changeCountByDates', payload: CountByDates }
     | { type: 'setTitlesArray', payload: string[] }
+    | { type: 'setLatLong', payload: LatLngInt }
 
 
 /* | { type: 'addError', payload: string }
@@ -84,6 +87,11 @@ export const heatSourcesReducer = (state: HeatSourcestState, action: HeatSourceA
             return {
                 ...state,
                 titleArray: action.payload
+            }
+        case 'setLatLong':
+            return {
+                ...state,
+                currentLatLong: action.payload
             }
 
         default:

@@ -30,13 +30,15 @@ export const getCVSreport = async (dateStart: string, dateEnd?: string) => {
     let blob = new Blob([response.data.csv]);
     saveAs(blob, `reporte ${setFileName(dateStart, dateEnd)}.csv`);
 }
-
-export const uploadFileCVS = async (files: FileList): Promise<string> => {
+interface IUploadFile {
+    ok: boolean,
+    msg: string
+}
+export const uploadFileCVS = async (file: File): Promise<IUploadFile> => {
     let formData = new FormData();
 
-    for (let i = 0; i < files.length; i++) {
-        formData.append('csv', files[i]);
-    }
+    formData.append('csv', file);
+
     try {
         const response = await serverAPI.post('maps/uploadcsvupdate', formData, {
             headers: {
@@ -44,12 +46,15 @@ export const uploadFileCVS = async (files: FileList): Promise<string> => {
             },
         });
         if (response.status === 200 || response.status === 201) {
-            return response.data.msg;
+            return response.data;
         } else {
-            return 'Hubo un error al subir el archivo';
+            return response.data
         }
 
     } catch (error) {
-        return 'Hubo un error al subir el archivo';
+        return {
+            ok: false,
+            msg: 'Hubo un error al subir el archivo',
+        }
     }
 }

@@ -1,7 +1,9 @@
 import React from 'react'
 import { Layout } from '../components/Layout';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const Ley1171 = () => {
+    useDocumentTitle('Ley 1171');
     return (
         <Layout>
             <div className="ley1171">

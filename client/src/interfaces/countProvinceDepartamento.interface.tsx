@@ -15,3 +15,9 @@ export interface DatesHeatSources {
     acq_date:    Date;
     focos_calor: string;
 }
+
+
+export interface LatLngInt {
+    longitude: number;
+    latitude: number;
+}

@@ -1,11 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import { departametsArray } from '../data/data';
-import { getRankDate } from '../utils/utils';
+import { getRankDate, getRandomArbitrary } from '../utils/utils';
 import { consultByDeparments, getHotSourcesByDepMun, getHotSourcesByDepProv } from '../provider/heatSourcesservices';
 import { getNombresProvincias, getNombresMunicipios } from '../provider/analysisServices';
 import { Resp as ResProv } from '../interfaces/provinciasResponse.interface';
 import { Resp as ResMun } from '../interfaces/municipiosResponse.interface';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
+import { GeoJsonFeature } from '../interfaces/geoJsonResponse';
+
+import { FlyToInterpolator } from 'react-map-gl';
+// 3rd-party easing functions
+/* import d3 from 'd3-ease'; */
 
 export const useFocosCalor = () => {
 
@@ -16,18 +21,34 @@ export const useFocosCalor = () => {
         mapStyle,
         setShowOptions,
         setChangeMapType,
+        currentLatLong,
+        changeCurrentLatLng,
     } = useContext(HeatSourcesContext);
 
     const [viewport, setViewport] = useState({
         width: 'fit',
         height: 800,
-        longitude: -66.2137434,
-        latitude: -17.390915,
-        zoom: 5.2
+        longitude: currentLatLong.longitude,
+        latitude: currentLatLong.latitude,
+        zoom: 5.2,
+        transitionDuration: 5000,
+        transitionInterpolator: new FlyToInterpolator(),
     });
 
+    const goTo = () => {
+        setViewport({
+            ...viewport,
+            longitude: currentLatLong.longitude,
+            latitude: currentLatLong.latitude,
+            zoom: 6,
+            transitionDuration: 1000,
+            transitionInterpolator: new FlyToInterpolator(),
+            /* transitionEasing: d3.easeCubic */
+        });
+    };
+
     const [loading, setLoading] = useState(false);
-    const [focosDeCalor, setfocosDeCalor] = useState({});
+    const [focosDeCalor, setfocosDeCalor] = useState<GeoJsonFeature>({ type: 'FeatureCollection', features: [] });
     const [selectedDepartament, setSelectedDepartament] = useState({
         departamentSelected: departametsArray[0].name,
         image: departametsArray[0].imageUrl,
@@ -37,8 +58,6 @@ export const useFocosCalor = () => {
         provincia: '',
         municipio: ''
     });
-
-
 
     const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState({
         departamentSelected: departametsArray[0].name,
@@ -127,6 +146,7 @@ export const useFocosCalor = () => {
                 departamentSelected: selectedDepartament.departamentSelected,
                 image: selectedDepartament.image
             });
+
         }
 
         const consultarProvincias = async () => {
@@ -193,8 +213,29 @@ export const useFocosCalor = () => {
         }
         getArray();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDepartament.departamentSelected]);
+
+    useEffect(() => {
+        console.log('moviendo el mapa');
+        if (loading === false && focosDeCalor.features.length > 0) {
+            const randomPoint = getRandomArbitrary(0, focosDeCalor.features.length - 1);
+            console.log(randomPoint)
+            console.log(focosDeCalor.features.length);
+            changeCurrentLatLng({
+                latitude: focosDeCalor.features[randomPoint].properties.latitude,
+                longitude: focosDeCalor.features[randomPoint].properties.longitude
+            });
+            /* goTo(); */
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        console.log('go to ')
+        goTo();
+    }, [currentLatLong]);
+
+
 
     useEffect(() => {
         setProvMunSelected({
@@ -202,7 +243,7 @@ export const useFocosCalor = () => {
             municipio: stateArrMunProv.sArrayMu[0] ? stateArrMunProv.sArrayMu[0].nombre_municipio : '',
             provincia: stateArrMunProv.sArrayPro[0] ? stateArrMunProv.sArrayPro[0].nombre_provincia : '',
         })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDepartament.departamentSelected]);
 
     return {
@@ -227,6 +268,7 @@ export const useFocosCalor = () => {
         loadingState,
         showProvMun,
         setChangeMapType,
-        mapStyle
+        mapStyle,
+        goTo
     }
 }

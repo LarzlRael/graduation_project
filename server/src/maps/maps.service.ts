@@ -91,11 +91,6 @@ export class MapsService {
 
   async saveNewData(path: string): Promise<boolean> {
     try {
-      const today = new Date().toISOString().slice(0, 10);
-
-      const verifyData = await this.pool.query(
-        `SELECT * FROM public.${fire_history} where acq_date ='${today}' limit 1;`,
-      );
 
       const query = `
         copy public.${fire_history} (latitude, longitude, brightness, scan, track, acq_date, acq_time, satellite, instrument, confidence, version, bright_t31, frp, daynight) FROM '${path}' CSV ENCODING 'UTF8' QUOTE '\"' ESCAPE '''';

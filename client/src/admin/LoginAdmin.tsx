@@ -6,6 +6,7 @@ import LoginContext from '../login/LoginContext'; */
 /* import { getDates } from '../provider/services';
 import { DatesResponse } from '../interfaces/datesResponse';
 import { v4 as uuidv4 } from 'uuid'; */
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 
 export const AdminLogin = () => {
@@ -47,8 +48,9 @@ export const AdminLogin = () => {
             ...Error,
             error_message: null
         })
-
     }
+
+    useDocumentTitle('Login');
 
     return (
         <div className="login-div animate__animated animate__fadeIn">

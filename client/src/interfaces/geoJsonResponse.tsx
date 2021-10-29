@@ -1,9 +1,9 @@
 export interface GeoJsonResponse {
     ok: boolean;
-    report: Report;
+    report: GeoJsonFeature;
 }
 
-export interface Report {
+export interface GeoJsonFeature {
     type: string;
     features: Feature[];
 }

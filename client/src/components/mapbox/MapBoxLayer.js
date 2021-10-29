@@ -9,6 +9,7 @@ import { departametsArray, mapTypeStyle } from "../../data/data";
 import { useFocosCalor } from "../../hooks/usefocosCalor";
 
 import { SwitchWidget } from "../widgets/SwitchWidget";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
 
 
@@ -42,9 +43,10 @@ export const MapBoxLayer = () => {
         setShowOptions,
         //style maps
         setChangeMapType,
-        mapStyle
-    } = useFocosCalor();
+        mapStyle,
 
+    } = useFocosCalor();
+    useDocumentTitle('Mapa de focos de calor');
 
     return (
         <div className="mapContainer">
@@ -57,16 +59,33 @@ export const MapBoxLayer = () => {
                         dateEnd={selectedDate.rank}
                         imageUrl={selecteDepartamentCopy.image}
                     />
-                    <select
-                        value={mapStyle}
-                        onChange={(e) => setChangeMapType(e.target.value)}
-                    >
-                        {mapTypeStyle.map(option => (
-                            <option
-                                key={option.mapName}
-                                value={option.mapStyle}>{option.mapName}</option>
-                        ))}
-                    </select>
+                    <br />
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">
+                            Seleccionar Tipo de Mapa
+                        </InputLabel>
+                        <Select
+                            renderValue={() => mapStyle.mapName}
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            name="departamento"
+                            label="Tipo de Mapa"
+                            value={mapStyle.mapName}
+                            onChange={(e) => setChangeMapType(e.target.value)}>
+
+                            {mapTypeStyle.map((option) => (
+                                <MenuItem
+                                    key={option.mapName}
+                                    value={option}>
+                                    {option.mapName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+
+
+
                 </Grid>
                 <Grid item xs={6}>
                     <FormControl fullWidth>
@@ -199,12 +218,12 @@ export const MapBoxLayer = () => {
                 </Grid>
 
             </Grid >
-
+            <br />
             <ReactMapGL
-                minZoom={viewport.zoom}
+                /* minZoom={viewport.zoom} */
                 mapboxApiAccessToken={apikey}
                 {...viewport}
-                mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
+                mapStyle={`mapbox://styles/mapbox/${mapStyle.mapStyle}`}
                 onViewportChange={nextViewport => setViewport(nextViewport)}
             >
                 <Source id="my-data" type="geojson" data={focosDeCalor}>

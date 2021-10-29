@@ -5,28 +5,42 @@ import { IoCloseCircleSharp } from 'react-icons/io5';
 import { MdFileUpload } from "react-icons/md";
 import { uploadFileCVS } from '../../provider/reportsServices';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+
+
 export const UpdateInformation = () => {
 
-    const [selectedFiles, setSelectedFiles] = useState<FileList>();
+    const [selectedFile, setSelectedFile] = useState<File>();
     const [isSelected, setIsSelected] = useState(false);
 
     const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        setSelectedFiles(e.target.files);
+        setSelectedFile(e.target.files[0]);
         setIsSelected(true);
+        e.currentTarget.value = ''
     }
 
     const uploadFile = async () => {
 
-        if (!selectedFiles) return;
-        const message = await uploadFileCVS(selectedFiles);
+        if (!selectedFile) return;
+        const message = await uploadFileCVS(selectedFile);
         console.log(message);
-
+        if (message.ok) {
+            toast.success(message.msg, {
+            })
+        } else {
+            toast.error(message.msg)
+        }
     }
+
     const clearFile = () => {
-        setSelectedFiles(undefined);
+        setSelectedFile(undefined);
         setIsSelected(false);
     }
+
+    useDocumentTitle('Actualizar Focos de calor');
 
     return (
         <div>
@@ -41,7 +55,7 @@ export const UpdateInformation = () => {
                 style={{ display: 'none' }}
                 id="raised-button-file"
                 type="file"
-                onChange={(e) => { changeHandler(e) }}
+                onChange={changeHandler}
             />
             <label htmlFor="raised-button-file">
                 <Button variant="outlined" component="span" >
@@ -53,6 +67,7 @@ export const UpdateInformation = () => {
                     <span>{file?.name && file?.name}</span>
                 ))
             } */}
+            <span>{selectedFile?.name && selectedFile?.name}</span>
             < br />
             {isSelected &&
                 <>
@@ -73,6 +88,9 @@ export const UpdateInformation = () => {
                         onClick={clearFile} />
                 </>
             }
+
+
+            <ToastContainer />
         </div>
     )
 }
