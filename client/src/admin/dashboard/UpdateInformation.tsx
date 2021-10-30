@@ -85,7 +85,8 @@ export const UpdateInformation = () => {
                     </Button>
                     <IoCloseCircleSharp
                         size="1.5rem"
-                        onClick={clearFile} />
+                        onClick={clearFile}
+                    />
                 </>
             }
 

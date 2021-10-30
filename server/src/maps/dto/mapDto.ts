@@ -9,6 +9,6 @@ export class MapDto {
   municipio: string;
   @IsOptional()
   @IsEnum(Departamento)
-  departament: Departamento;
+  departamento: Departamento;
 
 }

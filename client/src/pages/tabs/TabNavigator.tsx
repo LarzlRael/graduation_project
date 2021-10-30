@@ -7,9 +7,9 @@ import TabPanel from '@mui/lab/TabPanel';
 
 import { MapBoxLayer } from '../../components/mapbox/MapBoxLayer';
 
-import { Municipios } from './Municipios';
-import { Provincias } from './Provincias';
 import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext';
+import { GraphByDepartaments } from './GraphByDepartaments';
+import { GraphByMonths } from './GraphByMonths';
 
 export const TabNavigator = () => {
     const { tab, setChangeTab } = useContext(HeatSourcesContext);
@@ -32,10 +32,10 @@ export const TabNavigator = () => {
                     <MapBoxLayer />
                 </TabPanel>
                 <TabPanel value="2">
-                    <Municipios />
+                    <GraphByMonths />
                 </TabPanel>
                 <TabPanel value="3">
-                    <Provincias />
+                    <GraphByDepartaments />
                 </TabPanel>
             </TabContext>
         </div>

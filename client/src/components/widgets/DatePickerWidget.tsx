@@ -8,19 +8,22 @@ import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext'
 interface datePickerProps {
     setDate: React.Dispatch<React.SetStateAction<Date>>
     state: Date;
-    title: string
+    title: string;
+    limit?: Date;
+    minDate?: Date;
 }
 
-export const DatePickerWidget = ({ state, setDate, title }: datePickerProps) => {
+export const DatePickerWidget = ({ limit, state, setDate, title, minDate }: datePickerProps) => {
     const { datesAvailable } = useContext(HeatSourcesContext);
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
                 /* cultureInfo={cultureInfo} */
-                label={`Seleccionar fecha ${title}`}
+                label={title}
                 value={state}
+                minDate={minDate ? minDate : null}
                 inputFormat="dd/MM/yyyy"
-                maxDate={datesAvailable[1]}
+                maxDate={limit ? limit : datesAvailable[1]}
                 onChange={(e) => setDate(e!)}
                 renderInput={(params) => <TextField {...params} />}
             />

@@ -1,4 +1,4 @@
-export interface HottestByDeparament {
+export interface HeatSourcesByDeparament {
     dateStart: string;
     dateEnd: string;
     departamento: string;

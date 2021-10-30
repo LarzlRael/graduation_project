@@ -1,23 +1,27 @@
 import { useState } from 'react';
 import { useEffect, useContext } from 'react';
 import { ChartData, ChartOptions } from 'chart.js';
-import { getRandomColor } from '../utils/utils';
 import { Line, Bar } from 'react-chartjs-2';
-
-import { meses } from '../data/data';
-import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 import moment from 'moment'
 import { Switch, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { FormControlLabel } from '@material-ui/core';
+import { meses } from '../../data/data';
+import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext';
+import { getRandomColor } from '../../utils/utils';
 
 moment.locale('es');
 
 
-export const SearchMunicipios = () => {
-    const { setMounthSelected, getHeatSources, mounthSelected, titleArray, countByDates } = useContext(HeatSourcesContext);
+export const GraphByMonths = () => {
+    const {
+        setMounthSelected,
+        getHeatSourcesInfoToGragh,
+        mounthSelected,
+        titleArray,
+        countByDates } = useContext(HeatSourcesContext);
 
     useEffect(() => {
-        getHeatSources(mounthSelected);
+        getHeatSourcesInfoToGragh(mounthSelected);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mounthSelected]);
 
@@ -66,16 +70,6 @@ export const SearchMunicipios = () => {
                     onChange={(e) => setLineGraph(e.target.checked)}
                 />
             } label={`Grafico de ${!lineGraph ? 'Lineas' : 'Puntos'}`} />
-            {/*  <select
-                value={mounthSelected}
-                onChange={(e) => setMounthSelected(parseInt(e.target.value))}
-            >
-                {meses.map((mes, i) => (
-                    <option
-                        key={mes}
-                        value={i}>{mes}</option>
-                ))}
-            </select> */}
 
             <FormControl>
                 <InputLabel id="demo-simple-select-label">

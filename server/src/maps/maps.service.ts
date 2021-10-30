@@ -40,7 +40,7 @@ export class MapsService {
     from ${fire_history} as a
     join ${departamentos} as b
     on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '${mapdto.dateStart}' and '${mapdto.dateEnd}' 
-    and b.nombre_departamento in ('${mapdto.departament}' ));
+    and b.nombre_departamento in ('${mapdto.departamento}' ));
     `;
     return this.saveJsonAndParseAsGeoJson(query);
   }
@@ -119,5 +119,4 @@ export class MapsService {
       console.log(error);
     }
   }
-
 }

@@ -64,7 +64,7 @@ export const Graficos = (graphProps: GraphProps) => {
                     <div>
                         No se encontraron datos
                     </div> :
-                    <div className={`${tipoGrafico === 'circular' ? 'grafic-circle' : 'grafic-square'}`}>
+                    <div className={`${tipoGrafico === 'circular' && 'grafic-circle' }`}>
                         <ShowGraphic />
                     </div>
             }

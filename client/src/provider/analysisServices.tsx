@@ -3,7 +3,7 @@ import { ProvinciasResponse } from '../interfaces/provinciasResponse.interface';
 import { MunicipiosResponse } from '../interfaces/municipiosResponse.interface';
 
 import { CountDepProMun, CountByDates } from '../interfaces/countProvinceDepartamento.interface';
-import { ProvMun, CountInterface } from '../interfaces/provMun.interface';
+import { HeatSourcesByPlace, CountInterface } from '../interfaces/provMun.interface';
 import { DatesResponse } from '../interfaces/datesResponse';
 
 
@@ -19,21 +19,21 @@ export const getNombresProvincias = async (departamento: string) => {
 };
 
 
-export const getCountByDepartamaments = async (departamentos: ProvMun) => {
+export const getCountByDepartamaments = async (departamentos: HeatSourcesByPlace) => {
     const resp = await serverAPI.post<CountDepProMun>(`/analysis/getcountdepartamentos`, {
         ...departamentos,
     });
     return resp.data;
 };
 
-export const getCountByDepPro = async (provincia: ProvMun) => {
+export const getCountByDepPro = async (provincia: HeatSourcesByPlace) => {
     const resp = await serverAPI.post<CountDepProMun>(`/analysis/countdepartamentosprovincias`, {
         ...provincia,
     });
     return resp.data;
 };
 
-export const getCountByDeMun = async (municipcio: ProvMun) => {
+export const getCountByDeMun = async (municipcio: HeatSourcesByPlace) => {
     const resp = await serverAPI.post<CountDepProMun>(`/analysis/countdepartamentosmunicipios`, {
         ...municipcio,
     });

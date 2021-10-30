@@ -58,23 +58,23 @@ export const mapTypeStyle: MapStyleInt[] = [
     },
     {
         mapStyle: 'outdoors-v11',
-        mapName: 'Mapa de Puertas'
+        mapName: 'Mapa al aire libre'
     },
     {
         mapStyle: 'light-v10',
-        mapName: 'Mapa Light'
+        mapName: 'Mapa Claro'
     },
     {
         mapStyle: 'dark-v10',
-        mapName: 'Mapa Dark'
+        mapName: 'Mapa Oscuro'
     },
     {
         mapStyle: 'satellite-v9',
-        mapName: 'Mapa de satellite'
+        mapName: 'Mapa de satélite'
     },
     {
         mapStyle: 'satellite-streets-v11',
-        mapName: 'Mapa de satelites y calles'
+        mapName: 'Mapa de satélites y calles'
     },
     {
         mapStyle: 'navigation-day-v1',

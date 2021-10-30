@@ -1,10 +1,11 @@
 import { createContext, useEffect, useReducer } from 'react';
-import { heatSourcesReducer, HeatSourcestState } from './HeatSourcesReducer';
+import { heatSourcesReducer, HeatSourcestState, DateSelectedRangeInterface } from './HeatSourcesReducer';
 import { getAvailableDatesServer, getCountHeatSourcesByMonth, getCountHeatSourcesByMonths } from '../../provider/analysisServices';
 import { graphTypeArray, mapTypeStyle, meses, MapStyleInt } from '../../data/data';
 
 import moment from 'moment'
 import { CountByDates, LatLngInt } from '../../interfaces/countProvinceDepartamento.interface';
+import { GeoJsonFeature } from '../../interfaces/geoJsonResponse';
 moment.locale('es');
 
 type HeatSourcesStateProps = {
@@ -19,15 +20,21 @@ type HeatSourcesStateProps = {
     titleArray: string[],
     countByDates: CountByDates,
     currentLatLong: LatLngInt,
+    currentGeoJson: GeoJsonFeature,
+    modalIsOpen: boolean,
+    dateSelectedAndRange: DateSelectedRangeInterface,
     showProvinvicaMun: (newState: boolean) => void,
     setShowOptions: (newState: boolean) => void,
     setChangeMapType: (mapStyle: MapStyleInt) => void,
     setChangeTab: (value: number) => void,
     changeTypeGraph: (value: string) => void,
     setMounthSelected: (value: number) => void,
-    getHeatSources: (monthNumber: number) => void,
+    getHeatSourcesInfoToGragh: (monthNumber: number) => void,
     changeCurrentLatLng: (currentLatLong: LatLngInt) => void,
-
+    changeCurrentGeoJson: (geoJsonCurrent: GeoJsonFeature) => void,
+    changeDateSelectedAndRanked: (dateSelectedAndRange: DateSelectedRangeInterface) => void,
+    closeModal: () => void,
+    openModal: () => void,
 }
 
 const HeatSourcesInitialState: HeatSourcestState = {
@@ -47,8 +54,18 @@ const HeatSourcesInitialState: HeatSourcestState = {
     currentLatLong: {
         longitude: -66.2137434,
         latitude: -17.390915,
+    },
+    currentGeoJson: {
+        type: 'FeatureCollection',
+        features: [],
+    },
+    modalIsOpen: true,
+    dateSelectedAndRange: {
+        dateEnd: new Date(),
+        dateStart: new Date(),
+        dateEndRange: 7,
+        findbyOneDate: false,
     }
-
 };
 
 export const HeatSourcesContext = createContext({} as HeatSourcesStateProps);
@@ -84,7 +101,6 @@ export const HeatProvider = ({ children }: any) => {
                     dates: [
                         addHours(4, new Date(dates.dates[0])),
                         addHours(4, new Date(dates.dates[1])),
-
                     ]
                 },
             });
@@ -136,7 +152,7 @@ export const HeatProvider = ({ children }: any) => {
             payload: mes,
         });
     }
-    const getHeatSources = async (month: number) => {
+    const getHeatSourcesInfoToGragh = async (month: number) => {
 
         let getInformation: CountByDates;
         const arrayTitles: string[] = [];
@@ -167,10 +183,37 @@ export const HeatProvider = ({ children }: any) => {
         });
 
     }
-    const changeCurrentLatLng = async (latLng: LatLngInt) => {
+    const changeCurrentLatLng = (latLng: LatLngInt) => {
         dispatch({
             type: 'setLatLong',
             payload: latLng,
+        });
+    }
+
+    const changeCurrentGeoJson = (currentGeoJson: GeoJsonFeature) => {
+        dispatch({
+            type: 'setCurrentGeoJson',
+            payload: currentGeoJson,
+        });
+    }
+    const closeModal = () => {
+        dispatch({
+            type: 'setModalIsOpen',
+            payload: false,
+        });
+    }
+    const openModal = () => {
+        console.log('opening modal')
+        dispatch({
+            type: 'setModalIsOpen',
+            payload: true,
+        });
+    }
+    const changeDateSelectedAndRanked = (dateSelectedAndRange: DateSelectedRangeInterface) => {
+
+        dispatch({
+            type: 'dateSelectedAndRange',
+            payload: dateSelectedAndRange,
         });
     }
 
@@ -183,8 +226,12 @@ export const HeatProvider = ({ children }: any) => {
             setChangeTab,
             changeTypeGraph,
             setMounthSelected,
-            getHeatSources,
+            getHeatSourcesInfoToGragh,
             changeCurrentLatLng,
+            changeCurrentGeoJson,
+            closeModal,
+            openModal,
+            changeDateSelectedAndRanked
         }}>
             {children}
         </HeatSourcesContext.Provider>

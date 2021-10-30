@@ -1,16 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
 import { departametsArray } from '../data/data';
-import { getRankDate, getRandomArbitrary } from '../utils/utils';
-import { consultByDeparments, getHotSourcesByDepMun, getHotSourcesByDepProv } from '../provider/heatSourcesservices';
+import { getRandomArbitrary } from '../utils/utils';
+import { getHeatSourcesByDepartament, getHotSourcesByDepMun, getHotSourcesByDepProv } from '../provider/heatSourcesservices';
 import { getNombresProvincias, getNombresMunicipios } from '../provider/analysisServices';
 import { Resp as ResProv } from '../interfaces/provinciasResponse.interface';
 import { Resp as ResMun } from '../interfaces/municipiosResponse.interface';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
-import { GeoJsonFeature } from '../interfaces/geoJsonResponse';
+
 
 import { FlyToInterpolator } from 'react-map-gl';
-// 3rd-party easing functions
-/* import d3 from 'd3-ease'; */
 
 export const useFocosCalor = () => {
 
@@ -18,16 +16,22 @@ export const useFocosCalor = () => {
         loadingState,
         showProvMun,
         showOptions,
+        currentLatLong,
         mapStyle,
+        currentGeoJson,
         setShowOptions,
         setChangeMapType,
-        currentLatLong,
         changeCurrentLatLng,
+        changeCurrentGeoJson,
+        closeModal,
+        dateSelectedAndRange
     } = useContext(HeatSourcesContext);
+
+    const { dateStart, dateEnd } = dateSelectedAndRange;
 
     const [viewport, setViewport] = useState({
         width: 'fit',
-        height: 800,
+        height: '100vh',
         longitude: currentLatLong.longitude,
         latitude: currentLatLong.latitude,
         zoom: 5.2,
@@ -43,12 +47,10 @@ export const useFocosCalor = () => {
             zoom: 6,
             transitionDuration: 1000,
             transitionInterpolator: new FlyToInterpolator(),
-            /* transitionEasing: d3.easeCubic */
         });
     };
-
     const [loading, setLoading] = useState(false);
-    const [focosDeCalor, setfocosDeCalor] = useState<GeoJsonFeature>({ type: 'FeatureCollection', features: [] });
+
     const [selectedDepartament, setSelectedDepartament] = useState({
         departamentSelected: departametsArray[0].name,
         image: departametsArray[0].imageUrl,
@@ -62,11 +64,6 @@ export const useFocosCalor = () => {
     const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState({
         departamentSelected: departametsArray[0].name,
         image: departametsArray[0].imageUrl,
-    });
-
-    const [selectedDate, setSelectedDay] = useState({
-        selectedDate: !loadingState ? datesAvailable[1] : new Date(),
-        rank: getRankDate('today', !loadingState ? datesAvailable[1] : new Date(),),
     });
 
     const [stateArrMunProv, setArrMunProv] = useState<{
@@ -103,42 +100,25 @@ export const useFocosCalor = () => {
             'circle-color': 'rgb(145, 0, 16)'
         }
     };
-    const consultar = async (rango = 'today') => {
-
-        switch (rango) {
-            case 'today':
-                setSelectedDay({ ...selectedDate, rank: getRankDate('today', selectedDate.selectedDate) });
-                break;
-            case '24hr':
-                setSelectedDay({ ...selectedDate, rank: getRankDate('24hrs', selectedDate.selectedDate) });
-                break;
-            case 'week':
-                setSelectedDay({ ...selectedDate, rank: getRankDate('week', selectedDate.selectedDate) });
-                break;
-            case 'oneMounth':
-                setSelectedDay({ ...selectedDate, rank: getRankDate('oneMounth', selectedDate.selectedDate) });
-                break;
-
-            default:
-                break;
-        }
+    const getHeatSources = async () => {
         setLoading(true);
     }
 
     useEffect(() => {
-        consultar()
+        getHeatSources()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
 
         const consultarPorDepartamentos = async () => {
-            const queryResult = await consultByDeparments(
-                selectedDate.selectedDate.toISOString().slice(0, 10),
-                selectedDate.rank,
-                selectedDepartament.departamentSelected);
+            const queryResult = await getHeatSourcesByDepartament({
+                dateEnd: dateEnd.toISOString().slice(0, 10),
+                dateStart: dateStart.toISOString().slice(0, 10),
+                departamento: selectedDepartament.departamentSelected
+            });
 
-            setfocosDeCalor(queryResult);
+            changeCurrentGeoJson(queryResult);
 
             setLoading(false);
             setSelecteDepartamentCopy({
@@ -152,31 +132,32 @@ export const useFocosCalor = () => {
         const consultarProvincias = async () => {
             const queryResult = await getHotSourcesByDepProv(
                 {
-                    dateStart: selectedDate.selectedDate.toISOString().slice(0, 10),
-                    dateEnd: selectedDate.rank,
+                    dateEnd: dateEnd.toISOString().slice(0, 10),
+                    dateStart: dateStart.toISOString().slice(0, 10),
                     provincia: provMunSelected.provincia
                 }
             );
-            setfocosDeCalor(queryResult);
+            changeCurrentGeoJson(queryResult);
             console.log(queryResult)
 
             setLoading(false);
         }
+
         const consultarMunicipio = async () => {
             const queryResult = await getHotSourcesByDepMun(
                 {
-                    dateStart: selectedDate.selectedDate.toISOString().slice(0, 10),
-                    dateEnd: selectedDate.rank,
+                    dateEnd: dateEnd.toISOString().slice(0, 10),
+                    dateStart: dateStart.toISOString().slice(0, 10),
                     municipio: provMunSelected.municipio
                 }
             );
-            setfocosDeCalor(queryResult);
+            changeCurrentGeoJson(queryResult);
             console.log(queryResult)
 
             setLoading(false);
         }
 
-        if (loading === true) {
+        if (loading) {
             if (showOptions) {
                 if (showProvMun) {
                     /* /? consultar por provincia */
@@ -197,9 +178,6 @@ export const useFocosCalor = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
 
-
-
-
     useEffect(() => {
 
         const getArray = async () => {
@@ -217,21 +195,18 @@ export const useFocosCalor = () => {
     }, [selectedDepartament.departamentSelected]);
 
     useEffect(() => {
-        console.log('moviendo el mapa');
-        if (loading === false && focosDeCalor.features.length > 0) {
-            const randomPoint = getRandomArbitrary(0, focosDeCalor.features.length - 1);
-            console.log(randomPoint)
-            console.log(focosDeCalor.features.length);
+        if (loading === false && currentGeoJson.features.length > 0) {
+            const randomPoint = getRandomArbitrary(0, currentGeoJson.features.length - 1);
             changeCurrentLatLng({
-                latitude: focosDeCalor.features[randomPoint].properties.latitude,
-                longitude: focosDeCalor.features[randomPoint].properties.longitude
+                latitude: currentGeoJson.features[randomPoint].properties.latitude,
+                longitude: currentGeoJson.features[randomPoint].properties.longitude
             });
-            /* goTo(); */
+            closeModal();
         }
     }, [loading]);
 
+
     useEffect(() => {
-        console.log('go to ')
         goTo();
     }, [currentLatLong]);
 
@@ -249,19 +224,17 @@ export const useFocosCalor = () => {
     return {
         viewport,
         setViewport,
-        loading,
         onChange,
-        focosDeCalor,
+        loading,
+        currentGeoJson,
         selecteDepartamentCopy,
         selectedDepartament,
-        selectedDate,
-        setSelectedDay,
         layerStyle,
-        consultar,
         stateArrMunProv,
         provMunSelected,
-        setProvMunSelected,
         showOptions,
+        getHeatSources,
+        setProvMunSelected,
         setShowOptions,
         /* States from provider usestate */
         datesAvailable,

@@ -52,7 +52,6 @@
     height: 600px;
 }
 
-
 .grafic-square {
     margin: auto;
     width: 800px;
@@ -71,4 +70,38 @@
     @include media(sm) {
         margin-top: 4rem;
     }
+}
+.title_close {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .close-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: white;
+        background: rgb(207, 6, 6);
+        border: none;
+        padding: 5px 1rem;
+        border-radius: 8px;
+    }
+}
+.modal-wrapper{
+    position: absolute;
+    top: 15px;
+    right: 15px;  
+}
+.modal-content {
+    display: grid;
+    z-index: 100000;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 1.5rem;
+    /* flex-direction: row;
+
+    @include media(sm) {
+        flex-direction: column;
+        .modal-info {
+            margin-bottom: 1.5rem;
+        }
+    } */
 }

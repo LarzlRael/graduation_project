@@ -1,7 +1,14 @@
 import { CountByDates, LatLngInt } from '../../interfaces/countProvinceDepartamento.interface';
 import { MapStyleInt } from '../../data/data';
+import { GeoJsonFeature } from '../../interfaces/geoJsonResponse';
 
 
+export interface DateSelectedRangeInterface {
+    dateStart: Date;
+    dateEnd: Date;
+    dateEndRange: number;
+    findbyOneDate: boolean;
+}
 export interface HeatSourcestState {
     datesAvailable: Date[];
     loadingState: boolean;
@@ -14,6 +21,9 @@ export interface HeatSourcestState {
     countByDates: CountByDates;
     titleArray: string[];
     currentLatLong: LatLngInt;
+    currentGeoJson: GeoJsonFeature;
+    modalIsOpen: boolean;
+    dateSelectedAndRange: DateSelectedRangeInterface;
 
 }
 
@@ -29,6 +39,9 @@ type HeatSourceAction =
     | { type: 'changeCountByDates', payload: CountByDates }
     | { type: 'setTitlesArray', payload: string[] }
     | { type: 'setLatLong', payload: LatLngInt }
+    | { type: 'setCurrentGeoJson', payload: GeoJsonFeature }
+    | { type: 'setModalIsOpen', payload: boolean }
+    | { type: 'dateSelectedAndRange', payload: DateSelectedRangeInterface }
 
 
 /* | { type: 'addError', payload: string }
@@ -92,6 +105,21 @@ export const heatSourcesReducer = (state: HeatSourcestState, action: HeatSourceA
             return {
                 ...state,
                 currentLatLong: action.payload
+            }
+        case 'setCurrentGeoJson':
+            return {
+                ...state,
+                currentGeoJson: action.payload,
+            }
+        case 'setModalIsOpen':
+            return {
+                ...state,
+                modalIsOpen: action.payload,
+            }
+        case 'dateSelectedAndRange':
+            return {
+                ...state,
+                dateSelectedAndRange: action.payload,
             }
 
         default:
