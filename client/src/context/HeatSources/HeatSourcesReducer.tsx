@@ -9,6 +9,12 @@ export interface DateSelectedRangeInterface {
     dateEndRange: number;
     findbyOneDate: boolean;
 }
+export interface QueryToFindInterface {
+    departamentSelected: string;
+    image: string;
+    provincia: string;
+    municipio: string;
+}
 export interface HeatSourcestState {
     datesAvailable: Date[];
     loadingState: boolean;
@@ -20,11 +26,11 @@ export interface HeatSourcestState {
     mounthSelected: number;
     countByDates: CountByDates;
     titleArray: string[];
-    currentLatLong: LatLngInt;
+    currentLatLongMidLocation: LatLngInt;
     currentGeoJson: GeoJsonFeature;
     modalIsOpen: boolean;
     dateSelectedAndRange: DateSelectedRangeInterface;
-
+    queryToFind: QueryToFindInterface;
 }
 
 type HeatSourceAction =
@@ -42,6 +48,8 @@ type HeatSourceAction =
     | { type: 'setCurrentGeoJson', payload: GeoJsonFeature }
     | { type: 'setModalIsOpen', payload: boolean }
     | { type: 'dateSelectedAndRange', payload: DateSelectedRangeInterface }
+    | { type: 'setQueryToFind', payload: QueryToFindInterface }
+    | { type: 'setOneFieldQueryToFind', payload: { field: keyof QueryToFindInterface, value: string } }
 
 
 /* | { type: 'addError', payload: string }
@@ -104,7 +112,7 @@ export const heatSourcesReducer = (state: HeatSourcestState, action: HeatSourceA
         case 'setLatLong':
             return {
                 ...state,
-                currentLatLong: action.payload
+                currentLatLongMidLocation: action.payload
             }
         case 'setCurrentGeoJson':
             return {
@@ -120,6 +128,16 @@ export const heatSourcesReducer = (state: HeatSourcestState, action: HeatSourceA
             return {
                 ...state,
                 dateSelectedAndRange: action.payload,
+            }
+        case 'setOneFieldQueryToFind':
+            return {
+                ...state,
+                queryToFind: { ...state.queryToFind, [action.payload.field]: action.payload.value },
+            }
+        case 'setQueryToFind':
+            return {
+                ...state,
+                queryToFind: action.payload,
             }
 
         default:

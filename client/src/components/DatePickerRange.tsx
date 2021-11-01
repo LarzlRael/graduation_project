@@ -24,6 +24,7 @@ export const DatePickerRange = () => {
             dateEnd: moment(dateStart,).add(6, 'days').toDate(),
         })
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dateStart]);
 
     useEffect(() => {
@@ -31,8 +32,14 @@ export const DatePickerRange = () => {
             changeDateSelectedAndRanked({
                 ...dateSelectedAndRange,
                 dateEnd: dateStart,
-            })
+            });
+        } else {
+            changeDateSelectedAndRanked({
+                ...dateSelectedAndRange,
+                dateEnd: moment(dateStart,).add(6, 'days').toDate(),
+            });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isShowSwith]);
 
     const onChange = (value: any, nameField: keyof DateSelectedRangeInterface) => {

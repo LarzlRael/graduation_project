@@ -26,7 +26,7 @@ export const GraphByDepartaments = () => {
         ok: false,
         resp: []
     });
-    console.log('render searcho provincias')
+    console.log('render searcho provincias');
     const [loading, setLoading] = useState(false);
 
     const getProvinciasNamesService = async () => {
@@ -76,13 +76,11 @@ export const GraphByDepartaments = () => {
                 getDepartamentosNamesService();
                 setShowSwitch(false);
             } else if (showProvMun) {
-                getMunicipiosServices();
-                setShowSwitch(true);
-
-            } else {
                 getProvinciasNamesService();
                 setShowSwitch(true);
-                setShowSwitch(false);
+            } else {
+                getMunicipiosServices();
+                setShowSwitch(true);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,8 +90,13 @@ export const GraphByDepartaments = () => {
     }
 
     useEffect(() => {
-        consultar()
-    }, [])
+        if(departamentoProvincia.todosDepartamentos){
+            setShowSwitch(false);
+        }else{
+            setShowSwitch(true);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [departamentoProvincia.departamentSelected])
 
     return (
         <div>
@@ -107,7 +110,7 @@ export const GraphByDepartaments = () => {
 
                 </Grid>
                 <Grid item xs={6}>
-                    
+
                     <DatePickerRange />
 
                     <button onClick={

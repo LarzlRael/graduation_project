@@ -20,6 +20,7 @@ export const getNombresProvincias = async (departamento: string) => {
 
 
 export const getCountByDepartamaments = async (departamentos: HeatSourcesByPlace) => {
+
     const resp = await serverAPI.post<CountDepProMun>(`/analysis/getcountdepartamentos`, {
         ...departamentos,
     });

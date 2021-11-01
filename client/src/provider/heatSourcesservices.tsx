@@ -1,8 +1,9 @@
 import { serverAPI } from './serverConfig';
-import { DatesResponse, ConsulHeatSources } from '../interfaces/datesResponse';
+import { DatesResponse } from '../interfaces/datesResponse';
 import { HeatSourcesByDeparament } from '../interfaces/hottestByDepartament';
 import { HeatSourcesByPlace } from '../interfaces/provMun.interface';
 import { GeoJSONResponse } from '../interfaces/HottestSourceResponse';
+import { LatLngInt } from '../interfaces/countProvinceDepartamento.interface';
 
 
 export const getHigherOrLowerByDate = async (): Promise<DatesResponse> => {
@@ -36,5 +37,9 @@ export const getHotSourcesByDepProv = async (provincia: HeatSourcesByPlace): Pro
     const resp = await serverAPI.post<GeoJSONResponse>(`/maps/getheatsourcesbyprovincia`, {
         ...provincia,
     });
+    return resp.data;
+};
+export const getMidPoint = async (location: string, name: string): Promise<LatLngInt> => {
+    const resp = await serverAPI.get<LatLngInt>(`/maps/getMidPoint/${location}/${name}`);
     return resp.data;
 };

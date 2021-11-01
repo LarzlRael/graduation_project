@@ -1,7 +1,7 @@
 import { createContext, useEffect, useReducer } from 'react';
-import { heatSourcesReducer, HeatSourcestState, DateSelectedRangeInterface } from './HeatSourcesReducer';
+import { heatSourcesReducer, HeatSourcestState, DateSelectedRangeInterface, QueryToFindInterface } from './HeatSourcesReducer';
 import { getAvailableDatesServer, getCountHeatSourcesByMonth, getCountHeatSourcesByMonths } from '../../provider/analysisServices';
-import { graphTypeArray, mapTypeStyle, meses, MapStyleInt } from '../../data/data';
+import { graphTypeArray, mapTypeStyle, meses, MapStyleInt, departametsArray } from '../../data/data';
 
 import moment from 'moment'
 import { CountByDates, LatLngInt } from '../../interfaces/countProvinceDepartamento.interface';
@@ -19,10 +19,11 @@ type HeatSourcesStateProps = {
     mounthSelected: number,
     titleArray: string[],
     countByDates: CountByDates,
-    currentLatLong: LatLngInt,
+    currentLatLongMidLocation: LatLngInt,
     currentGeoJson: GeoJsonFeature,
     modalIsOpen: boolean,
     dateSelectedAndRange: DateSelectedRangeInterface,
+    queryToFind: QueryToFindInterface,
     showProvinvicaMun: (newState: boolean) => void,
     setShowOptions: (newState: boolean) => void,
     setChangeMapType: (mapStyle: MapStyleInt) => void,
@@ -33,6 +34,8 @@ type HeatSourcesStateProps = {
     changeCurrentLatLng: (currentLatLong: LatLngInt) => void,
     changeCurrentGeoJson: (geoJsonCurrent: GeoJsonFeature) => void,
     changeDateSelectedAndRanked: (dateSelectedAndRange: DateSelectedRangeInterface) => void,
+    changeQueryOneFieldToFind: (field: keyof QueryToFindInterface, value: string) => void,
+    changeQueryToFind: (queryToFindInterface: QueryToFindInterface) => void,
     closeModal: () => void,
     openModal: () => void,
 }
@@ -51,7 +54,7 @@ const HeatSourcesInitialState: HeatSourcestState = {
         resp: []
     },
     titleArray: [],
-    currentLatLong: {
+    currentLatLongMidLocation: {
         longitude: -66.2137434,
         latitude: -17.390915,
     },
@@ -65,7 +68,14 @@ const HeatSourcesInitialState: HeatSourcestState = {
         dateStart: new Date(),
         dateEndRange: 7,
         findbyOneDate: false,
-    }
+    },
+    queryToFind: {
+        departamentSelected: departametsArray[0].name,
+        image: departametsArray[0].imageUrl,
+        municipio: '',
+        provincia: '',
+    },
+
 };
 
 export const HeatSourcesContext = createContext({} as HeatSourcesStateProps);
@@ -85,16 +95,11 @@ export const HeatProvider = ({ children }: any) => {
         return date;
     }
 
-
     const getDatesAvailable = async () => {
 
-
         try {
-
             dispatch({ type: 'loading', payload: true });
             const dates = await getAvailableDatesServer();
-            console.log(new Date(dates.dates[0]),
-                new Date(dates.dates[1]));
             dispatch({
                 type: 'dates',
                 payload: {
@@ -116,13 +121,13 @@ export const HeatProvider = ({ children }: any) => {
         dispatch({
             type: 'showProvMun',
             payload: state,
-        })
+        });
     }
     const setShowOptions = (state: boolean) => {
         dispatch({
             type: 'showOptions',
             payload: state,
-        })
+        });
     }
 
     const setChangeMapType = (mapStyle: MapStyleInt) => {
@@ -203,7 +208,6 @@ export const HeatProvider = ({ children }: any) => {
         });
     }
     const openModal = () => {
-        console.log('opening modal')
         dispatch({
             type: 'setModalIsOpen',
             payload: true,
@@ -214,6 +218,23 @@ export const HeatProvider = ({ children }: any) => {
         dispatch({
             type: 'dateSelectedAndRange',
             payload: dateSelectedAndRange,
+        });
+    }
+    const changeQueryToFind = (queryToFind: QueryToFindInterface) => {
+
+        dispatch({
+            type: 'setQueryToFind',
+            payload: queryToFind,
+        });
+    }
+    const changeQueryOneFieldToFind = (field: keyof QueryToFindInterface, value: string) => {
+
+        dispatch({
+            type: 'setOneFieldQueryToFind',
+            payload: {
+                field,
+                value,
+            },
         });
     }
 
@@ -231,7 +252,9 @@ export const HeatProvider = ({ children }: any) => {
             changeCurrentGeoJson,
             closeModal,
             openModal,
-            changeDateSelectedAndRanked
+            changeDateSelectedAndRanked,
+            changeQueryOneFieldToFind,
+            changeQueryToFind,
         }}>
             {children}
         </HeatSourcesContext.Provider>

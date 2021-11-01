@@ -1,7 +1,5 @@
-import { Button, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField } from "@material-ui/core";
+import { Button, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { CircularProgress } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/lab";
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { CardInfo } from "../CardInfo";
 import ReactMapGL, { Layer, NavigationControl, Source } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -23,19 +21,13 @@ export const MapBoxLayer = () => {
         onChange,
         currentGeoJson: focosDeCalor,
         selecteDepartamentCopy,
-        selectedDate,
-        selectedDepartament,
         layerStyle,
-        setSelectedDay,
         getHeatSources,
 
         stateArrMunProv,
-        provMunSelected,
-        setProvMunSelected,
 
         //state from usestate
-        datesAvailable,
-        loadingState,
+
         // menu controls
         showProvMun,
         showOptions,
@@ -43,6 +35,9 @@ export const MapBoxLayer = () => {
         //style maps
         setChangeMapType,
         mapStyle,
+        //query to find
+        queryToFind,
+        changeQueryOneFieldToFind,
 
     } = useFocosCalor();
     useDocumentTitle('Mapa de focos de calor');
@@ -88,7 +83,6 @@ export const MapBoxLayer = () => {
                                     renderValue={() => mapStyle.mapName}
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
-                                    name="departamento"
                                     label="Tipo de Mapa"
                                     value={mapStyle.mapName}
                                     onChange={(e) => setChangeMapType(e.target.value)}>
@@ -110,17 +104,16 @@ export const MapBoxLayer = () => {
                                     Seleccionar Departamento
                                 </InputLabel>
                                 <Select
-                                    renderValue={() => selectedDepartament.departamentSelected}
+                                    renderValue={() => queryToFind.departamentSelected}
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
-                                    name="departamento"
                                     label="Age"
-                                    value={selectedDepartament.departamentSelected}
+                                    value={queryToFind.departamentSelected}
                                     onChange={onChange}>
-                                    {departametsArray.map((_, i) => (
+                                    {departametsArray.map((departament, i) => (
                                         <MenuItem
-                                            key={departametsArray[i].name}
-                                            value={i}>{departametsArray[i].name}
+                                            key={i}
+                                            value={departament}>{departament.name}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -145,14 +138,11 @@ export const MapBoxLayer = () => {
                                                 id="demo-simple-select"
                                                 name="provincia"
                                                 label="Age"
-                                                value={provMunSelected.provincia}
-                                                renderValue={() => provMunSelected.provincia}
+                                                value={queryToFind.provincia}
+                                                renderValue={() => queryToFind.provincia}
                                                 onChange={
                                                     ({ target }) => {
-                                                        setProvMunSelected(prevState => ({
-                                                            ...prevState,
-                                                            provincia: target.value
-                                                        }))
+                                                        changeQueryOneFieldToFind('provincia', target.value)
                                                     }}>
                                                 {stateArrMunProv.sArrayPro.map((provincia) => (
                                                     <MenuItem
@@ -172,9 +162,9 @@ export const MapBoxLayer = () => {
                                                 id="demo-simple-select"
                                                 name="municipio"
                                                 label="Age"
-                                                value={provMunSelected.municipio}
-                                                renderValue={() => provMunSelected.municipio}
-                                                onChange={({ target }) => setProvMunSelected(prevState => ({ ...prevState, municipio: target.value }))}>
+                                                value={queryToFind.municipio}
+                                                renderValue={() => queryToFind.municipio}
+                                                onChange={({ target }) => changeQueryOneFieldToFind('municipio', target.value)}>
 
                                                 {stateArrMunProv.sArrayMu.map(municipios => (
                                                     <MenuItem
@@ -189,24 +179,6 @@ export const MapBoxLayer = () => {
                             }
                             <br />
                             <br />
-
-                            {/* {loadingState ?
-                                <CircularProgress />
-                                :
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                    <DatePicker
-                                        
-                                        label="Seleccionar fecha"
-                                        value={selectedDate.selectedDate}
-                                        inputFormat="dd/MM/yyyy"
-                                        maxDate={datesAvailable[1]}
-                                        onChange={(newValue) => {
-                                            setSelectedDay({ ...selectedDate, selectedDate: newValue });
-                                        }}
-                                        renderInput={(params) => <TextField {...params} />}
-                                    />
-                                </LocalizationProvider>
-                            } */}
 
                             <Button
                                 onClick={getHeatSources}

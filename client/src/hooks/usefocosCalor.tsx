@@ -1,7 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { departametsArray } from '../data/data';
-import { getRandomArbitrary } from '../utils/utils';
-import { getHeatSourcesByDepartament, getHotSourcesByDepMun, getHotSourcesByDepProv } from '../provider/heatSourcesservices';
+import { getHeatSourcesByDepartament, getHotSourcesByDepMun, getHotSourcesByDepProv, getMidPoint } from '../provider/heatSourcesservices';
 import { getNombresProvincias, getNombresMunicipios } from '../provider/analysisServices';
 import { Resp as ResProv } from '../interfaces/provinciasResponse.interface';
 import { Resp as ResMun } from '../interfaces/municipiosResponse.interface';
@@ -9,6 +8,7 @@ import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 
 
 import { FlyToInterpolator } from 'react-map-gl';
+import { QueryToFindInterface } from '../context/HeatSources/HeatSourcesReducer';
 
 export const useFocosCalor = () => {
 
@@ -16,24 +16,37 @@ export const useFocosCalor = () => {
         loadingState,
         showProvMun,
         showOptions,
-        currentLatLong,
+        currentLatLongMidLocation,
         mapStyle,
         currentGeoJson,
         setShowOptions,
         setChangeMapType,
         changeCurrentLatLng,
         changeCurrentGeoJson,
+        changeQueryOneFieldToFind,
+        changeQueryToFind,
         closeModal,
-        dateSelectedAndRange
+        dateSelectedAndRange,
+        queryToFind
     } = useContext(HeatSourcesContext);
+
+    function usePrevious(value: QueryToFindInterface) {
+        const ref = useRef<QueryToFindInterface>();
+        useEffect(() => {
+            ref.current = value;
+        });
+        return ref.current;
+    }
+
+    const previusQueryToFind = usePrevious(queryToFind);
 
     const { dateStart, dateEnd } = dateSelectedAndRange;
 
     const [viewport, setViewport] = useState({
         width: 'fit',
         height: '100vh',
-        longitude: currentLatLong.longitude,
-        latitude: currentLatLong.latitude,
+        longitude: currentLatLongMidLocation.longitude,
+        latitude: currentLatLongMidLocation.latitude,
         zoom: 5.2,
         transitionDuration: 5000,
         transitionInterpolator: new FlyToInterpolator(),
@@ -42,24 +55,14 @@ export const useFocosCalor = () => {
     const goTo = () => {
         setViewport({
             ...viewport,
-            longitude: currentLatLong.longitude,
-            latitude: currentLatLong.latitude,
+            longitude: currentLatLongMidLocation.longitude,
+            latitude: currentLatLongMidLocation.latitude,
             zoom: 6,
             transitionDuration: 1000,
             transitionInterpolator: new FlyToInterpolator(),
         });
     };
     const [loading, setLoading] = useState(false);
-
-    const [selectedDepartament, setSelectedDepartament] = useState({
-        departamentSelected: departametsArray[0].name,
-        image: departametsArray[0].imageUrl,
-    });
-
-    const [provMunSelected, setProvMunSelected] = useState({
-        provincia: '',
-        municipio: ''
-    });
 
     const [selecteDepartamentCopy, setSelecteDepartamentCopy] = useState({
         departamentSelected: departametsArray[0].name,
@@ -75,11 +78,10 @@ export const useFocosCalor = () => {
     });
 
     const onChange = (e: any) => {
-        const index = e.target.value;
-        setSelectedDepartament({
-            ...selectedDepartament,
-            departamentSelected: departametsArray[index].name,
-            image: departametsArray[index].imageUrl,
+        changeQueryToFind({
+            ...queryToFind,
+            departamentSelected: e.target.value.name,
+            image: e.target.value.imageUrl,
         });
     }
 
@@ -115,7 +117,7 @@ export const useFocosCalor = () => {
             const queryResult = await getHeatSourcesByDepartament({
                 dateEnd: dateEnd.toISOString().slice(0, 10),
                 dateStart: dateStart.toISOString().slice(0, 10),
-                departamento: selectedDepartament.departamentSelected
+                departamento: queryToFind.departamentSelected
             });
 
             changeCurrentGeoJson(queryResult);
@@ -123,22 +125,19 @@ export const useFocosCalor = () => {
             setLoading(false);
             setSelecteDepartamentCopy({
                 ...selecteDepartamentCopy,
-                departamentSelected: selectedDepartament.departamentSelected,
-                image: selectedDepartament.image
+                departamentSelected: queryToFind.departamentSelected,
+                image: queryToFind.image
             });
-
         }
 
         const consultarProvincias = async () => {
-            const queryResult = await getHotSourcesByDepProv(
+            changeCurrentGeoJson(await getHotSourcesByDepProv(
                 {
                     dateEnd: dateEnd.toISOString().slice(0, 10),
                     dateStart: dateStart.toISOString().slice(0, 10),
-                    provincia: provMunSelected.provincia
+                    provincia: queryToFind.provincia
                 }
-            );
-            changeCurrentGeoJson(queryResult);
-            console.log(queryResult)
+            ));
 
             setLoading(false);
         }
@@ -148,12 +147,10 @@ export const useFocosCalor = () => {
                 {
                     dateEnd: dateEnd.toISOString().slice(0, 10),
                     dateStart: dateStart.toISOString().slice(0, 10),
-                    municipio: provMunSelected.municipio
+                    municipio: queryToFind.municipio
                 }
             );
             changeCurrentGeoJson(queryResult);
-            console.log(queryResult)
-
             setLoading(false);
         }
 
@@ -169,11 +166,13 @@ export const useFocosCalor = () => {
             } else {
                 consultarPorDepartamentos();
             }
+        } else {
+            setLoading(false);
         }
         setSelecteDepartamentCopy({
             ...selecteDepartamentCopy,
-            departamentSelected: selectedDepartament.departamentSelected,
-            image: selectedDepartament.image
+            departamentSelected: queryToFind.departamentSelected,
+            image: queryToFind.image
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
@@ -181,8 +180,8 @@ export const useFocosCalor = () => {
     useEffect(() => {
 
         const getArray = async () => {
-            const arrayProvinciasList = await getNombresProvincias(selectedDepartament.departamentSelected);
-            const arrayMunicipiosList = await getNombresMunicipios(selectedDepartament.departamentSelected);
+            const arrayProvinciasList = await getNombresProvincias(queryToFind.departamentSelected);
+            const arrayMunicipiosList = await getNombresMunicipios(queryToFind.departamentSelected);
             setArrMunProv({
                 ...stateArrMunProv,
                 sArrayMu: arrayMunicipiosList.resp,
@@ -192,34 +191,47 @@ export const useFocosCalor = () => {
         getArray();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDepartament.departamentSelected]);
+    }, [queryToFind.departamentSelected]);
 
     useEffect(() => {
-        if (loading === false && currentGeoJson.features.length > 0) {
-            const randomPoint = getRandomArbitrary(0, currentGeoJson.features.length - 1);
-            changeCurrentLatLng({
-                latitude: currentGeoJson.features[randomPoint].properties.latitude,
-                longitude: currentGeoJson.features[randomPoint].properties.longitude
-            });
-            closeModal();
+
+        const getMiddlePoint = async () => {
+            let getMidPointService;
+            if (showOptions === false) {
+                getMidPointService = await getMidPoint('departamentos', queryToFind.departamentSelected);
+            } else if (showProvMun) {
+                getMidPointService = await getMidPoint('provincias', queryToFind.provincia);
+            } else {
+                getMidPointService = await getMidPoint('municipios', queryToFind.municipio);
+            }
+            if (loading === false && currentGeoJson.features.length > 0) {
+
+                changeCurrentLatLng({
+                    latitude: getMidPointService.longitude,
+                    longitude: getMidPointService.latitude,
+                });
+                closeModal();
+            }
         }
+        getMiddlePoint();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
 
 
     useEffect(() => {
         goTo();
-    }, [currentLatLong]);
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentLatLongMidLocation]);
 
 
     useEffect(() => {
-        setProvMunSelected({
-            ...provMunSelected,
+        changeQueryToFind({
+            ...queryToFind,
             municipio: stateArrMunProv.sArrayMu[0] ? stateArrMunProv.sArrayMu[0].nombre_municipio : '',
             provincia: stateArrMunProv.sArrayPro[0] ? stateArrMunProv.sArrayPro[0].nombre_provincia : '',
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDepartament.departamentSelected]);
+    }, [queryToFind.departamentSelected]);
 
     return {
         viewport,
@@ -228,13 +240,10 @@ export const useFocosCalor = () => {
         loading,
         currentGeoJson,
         selecteDepartamentCopy,
-        selectedDepartament,
         layerStyle,
         stateArrMunProv,
-        provMunSelected,
         showOptions,
         getHeatSources,
-        setProvMunSelected,
         setShowOptions,
         /* States from provider usestate */
         datesAvailable,
@@ -242,6 +251,9 @@ export const useFocosCalor = () => {
         showProvMun,
         setChangeMapType,
         mapStyle,
-        goTo
+        goTo,
+        queryToFind,
+        changeQueryToFind,
+        changeQueryOneFieldToFind,
     }
 }
