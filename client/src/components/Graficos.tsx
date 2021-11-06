@@ -2,12 +2,17 @@ import { CountDepProMun } from '../interfaces/countProvinceDepartamento.interfac
 import { CircularProgress } from '@material-ui/core';
 import { useGraficos } from '../hooks/useGraficos';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { useRef, useEffect } from 'react';
 
 export interface GraphProps {
     info?: CountDepProMun,
     nombreDepartamento: string;
     loading: boolean;
+    ref: any;
 }
+
+const scrollToRef = (ref: any) => window.scrollTo(0, ref.current.offsetTop)
+
 export const Graficos = (graphProps: GraphProps) => {
 
     const {
@@ -20,19 +25,16 @@ export const Graficos = (graphProps: GraphProps) => {
 
     const { loading, info } = graphProps;
 
+
+    const myRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        window.scrollTo(0, myRef.current?.offsetTop ? myRef.current?.offsetTop : 0);
+    }, [loading]);
+
+
     return (
         <>
-            {/* <select
-                value={graphType}
-                onChange={(e) => changeTypeGraph(e.target.value)}
-            >
-                {graphTypeArray.map(graph => (
-                    <option
-                        key={graph}
-                        value={graph}>{graph}</option>
-                ))}
-            </select> */}
-            <br />
             <FormControl>
                 <InputLabel id="demo-simple-select-label">
                     Tipo de grafico
@@ -43,7 +45,7 @@ export const Graficos = (graphProps: GraphProps) => {
                     label="Age"
                     renderValue={(value) => `${graphType}`}
                     value={graphType}
-                    onChange={({target}) => changeTypeGraph(target.value)}
+                    onChange={({ target }) => changeTypeGraph(target.value)}
                 >
                     {graphTypeArray.map((graph) => (
                         <MenuItem
@@ -64,7 +66,9 @@ export const Graficos = (graphProps: GraphProps) => {
                     <div>
                         No se encontraron datos
                     </div> :
-                    <div className={`${tipoGrafico === 'circular' && 'grafic-circle' }`}>
+                    <div
+                        ref={myRef}
+                        className={`${tipoGrafico === 'circular' && 'grafic-circle'}`} >
                         <ShowGraphic />
                     </div>
             }

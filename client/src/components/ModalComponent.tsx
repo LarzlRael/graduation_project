@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import Modal from 'react-modal';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 import { IoCloseCircleSharp } from 'react-icons/io5';
+import { Button } from '@mui/material';
 
 const customStyles = {
     content: {
@@ -26,12 +27,13 @@ export const ModalComponent = ({ children }: ModalProps) => {
         <div
             className="modal-wrapper"
         >
-            <button onClick={() => openModal()}>Ver focos de calor</button>
+            <Button
+                variant="contained"
+                onClick={() => openModal()}>Consultar</Button>
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={() => closeModal()}
                 style={customStyles}
-
             >
                 <div className="title_close">
                     <h2>Buscar Focos de Calor</h2>

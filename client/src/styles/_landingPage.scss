@@ -6,7 +6,6 @@
     background-repeat: no-repeat;
     background-position: center;
     @media (max-width: 450px) {
-        
         background-image: url("https://res.cloudinary.com/negocioexitoso-online/image/upload/v1635450839/portback_vgzmxz.png");
     }
     @include media(sm) {
@@ -72,25 +71,40 @@
     margin: 1.5rem 0;
     display: flex;
     justify-content: space-between;
+    transition: 0.5s ease all;
+
     @include media(sm) {
         margin: 0;
         flex-direction: column;
-        background: $primaryLanding;
         position: absolute;
         width: 100%;
         z-index: 1000;
+        background: $primaryLanding;
     }
     .logo {
         @include media(sm) {
+            background: $primaryLanding;
             margin: 0;
             border-bottom: 1px solid black;
             padding: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
     }
     .enlaces {
+        transition: 0.5s ease all;
+        &.openMenu {
+            transform: translate(0%);
+        }
+        &.closeMenu {
+            transform: translate(-150%);
+            display: none;
+        }
         .link {
             @include media(sm) {
-                display: none;
+                display: flex;
+                background: $primaryLanding;
                 padding: 1.1rem;
                 color: white;
                 margin: 0rem;

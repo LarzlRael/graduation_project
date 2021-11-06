@@ -62,7 +62,7 @@ const HeatSourcesInitialState: HeatSourcestState = {
         type: 'FeatureCollection',
         features: [],
     },
-    modalIsOpen: true,
+    modalIsOpen: false,
     dateSelectedAndRange: {
         dateEnd: new Date(),
         dateStart: new Date(),

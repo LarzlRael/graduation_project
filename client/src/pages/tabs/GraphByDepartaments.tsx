@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { Grid } from '@material-ui/core';
 import { departametsArray } from '../../data/data';
 import { getCountByDepPro, getCountByDepartamaments, getCountByDeMun } from '../../provider/analysisServices';
@@ -8,6 +8,7 @@ import { ComboBoxDepartamentos } from '../../components/widgets/ComboBoxDepartam
 import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext';
 import { SwitchWidget } from '../../components/widgets/SwitchWidget';
 import { DatePickerRange } from '../../components/DatePickerRange';
+import { Button } from '@mui/material';
 
 export const GraphByDepartaments = () => {
 
@@ -21,6 +22,8 @@ export const GraphByDepartaments = () => {
         provinciaSelected: '',
         todosDepartamentos: false,
     });
+
+    const myRef = useRef(null);
 
     const [countDepProvState, setCountDepProvState] = useState<CountDepProMun>({
         ok: false,
@@ -85,18 +88,20 @@ export const GraphByDepartaments = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
+
     const consultar = () => {
         setLoading(true)
     }
 
     useEffect(() => {
-        if(departamentoProvincia.todosDepartamentos){
+        if (departamentoProvincia.todosDepartamentos) {
             setShowSwitch(false);
-        }else{
+        } else {
             setShowSwitch(true);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [departamentoProvincia.departamentSelected])
+
 
     return (
         <div>
@@ -113,13 +118,14 @@ export const GraphByDepartaments = () => {
 
                     <DatePickerRange />
 
-                    <button onClick={
-                        consultar
-                    }>Consultar</button>
+                    <Button
+                        onClick={consultar}
+                        variant="outlined">Consultar</Button>
                 </Grid>
             </Grid>
 
             <Graficos
+                ref={myRef}
                 info={countDepProvState}
                 loading={loading}
                 nombreDepartamento={

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useEffect, useContext } from 'react';
 import { ChartData, ChartOptions } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
@@ -62,6 +62,12 @@ export const GraphByMonths = () => {
         },
     };
 
+    const myRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        window.scrollTo(0, myRef.current?.offsetTop ? myRef.current?.offsetTop : 0);
+    }, [mounthSelected]);
+
     return (
         <>
             <FormControlLabel control={
@@ -91,12 +97,16 @@ export const GraphByMonths = () => {
                     ))}
                 </Select>
             </FormControl>
+            <div
+                ref={myRef}
+            >
+                {lineGraph ?
+                    <Line data={data} options={options} />
+                    :
+                    <Bar data={data} options={options} />
+                }
+            </div>
 
-            {lineGraph ?
-                <Line data={data} options={options} />
-                :
-                <Bar data={data} options={options} />
-            }
         </>
     )
 
