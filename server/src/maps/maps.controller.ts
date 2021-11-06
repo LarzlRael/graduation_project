@@ -15,7 +15,7 @@ import { Response } from 'express';
 import { MapsService } from './maps.service';
 import { MapDto } from './dto/mapDto';
 import { join } from 'path';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { cvsFilter, editFileName, formatFileCsv } from './utils/utils';
 import { diskStorage } from 'multer';
 import { readFile, writeFile, unlink, readFileSync, writeFileSync } from 'fs';
@@ -97,6 +97,16 @@ export class MapsController {
     return res.json(result);
   }
 
+  @Get('getmidPoint/:location/:name')
+  async getMidPoint(
+    @Res() res: Response,
+    @Param('location') location,
+    @Param('name') name,
+  ) {
+    const result = await this.mapsService.getMiddlePoint(location, name);
+    return res.json(result);
+  }
+
   @Post('getheatsourcesbymunicipio')
   async getHeatSourcesByMunicipio(
     @Res() res: Response,
@@ -126,7 +136,6 @@ export class MapsController {
       // Load and parsing data
       const { data, fechas } = await formatFileCsv(pathIn);
       //Save
-      console.log(data[0]);
 
       const verify = await this.analisysServices.verifyDatesDB(
         new Date(fechas[0].acq_date),
@@ -137,7 +146,7 @@ export class MapsController {
       const pathOut = join(__dirname, '../../', `files/cvsconvertido.csv`);
       writeFileSync(
         pathOut,
-        (csv.stringify as any)(data, { header: true, quoted: false }),
+        (csv.stringify as any)(data, { header: false, quoted: false }),
         'utf-8',
       );
 
@@ -181,11 +190,6 @@ export class MapsController {
         }
         console.log('archivo eliminado corretamente');
       });
-      /* if (response) {
-        console.log('subido correctamente');
-      } else {
-        console.log('hubo un error al subir we');
-      } */
     });
   }
 }

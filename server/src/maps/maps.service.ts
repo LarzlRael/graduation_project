@@ -25,7 +25,7 @@ export class MapsService {
 
   async getHeatSourcesByBetweenDate(mapdto: MapDto): Promise<MapResponse> {
     const query = `
-    SELECT distinct latitude ,longitude,brightness, longitude as lng, latitude as lat 
+    SELECT distinct latitude , longitude ,brightness, longitude as lng, latitude as lat 
     FROM ${fire_history}
     WHERE acq_date BETWEEN '${mapdto.dateStart}' AND '${mapdto.dateEnd}'
     order by brightness`;
@@ -33,12 +33,10 @@ export class MapsService {
   }
 
   async getHeatSourcesByDeparment(mapdto: MapDto): Promise<MapResponse> {
-    /*     mapdto.departaments = convertDepartmentsToString(mapdto.departaments); */
-    console.log(mapdto);
     const query = `
     select a.longitude as lng, a.latitude as lat, a.brightness, a.longitude, a.latitude
     from ${fire_history} as a
-    join ${departamentos} as b
+    join ${departamentos.tableName} as b
     on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN '${mapdto.dateStart}' and '${mapdto.dateEnd}' 
     and b.nombre_departamento in ('${mapdto.departamento}' ));
     `;
@@ -61,11 +59,11 @@ export class MapsService {
     const query = `
     select a.longitude,a.latitude,a.longitude as lng, a.latitude as lat, a.brightness
     from fire_history as a
-    join provincias as b
+    join municipios as b
     on ST_WITHIN(a.geometry, b.geom) 
     where (a.acq_date BETWEEN '${mapDTO.dateStart}'
     and '${mapDTO.dateEnd}'
-    and b.nombre_provincia in ('${mapDTO.municipio}')); 
+    and b.nombre_municipio in ('${mapDTO.municipio}')); 
     `;
     return this.saveJsonAndParseAsGeoJson(query);
   }
@@ -91,7 +89,6 @@ export class MapsService {
 
   async saveNewData(path: string): Promise<boolean> {
     try {
-
       const query = `
         copy public.${fire_history} (latitude, longitude, brightness, scan, track, acq_date, acq_time, satellite, instrument, confidence, version, bright_t31, frp, daynight) FROM '${path}' CSV ENCODING 'UTF8' QUOTE '\"' ESCAPE '''';
         `;
@@ -99,6 +96,7 @@ export class MapsService {
       await this.pool.query(`
           UPDATE ${fire_history} SET geometry = ST_GeomFromText('POINT(' || longitude || ' ' || latitude || ')',4326) WHERE geometry IS null;
         `);
+      console.log('subido correctamente');
       return true;
     } catch (error) {
       console.log(error);
@@ -117,6 +115,40 @@ export class MapsService {
       return data;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async getMiddlePoint(table: string, name: string) {
+    let column = '';
+    switch (table) {
+      case 'departamentos':
+        column = 'nombre_departamento';
+        break;
+      case 'municipios':
+        column = 'nombre_municipio';
+        break;
+      case 'provincias':
+        column = 'nombre_provincia';
+        break;
+      default:
+        column = '';
+    }
+    if (column !== '') {
+      try {
+        const res = await this.pool.query(
+          `SELECT st_centroid(st_union(geom)) as geom FROM ${table} where ${column} = '${name}'`,
+        );
+
+        const latlong = await this.pool.query(
+          `SELECT ST_X($1) as latitude, ST_Y($1) as  longitude ;`,
+          [res.rows[0].geom],
+        );
+        return latlong.rows[0];
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      return '';
     }
   }
 }

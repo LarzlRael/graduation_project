@@ -46,7 +46,7 @@ export class AnalysisService {
   async getNHeatSourceByDepartament(analysisDto: AnalysisDto) {
     const query = `select a.longitude as lng, a.latitude as lat, a.brightness
     from ${fire_history} as a
-    join ${departamentos} as b
+    join ${departamentos.tableName} as b
     on ST_WITHIN(a.geometry, b.geom) where (a.acq_date BETWEEN $1 and $2
     and b.nombre_departamento in ($3)) ORDER BY a.brightness ${analysisDto.orderBy} limit $4`;
 
@@ -67,8 +67,8 @@ export class AnalysisService {
     return res.rows;
   }
   async getNamesMunicipios(nombreDepartamento: string) {
-    const query = `select nombre_municipio, provincia, departamento from ${municipios}
-    where departamento = $1`;
+    const query = `select nombre_municipio, provincia, departamento from ${municipios.tableName}
+    where departamento = $1 order by nombre_municipio ASC`;
 
     const res = await this.pool.query(query, [nombreDepartamento]);
     return res.rows;
@@ -164,6 +164,7 @@ export class AnalysisService {
     const res = await this.pool.query(query, [countDto.year, countDto.month]);
     return res.rows;
   }
+
   async getCountHeatSourceByMonths(countDto: CountDto) {
     const query = `
     select count(brightness) as focos_calor,extract(MONTH from acq_date) as mes  from fire_history 

@@ -77,7 +77,8 @@ export const convertDepartmentsToString = (departamentos: string): string => {
 
 export const formatFileCsv = async (pathIn: string) => {
   const strcsv = readFileSync(pathIn, 'utf-8');
-  const data: Report[] = (csv.parse as any)(strcsv, {
+  let data: Report[] = [];
+  data = (csv.parse as any)(strcsv, {
     bom: true,
     cast: false,
     columns: true,
@@ -97,5 +98,4 @@ export const formatFileCsv = async (pathIn: string) => {
   const lastAcqDate = data[data.length - 1];
   const firstAcqDate = data[0];
   return { data, fechas: [firstAcqDate, lastAcqDate] };
-
 };

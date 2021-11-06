@@ -20,7 +20,6 @@ export class AnalysisController {
     @Res() res: Response,
     @Body() analysisDto: AnalysisDto,
   ) {
-    console.log(analysisDto);
     const resp = await this.analysisService.getNHeatSourceByDepartament(
       analysisDto,
     );
@@ -72,7 +71,6 @@ export class AnalysisController {
     @Res() res: Response,
     @Body() analysisDto: AnalysisDto,
   ) {
-    console.log(analysisDto);
     const resp = await this.analysisService.getHeatSourcesByMunicio(
       analysisDto,
     );
@@ -101,7 +99,6 @@ export class AnalysisController {
     @Res() res: Response,
     @Body() analysisDto: AnalysisDto,
   ) {
-    console.log(analysisDto);
     const resp = await this.analysisService.getCountDepartamentosMunicipios(
       analysisDto,
     );
