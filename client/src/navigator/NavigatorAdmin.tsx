@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { AdminLogin } from '../admin/LoginAdmin';
 import { AdminDashboard } from '../admin/DashBoard';
@@ -10,6 +10,7 @@ import { PrivateRoute } from './AdminRoutes';
 import { AuthAdminContext } from '../context/AuthAdminContext';
 import { CircularProgress } from '@material-ui/core';
 
+import { ThemeProvider, createTheme } from "@material-ui/core/styles";
 
 
 export const LoadingScreen = () => {
@@ -19,32 +20,50 @@ export const LoadingScreen = () => {
 }
 
 export const Navigator = () => {
-    const { status } = useContext(AuthAdminContext);
+    const { status, darkTheme } = useContext(AuthAdminContext);
     console.log(status);
+
     if (status === 'checking') {
         return <LoadingScreen />
     }
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+        if (darkTheme) {
+            document.body.className = "blackTheme";
+        } else {
+            document.body.className = "";
+
+        }
+    }, [darkTheme]);
+
+    const theme = createTheme({ palette: { mode: darkTheme ? 'dark' : 'light' } });
+
     return (
-        <Router >
-            <Switch>
+        <div className="theme">
+            <ThemeProvider theme={theme}>
+                <Router >
+                    <Switch>
 
-                <Route path="/" exact >
-                    <Redirect to='/inicio' />
-                </Route>
+                        <Route path="/" exact >
+                            <Redirect to='/inicio' />
+                        </Route>
 
-                <Route path="/inicio" component={LandingPage} />
-                <Route path="/login" component={AdminLogin} />
-                <Route path="/reportes" component={ReportsLists} />
-                <Route path="/ley1171" component={Ley1171} />
-                <Route path="/departamentos" component={Departaments} />
-                {/* <Route path="/report" component={MyDocument} /> */}
-                {/* <Route path="/dashboard" component={AdminDashboard} /> */}
+                        <Route path="/inicio" component={LandingPage} />
+                        <Route path="/login" component={AdminLogin} />
+                        <Route path="/reportes" component={ReportsLists} />
+                        <Route path="/ley1171" component={Ley1171} />
+                        <Route path="/departamentos" component={Departaments} />
+                        {/* <Route path="/report" component={MyDocument} /> */}
+                        {/* <Route path="/dashboard" component={AdminDashboard} /> */}
 
-                <PrivateRoute path='/dashboard' component={AdminDashboard} />
+                        <PrivateRoute path='/dashboard' component={AdminDashboard} />
 
-                {/* <Redirect from="/*" to="/inicio" /> */}
+                        {/* <Redirect from="/*" to="/inicio" /> */}
 
-            </Switch>
-        </Router >
+                    </Switch>
+                </Router >
+            </ThemeProvider>
+        </div>
     );
 }

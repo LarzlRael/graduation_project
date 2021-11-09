@@ -14,7 +14,6 @@ export const ReportsLists = () => {
             <CustomDateRangePickerDay />
 
             <h3>Escribir fecha manualmente</h3>
-            <br />
             <ResponsiveDatePickers />
         </Layout>
     )

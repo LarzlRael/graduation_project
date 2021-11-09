@@ -4,6 +4,7 @@
 @import "loginAdmin";
 @import "landingPage";
 @import "ley1171";
+@import "header";
 body {
   margin: 0;
   font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
@@ -15,6 +16,58 @@ body {
 html {
   scroll-behavior: smooth;
 }
-body{
-  background: #000;
+body {
+  transition: 0.3s ease all;
+  &.blackTheme {
+    background: $primary-dark-color;
+    color: white;
+    .header {
+      @include media(sm) {
+      }
+      .logo {
+        @include media(sm) {
+        }
+      }
+      .enlaces {
+        .link {
+          color: white;
+
+          @include media(sm) {
+          }
+
+          &:hover {
+            color: $primaryLanding;
+          }
+          &.active {
+            @include media(sm) {
+            }
+          }
+        }
+      }
+    }
+
+    .info {
+      .info-container {
+        span {
+          color: white;
+        }
+      }
+      @include media(sm) {
+        .info-container {
+        }
+      }
+      .buttonMap {
+        &:hover {
+        }
+        @include media(sm) {
+        }
+      }
+      .title {
+        h2 {
+          color: white;
+        }
+      }
+    }
+  }
 }
+//dark theme

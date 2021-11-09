@@ -12,11 +12,13 @@ type AuthContextProps = {
     user: null;
     status: 'checking' | 'authenticated' | 'not-authenticated';
     logged: boolean,
+    darkTheme: boolean,
     singUp: (obj: any) => void;
     singIn: (loginData: LoginData) => void;
     logOut: () => void;
     removeError: () => void;
     checkToken: () => void;
+    setTheme: () => void;
 }
 
 const AuthInitialState: AuthState = {
@@ -25,6 +27,8 @@ const AuthInitialState: AuthState = {
     user: null,
     logged: false,
     errorMessage: '',
+    /* localStorage.setItem('darktheme', JSON.stringify(!state.darkTheme)); */
+    darkTheme: localStorage.getItem('darktheme') === 'true' ? true : false,
 };
 
 export const AuthAdminContext = createContext({} as AuthContextProps);
@@ -121,9 +125,18 @@ export const AuthProvider = ({ children }: any) => {
     const logOut = async () => {
         dispatch({ type: 'logout' });
     };
+
     const removeError = () => {
         dispatch({
             type: 'removeError',
+        });
+    };
+
+    const setTheme = () => {
+        localStorage.setItem('darktheme', JSON.stringify(!state.darkTheme));
+        dispatch({
+            type: 'changeTheme',
+            payload: !state.darkTheme,
         });
     };
 
@@ -135,6 +148,7 @@ export const AuthProvider = ({ children }: any) => {
             logOut,
             removeError,
             checkToken,
+            setTheme,
             ...state,
         }}>
             {children}

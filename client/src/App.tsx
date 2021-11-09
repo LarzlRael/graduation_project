@@ -4,11 +4,13 @@ import { HeatProvider } from './context/HeatSources/HeatSourceContext';
 
 const App = () => {
   return (
+
     <AuthProvider>
       <HeatProvider>
         <Navigator />
       </HeatProvider>
     </AuthProvider>
+
   );
 }
 
