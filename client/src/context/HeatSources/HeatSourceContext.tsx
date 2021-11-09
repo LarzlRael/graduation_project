@@ -64,8 +64,8 @@ const HeatSourcesInitialState: HeatSourcestState = {
     },
     modalIsOpen: false,
     dateSelectedAndRange: {
-        dateEnd: new Date(),
-        dateStart: new Date(),
+        dateEnd: null,
+        dateStart: null,
         dateEndRange: 7,
         findbyOneDate: false,
     },
@@ -87,6 +87,11 @@ export const HeatProvider = ({ children }: any) => {
     useEffect(() => {
         getDatesAvailable();
         setMounthSelected(0);
+        changeDateSelectedAndRanked({
+            ...state.dateSelectedAndRange,
+            dateStart: state.datesAvailable[1],
+            dateEnd: state.datesAvailable[1],
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -104,8 +109,8 @@ export const HeatProvider = ({ children }: any) => {
                 type: 'dates',
                 payload: {
                     dates: [
-                        addHours(4, new Date(dates.dates[0])),
-                        addHours(4, new Date(dates.dates[1])),
+                        addHours(8, new Date(dates.dates[0])),
+                        addHours(8, new Date(dates.dates[1])),
                     ]
                 },
             });
@@ -117,7 +122,6 @@ export const HeatProvider = ({ children }: any) => {
     };
 
     const showProvinvicaMun = (state: boolean) => {
-        console.log(state);
         dispatch({
             type: 'showProvMun',
             payload: state,
@@ -173,7 +177,7 @@ export const HeatProvider = ({ children }: any) => {
                 month: month,
                 year: 2021,
             });
-            getInformation?.resp.map(resp => (arrayTitles.push(moment(resp.acq_date).format('L'))));
+            getInformation?.resp.map(resp => (arrayTitles.push(moment(resp.acq_date).add(8, 'hours').format('L'))));
         }
 
         dispatch({

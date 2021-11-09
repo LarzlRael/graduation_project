@@ -11,7 +11,6 @@ export interface GraphProps {
     ref: any;
 }
 
-const scrollToRef = (ref: any) => window.scrollTo(0, ref.current.offsetTop)
 
 export const Graficos = (graphProps: GraphProps) => {
 
@@ -40,6 +39,7 @@ export const Graficos = (graphProps: GraphProps) => {
                     Tipo de grafico
                 </InputLabel>
                 <Select
+                    autoWidth
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Age"

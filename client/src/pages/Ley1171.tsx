@@ -1,7 +1,6 @@
-import React from 'react'
 import { Layout } from '../components/Layout';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { DatePickerRange } from '../components/DatePickerRange';
+
 
 export const Ley1171 = () => {
     useDocumentTitle('Ley 1171');

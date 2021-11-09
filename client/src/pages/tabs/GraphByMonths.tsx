@@ -79,7 +79,7 @@ export const GraphByMonths = () => {
 
             <FormControl>
                 <InputLabel id="demo-simple-select-label">
-                    Tipo de grafico
+                    Seleccionar Fecha
                 </InputLabel>
                 <Select
                     labelId="demo-simple-select-label"

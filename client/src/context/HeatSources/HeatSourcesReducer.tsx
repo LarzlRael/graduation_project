@@ -4,8 +4,8 @@ import { GeoJsonFeature } from '../../interfaces/geoJsonResponse';
 
 
 export interface DateSelectedRangeInterface {
-    dateStart: Date;
-    dateEnd: Date;
+    dateStart: Date | null;
+    dateEnd: Date | null;
     dateEndRange: number;
     findbyOneDate: boolean;
 }

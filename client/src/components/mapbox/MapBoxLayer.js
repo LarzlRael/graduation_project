@@ -23,11 +23,8 @@ export const MapBoxLayer = () => {
         selecteDepartamentCopy,
         layerStyle,
         getHeatSources,
-
         stateArrMunProv,
-
         //state from usestate
-
         // menu controls
         showProvMun,
         showOptions,
@@ -38,6 +35,7 @@ export const MapBoxLayer = () => {
         //query to find
         queryToFind,
         changeQueryOneFieldToFind,
+        darkTheme
 
     } = useFocosCalor();
     useDocumentTitle('Mapa de focos de calor');
@@ -49,7 +47,6 @@ export const MapBoxLayer = () => {
 
     return (
         <div className="mapContainer">
-
             <ReactMapGL
                 /* minZoom={viewport.zoom} */
                 mapboxApiAccessToken={apikey}
@@ -65,13 +62,9 @@ export const MapBoxLayer = () => {
                 <NavigationControl style={navControlStyle} />
 
                 <ModalComponent>
-                    <div className="modal-content">
+                    <div className={`modal-content ${darkTheme && 'blackTheme'}`}>
                         <div className="modal-info">
                             <CardInfo
-                                departamento={selecteDepartamentCopy.departamentSelected}
-                                numeroFocos={focosDeCalor.features ? focosDeCalor.features.length : 0}
-                                dateStart={new Date()}
-                                dateEnd={new Date()}
                                 imageUrl={selecteDepartamentCopy.image}
                             />
                             <br />

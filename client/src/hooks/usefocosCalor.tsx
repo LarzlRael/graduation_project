@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from 'react';
-import { departametsArray } from '../data/data';
+import { departametsArray, mapTypeStyle } from '../data/data';
 import { getHeatSourcesByDepartament, getHotSourcesByDepMun, getHotSourcesByDepProv, getMidPoint } from '../provider/heatSourcesservices';
 import { getNombresProvincias, getNombresMunicipios } from '../provider/analysisServices';
 import { Resp as ResProv } from '../interfaces/provinciasResponse.interface';
@@ -8,7 +8,8 @@ import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 
 
 import { FlyToInterpolator } from 'react-map-gl';
-import { QueryToFindInterface } from '../context/HeatSources/HeatSourcesReducer';
+import { AuthAdminContext } from '../context/AuthAdminContext';
+
 
 export const useFocosCalor = () => {
 
@@ -30,7 +31,9 @@ export const useFocosCalor = () => {
         queryToFind
     } = useContext(HeatSourcesContext);
 
-    function usePrevious(value: QueryToFindInterface) {
+    const { darkTheme } = useContext(AuthAdminContext);
+
+    /* function usePrevious(value: QueryToFindInterface) {
         const ref = useRef<QueryToFindInterface>();
         useEffect(() => {
             ref.current = value;
@@ -38,7 +41,15 @@ export const useFocosCalor = () => {
         return ref.current;
     }
 
-    const previusQueryToFind = usePrevious(queryToFind);
+    const previusQueryToFind = usePrevious(queryToFind); */
+    useEffect(() => {
+        if(darkTheme){
+            setChangeMapType(mapTypeStyle[3]);
+        }else{
+            setChangeMapType(mapTypeStyle[2]);
+
+        }
+    }, [darkTheme]);
 
     const { dateStart, dateEnd } = dateSelectedAndRange;
 
@@ -115,8 +126,8 @@ export const useFocosCalor = () => {
 
         const consultarPorDepartamentos = async () => {
             const queryResult = await getHeatSourcesByDepartament({
-                dateEnd: dateEnd.toISOString().slice(0, 10),
-                dateStart: dateStart.toISOString().slice(0, 10),
+                dateEnd: dateEnd!.toISOString().slice(0, 10),
+                dateStart: dateStart!.toISOString().slice(0, 10),
                 departamento: queryToFind.departamentSelected
             });
 
@@ -133,8 +144,8 @@ export const useFocosCalor = () => {
         const consultarProvincias = async () => {
             changeCurrentGeoJson(await getHotSourcesByDepProv(
                 {
-                    dateEnd: dateEnd.toISOString().slice(0, 10),
-                    dateStart: dateStart.toISOString().slice(0, 10),
+                    dateEnd: dateEnd!.toISOString().slice(0, 10),
+                    dateStart: dateStart!.toISOString().slice(0, 10),
                     provincia: queryToFind.provincia
                 }
             ));
@@ -145,8 +156,8 @@ export const useFocosCalor = () => {
         const consultarMunicipio = async () => {
             const queryResult = await getHotSourcesByDepMun(
                 {
-                    dateEnd: dateEnd.toISOString().slice(0, 10),
-                    dateStart: dateStart.toISOString().slice(0, 10),
+                    dateEnd: dateEnd!.toISOString().slice(0, 10),
+                    dateStart: dateStart!.toISOString().slice(0, 10),
                     municipio: queryToFind.municipio
                 }
             );
@@ -255,5 +266,6 @@ export const useFocosCalor = () => {
         queryToFind,
         changeQueryToFind,
         changeQueryOneFieldToFind,
+        darkTheme
     }
 }

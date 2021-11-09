@@ -22,9 +22,8 @@ export const TabNavigator = () => {
             <TabContext value={tab.toString()}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChange}
-                        variant="scrollable"
-                    >
-                        <Tab label="Departamentos" value="1" />
+                        variant="scrollable">
+                        <Tab color="white" label="Departamentos" value="1" />
                         <Tab label="Gráficos por meses" value="2" />
                         <Tab label="Gráficos por departamentos" value="3" />
                     </TabList>

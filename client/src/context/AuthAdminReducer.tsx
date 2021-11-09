@@ -5,6 +5,7 @@ export interface AuthState {
     errorMessage: string;
     user: null;
     logged: boolean;
+    darkTheme: boolean;
 }
 
 type AuthAction =
@@ -13,6 +14,7 @@ type AuthAction =
     | { type: 'removeError' }
     | { type: 'noAuthenticated' }
     | { type: 'logout' }
+    | { type: 'changeTheme', payload: boolean }
 
 export const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
@@ -50,6 +52,12 @@ export const authReducer = (state: AuthState, action: AuthAction): AuthState => 
                 token: null,
                 user: null,
                 logged: false,
+            };
+        case 'changeTheme':
+
+            return {
+                ...state,
+                darkTheme: action.payload,
             };
 
         default:

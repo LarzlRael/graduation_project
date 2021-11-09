@@ -34,13 +34,13 @@ export const GraphByDepartaments = () => {
 
     const getProvinciasNamesService = async () => {
 
-        const dateStartToQuery = dateStart.toISOString().slice(0, 10);
-        const dateEndToQuery = findbyOneDate ? dateEnd.toISOString().slice(0, 10) : dateStart.toISOString().slice(0, 10);
+        const dateStartToQuery = dateStart?.toISOString().slice(0, 10);
+        const dateEndToQuery = findbyOneDate ? dateEnd?.toISOString().slice(0, 10) : dateStart?.toISOString().slice(0, 10);
 
         setCountDepProvState(
             await getCountByDepPro({
-                dateStart: dateStartToQuery,
-                dateEnd: dateEndToQuery,
+                dateStart: dateStartToQuery!,
+                dateEnd: dateEndToQuery!,
                 departamento: departamentoProvincia.departamentSelected,
             })
         );
@@ -49,25 +49,25 @@ export const GraphByDepartaments = () => {
 
     const getDepartamentosNamesService = async () => {
 
-        const dateStartToQuery = dateStart.toISOString().slice(0, 10);
-        const dateEndToQuery = findbyOneDate ? dateEnd.toISOString().slice(0, 10) : dateStart.toISOString().slice(0, 10);
+        const dateStartToQuery = dateStart?.toISOString().slice(0, 10);
+        const dateEndToQuery = findbyOneDate ? dateEnd?.toISOString().slice(0, 10) : dateStart?.toISOString().slice(0, 10);
 
 
         setCountDepProvState(await getCountByDepartamaments({
-            dateStart: dateStartToQuery,
-            dateEnd: dateEndToQuery,
+            dateStart: dateStartToQuery!,
+            dateEnd: dateEndToQuery!,
         }));
         setLoading(false);
     }
 
     const getMunicipiosServices = async () => {
 
-        const dateStartToQuery = dateStart.toISOString().slice(0, 10);
-        const dateEndToQuery = findbyOneDate ? dateEnd.toISOString().slice(0, 10) : dateStart.toISOString().slice(0, 10);
+        const dateStartToQuery = dateStart?.toISOString().slice(0, 10);
+        const dateEndToQuery = findbyOneDate ? dateEnd?.toISOString().slice(0, 10) : dateStart?.toISOString().slice(0, 10);
 
         setCountDepProvState(await getCountByDeMun({
-            dateStart: dateStartToQuery,
-            dateEnd: dateEndToQuery,
+            dateStart: dateStartToQuery!,
+            dateEnd: dateEndToQuery!,
             departamento: departamentoProvincia.departamentSelected,
         }))
         setLoading(false);
@@ -104,25 +104,24 @@ export const GraphByDepartaments = () => {
 
 
     return (
-        <div>
-            <Grid container spacing={6}>
-                <Grid item xs={6}>
+        <div className="graphDepartaments">
+            <div className="combo">
+                <div>
                     <ComboBoxDepartamentos
                         nameDepartament={departamentoProvincia.departamentSelected}
                         setState={setDepartamentoProvincia}
                     />
+
                     {showSwitch && <SwitchWidget />}
-
-                </Grid>
-                <Grid item xs={6}>
-
+                </div>
+                <div>
                     <DatePickerRange />
-
                     <Button
                         onClick={consultar}
                         variant="outlined">Consultar</Button>
-                </Grid>
-            </Grid>
+                </div>
+            </div>
+
 
             <Graficos
                 ref={myRef}

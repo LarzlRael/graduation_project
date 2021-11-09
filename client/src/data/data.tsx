@@ -51,6 +51,7 @@ export interface MapStyleInt {
     mapStyle: string,
     mapName: string
 }
+
 export const mapTypeStyle: MapStyleInt[] = [
     {
         mapName: 'Mapa de Calles',
