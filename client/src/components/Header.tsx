@@ -23,7 +23,7 @@ export const Header = () => {
     const hideMenu = () => {
         setShowMenu(false);
     }
-    
+
     useEffect(() => {
         if (windowDimensions.width < 768) {
             hideMenu()
