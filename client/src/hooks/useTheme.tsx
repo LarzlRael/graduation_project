@@ -1,12 +1,12 @@
 import { useContext } from 'react';
-import { AuthAdminContext } from '../context/AuthAdminContext';
+import { CommonContext } from '../context/commonContext/CommonContext_';
 // useTheme hook
 
 
 
 export const useTheme = () => {
 
-    const { setTheme, darkTheme } = useContext(AuthAdminContext);
+    const { setTheme, darkTheme } = useContext(CommonContext);
 
     return {
         setTheme,

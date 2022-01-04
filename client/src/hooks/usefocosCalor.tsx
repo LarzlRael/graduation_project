@@ -8,7 +8,7 @@ import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 
 
 import { FlyToInterpolator } from 'react-map-gl';
-import { AuthAdminContext } from '../context/AuthAdminContext';
+import { CommonContext } from '../context/commonContext/CommonContext_';
 
 
 export const useFocosCalor = () => {
@@ -31,7 +31,7 @@ export const useFocosCalor = () => {
         queryToFind
     } = useContext(HeatSourcesContext);
 
-    const { darkTheme } = useContext(AuthAdminContext);
+    const { darkTheme } = useContext(CommonContext);
 
     /* function usePrevious(value: QueryToFindInterface) {
         const ref = useRef<QueryToFindInterface>();

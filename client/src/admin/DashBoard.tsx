@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { accountsLink } from './dataMenu';
 import { UpdateInformation } from './dashboard/UpdateInformation';
 import { CVSTutorial } from './dashboard/CVSTutorial';
-import { AuthAdminContext } from '../context/AuthAdminContext';
+import { AuthAdminContext } from '../context/LoginContext/AuthAdminContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const AdminDashboard = () => {

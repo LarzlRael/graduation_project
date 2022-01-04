@@ -1,96 +1,105 @@
 import { useEffect, useContext } from 'react'
-import { FormControlLabel } from '@material-ui/core';
-import { Switch, TextField, FormControl } from '@mui/material';
-import { DatePicker, LocalizationProvider } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { FormControlLabel } from '@material-ui/core'
+import { Switch, TextField, FormControl } from '@mui/material'
+import { DatePicker, LocalizationProvider } from '@mui/lab'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import moment from 'moment'
-import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
-import { DateSelectedRangeInterface } from '../context/HeatSources/HeatSourcesReducer';
+import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext'
+import { DateSelectedRangeInterface } from '../context/HeatSources/HeatSourcesReducer'
+import { LoadingElipsis } from './widgets/LoadingElipsis'
 
 export const DatePickerRange = () => {
+  const {
+    dateSelectedAndRange,
+    datesAvailable,
+    changeDateSelectedAndRanked,
+    loadingState,
+  } = useContext(HeatSourcesContext)
 
-    const {
-        dateSelectedAndRange,
-        datesAvailable,
-        changeDateSelectedAndRanked,
-    } = useContext(HeatSourcesContext);
+  const {
+    dateStart,
+    dateEnd,
+    findbyOneDate: isShowSwith,
+  } = dateSelectedAndRange
 
-    const { dateStart, dateEnd, findbyOneDate: isShowSwith } = dateSelectedAndRange;
+  useEffect(() => {
+    /* setEndDateRange(moment(dateStart,).add(6, 'days').toDate()); */
+    changeDateSelectedAndRanked({
+      ...dateSelectedAndRange,
+      dateEnd: moment(dateStart).add(6, 'days').toDate(),
+    })
 
-    useEffect(() => {
-        /* setEndDateRange(moment(dateStart,).add(6, 'days').toDate()); */
-        changeDateSelectedAndRanked({
-            ...dateSelectedAndRange,
-            dateEnd: moment(dateStart,).add(6, 'days').toDate(),
-        })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateStart])
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dateStart]);
-
-    useEffect(() => {
-        if (!isShowSwith) {
-            changeDateSelectedAndRanked({
-                ...dateSelectedAndRange,
-                dateEnd: dateStart,
-            });
-        } else {
-            changeDateSelectedAndRanked({
-                ...dateSelectedAndRange,
-                dateEnd: moment(dateStart,).add(6, 'days').toDate(),
-            });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isShowSwith]);
-
-    const onChange = (value: any, nameField: keyof DateSelectedRangeInterface) => {
-        changeDateSelectedAndRanked({
-            ...dateSelectedAndRange,
-            [nameField]: value,
-        });
+  useEffect(() => {
+    if (!isShowSwith) {
+      changeDateSelectedAndRanked({
+        ...dateSelectedAndRange,
+        dateEnd: dateStart,
+      })
+    } else {
+      changeDateSelectedAndRanked({
+        ...dateSelectedAndRange,
+        dateEnd: moment(dateStart).add(6, 'days').toDate(),
+      })
     }
-    return (
-        <>
-            <FormControl fullWidth>
-            <br />
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShowSwith])
 
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
+  const onChange = (
+    value: any,
+    nameField: keyof DateSelectedRangeInterface,
+  ) => {
+    changeDateSelectedAndRanked({
+      ...dateSelectedAndRange,
+      [nameField]: value,
+    })
+  }
+  return !loadingState ? (
+    <>
+      <FormControl fullWidth>
+        <br />
 
-                    <DatePicker
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            /* cultureInfo={cultureInfo} */
+            label={!isShowSwith ? 'Buscar por fecha' : 'Fecha inicio'}
+            value={dateStart}
+            inputFormat="dd/MM/yyyy"
+            maxDate={datesAvailable[1]}
+            onChange={(e) => onChange(e!, 'dateStart')}
+            renderInput={(params) => <TextField {...params} />}
+          />
+          <br />
+        </LocalizationProvider>
+        {isShowSwith && (
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              /* cultureInfo={cultureInfo} */
+              label="Selecciona Fecha fin"
+              value={dateEnd}
+              minDate={dateStart ? dateStart : null}
+              inputFormat="dd/MM/yyyy"
+              maxDate={dateEnd ? dateEnd : datesAvailable[1]}
+              onChange={(e) => onChange(e!, 'dateEnd')}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+        )}
+      </FormControl>
 
-                        /* cultureInfo={cultureInfo} */
-                        label={!isShowSwith ? 'Buscar por fecha' : 'Fecha inicio'}
-                        value={dateStart}
-                        inputFormat="dd/MM/yyyy"
-                        maxDate={datesAvailable[1]}
-                        onChange={(e) => onChange(e!, 'dateStart')}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                    <br />
-                </LocalizationProvider>
-                {isShowSwith &&
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DatePicker
-
-                            /* cultureInfo={cultureInfo} */
-                            label='Selecciona Fecha fin'
-                            value={dateEnd}
-                            minDate={dateStart ? dateStart : null}
-                            inputFormat="dd/MM/yyyy"
-                            maxDate={dateEnd ? dateEnd : datesAvailable[1]}
-                            onChange={(e) => onChange(e!, 'dateEnd')}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider>
-                }
-            </FormControl>
-
-            <FormControlLabel control={
-                <Switch
-                    checked={dateSelectedAndRange.findbyOneDate}
-                    onChange={(e) => onChange(e.target.checked, 'findbyOneDate')}
-                />
-            } label={`Buscando por ${isShowSwith ? 'Rango' : 'Un solo dia'}`} />
-
-        </>
-    )
+      <FormControlLabel
+        control={
+          <Switch
+            checked={dateSelectedAndRange.findbyOneDate}
+            onChange={(e) => onChange(e.target.checked, 'findbyOneDate')}
+          />
+        }
+        label={`Buscando por ${isShowSwith ? 'Rango' : 'Un solo dia'}`}
+      />
+    </>
+  ) : (
+    <LoadingElipsis />
+  )
 }

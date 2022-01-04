@@ -1,5 +1,5 @@
 import { serverAPI } from './serverConfig';
-import { LoginResponse } from '../context/login.admin.interfaces';
+import { LoginResponse } from '../context/LoginContext/interfaces/login.admin.interfaces';
 
 export const singInAdmin = async (username: string, password: string) => {
     const { data } = await serverAPI.post<LoginResponse>('/auth/signin', {

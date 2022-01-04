@@ -1,7 +1,7 @@
 
 import { useEffect, useContext } from 'react';
 import tokenAuth from '../utils/token_auth';
-import { AuthAdminContext } from '../context/AuthAdminContext';
+import { AuthAdminContext } from '../context/LoginContext/AuthAdminContext';
 import {
     Route,
     Redirect,

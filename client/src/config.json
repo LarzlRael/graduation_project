@@ -1,0 +1,5 @@
+{
+  "domainURL": "http://localhost:3000",
+  "requestURL": "http://localhost:5000/api",
+  "requestURL2": "http://localhost:5001/api"
+}

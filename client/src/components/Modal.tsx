@@ -3,7 +3,8 @@ import { IoCloseCircle } from "react-icons/io5";
 import styled from 'styled-components';
 import { HeatSourcesContext } from '../context/HeatSources/HeatSourceContext';
 import { sizeMedia } from '../utils/mediaQuerys';
-import { AuthAdminContext } from '../context/AuthAdminContext';
+import { CommonContext } from '../context/commonContext/CommonContext_';
+
 
 export interface LayoutProps {
     children: React.ReactNode,
@@ -23,7 +24,7 @@ export const Modal = ({ children,
 }: LayoutProps) => {
 
     const { modalIsOpen, closeModal } = useContext(HeatSourcesContext);
-    const { darkTheme } = useContext(AuthAdminContext);
+    const { darkTheme } = useContext(CommonContext);
 
 
     return (
