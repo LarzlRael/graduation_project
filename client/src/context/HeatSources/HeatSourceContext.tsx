@@ -125,7 +125,6 @@ export const HeatProvider = ({ children }: any) => {
   }
 
   const getDatesAvailable = async () => {
-    console.log(HeatSourcesInitialState.loadingState)
     try {
       dispatch({ type: 'loading', payload: true })
       const dates = await getAvailableDatesServer()
@@ -140,7 +139,6 @@ export const HeatProvider = ({ children }: any) => {
       })
       dispatch({ type: 'loading', payload: false })
     } catch (error) {
-      console.log(error)
       dispatch({ type: 'loading', payload: false })
     }
   }

@@ -1,20 +1,18 @@
-import { createContext, useEffect, useReducer } from 'react'
-import { commonReducer, CommonState } from './CommonReducer'
+import { createContext, useReducer } from 'react'
+import { commonReducer, CommonState, ISnackbar } from './CommonReducer'
 
 type CommonContextProps = {
-  snackBar: {
-    isOpen: boolean
-    content: string
-  }
-  darkTheme: boolean  ,
-  showSnackBar: (content: string, status: boolean) => void
+  snackBar: ISnackbar
+  darkTheme: boolean
+  showSnackBar: (parameters: ISnackbar) => void
   setTheme: () => void
 }
 
 const CommonInitialState: CommonState = {
   snackBar: {
     isOpen: false,
-    content: '',
+    message: '',
+    kind: true,
   },
   darkTheme: false,
 }
@@ -24,8 +22,8 @@ export const CommonContext = createContext({} as CommonContextProps)
 export const CommonProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(commonReducer, CommonInitialState)
 
-  const showSnackBar = async (content: string, status: boolean) => {
-    dispatch({ type: 'openSnackBar', payload: { content, status } })
+  const showSnackBar = (parameters: ISnackbar) => {
+    dispatch({ type: 'openSnackBar', payload: { ...parameters } })
   }
 
   const setTheme = () => {
@@ -42,6 +40,8 @@ export const CommonProvider = ({ children }: any) => {
         ...state,
         setTheme,
         showSnackBar,
+        
+        
       }}
     >
       {children}

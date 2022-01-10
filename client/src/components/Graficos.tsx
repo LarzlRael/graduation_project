@@ -3,6 +3,7 @@ import { CircularProgress } from '@material-ui/core'
 import { useGraficos } from '../hooks/useGraficos'
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { useRef, useEffect } from 'react'
+import { LoadingElipsis } from './widgets/LoadingElipsis';
 
 export interface GraphProps {
   info?: CountDepProMun
@@ -50,7 +51,7 @@ export const Graficos = (graphProps: GraphProps) => {
       </FormControl>
 
       {loading ? (
-        <CircularProgress />
+        <LoadingElipsis />
       ) : info?.resp.length === 0 ? (
         <div>No se encontraron datos</div>
       ) : (

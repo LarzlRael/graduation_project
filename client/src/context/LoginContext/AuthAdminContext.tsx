@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer } from 'react'
+import { createContext, useEffect, useReducer, useContext } from 'react'
 
 /* import { authReducer, AuthState } from '../AuthAdminReducer' */
 
@@ -12,6 +12,8 @@ import { serverAPI } from '../../provider/serverConfig'
 import { singInAdmin } from '../../provider/authServices'
 import tokenAuth from '../../utils/token_auth'
 import { authReducer, AuthState } from './AuthAdminReducer'
+import { CommonContext } from '../commonContext/CommonContext_'
+import { openSnackbar } from '../commonContext/actions'
 
 type AuthContextProps = {
   errorMessage: string
@@ -40,7 +42,7 @@ export const AuthAdminContext = createContext({} as AuthContextProps)
 
 export const AuthProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(authReducer, AuthInitialState)
-
+  const { showSnackBar } = useContext(CommonContext)
   useEffect(() => {
     checkToken()
   }, [])
@@ -87,6 +89,11 @@ export const AuthProvider = ({ children }: any) => {
           usuario: data.usuario,
         },
       })
+      showSnackBar({
+        message: 'Inicio de sesión exitoso',
+        isOpen: true,
+        kind: true,
+      })
       localStorage.setItem('token', data.accessToken)
       dispatch({
         type: 'loading',
@@ -95,9 +102,15 @@ export const AuthProvider = ({ children }: any) => {
     } catch (error) {
       /* console.log(error.response.data);
             console.log(error.response.data.error); */
+
       dispatch({
         type: 'addError',
         payload: 'Credenciales incorrectas',
+      })
+      showSnackBar({
+        message: 'Hubo un error al iniciar sesión',
+        isOpen: true,
+        kind: false,
       })
       dispatch({
         type: 'loading',

@@ -1,15 +1,17 @@
+export interface ISnackbar {
+  isOpen: boolean
+  message: string
+  kind: boolean
+}
 export interface CommonState {
-  snackBar: {
-    isOpen: boolean
-    content: string
-  },
-  darkTheme: boolean,
+  snackBar: ISnackbar
+  darkTheme: boolean
 }
 
 type CommonAction =
-  | { type: 'openSnackBar'; payload: { content: string; status: boolean } }
   | { type: 'changeTheme'; payload: boolean }
-  /* | { type: 'removeError' }
+  | { type: 'openSnackBar'; payload: ISnackbar }
+/* | { type: 'removeError' }
   | { type: 'noAuthenticated' } 
   | { type: 'logout' }
   | { type: 'changeTheme'; payload: boolean }
@@ -24,8 +26,9 @@ export const commonReducer = (
       return {
         ...state,
         snackBar: {
-          content: action.payload.content,
-          isOpen: action.payload.status,
+          isOpen: action.payload.isOpen,
+          message: action.payload.message,
+          kind: action.payload.kind,
         },
       }
     case 'changeTheme':
@@ -33,6 +36,7 @@ export const commonReducer = (
         ...state,
         darkTheme: action.payload,
       }
+
     default:
       return state
   }
