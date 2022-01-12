@@ -11,7 +11,6 @@ import { RouteComponentProps } from 'react-router-dom'
 import { LoadingElipsis } from '../components/widgets/LoadingElipsis'
 import { AuthAdminContext } from '../context/LoginContext/AuthAdminContext'
 import { CommonContext } from '../context/commonContext/CommonContext_'
-import { Snackbar } from '../components/widgets/snackBar/SnackBar'
 import { ButtonIcon } from '../components/widgets/buttons/ButtonIcons'
 
 interface Props extends RouteComponentProps<any> {

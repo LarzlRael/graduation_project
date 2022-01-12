@@ -14,7 +14,7 @@ const CommonInitialState: CommonState = {
     message: '',
     kind: true,
   },
-  darkTheme: false,
+  darkTheme: localStorage.getItem('darktheme') === 'true' ? true : false,
 }
 
 export const CommonContext = createContext({} as CommonContextProps)

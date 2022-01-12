@@ -1,10 +1,10 @@
 .ButtonIcon {
-    font-size: 4rem;
-    padding: 8px 15px;
+    font-size: 2rem;
+    padding: 8px 10px;
     border-radius: 8px;
     background: #5b555e88;
     margin-left: 20px;
-    color: #773b8e;
+    color: var(--primaryLanding);
 }
 .ButtonIcon:hover {
     opacity: 0.8;
