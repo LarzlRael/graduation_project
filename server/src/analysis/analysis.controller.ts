@@ -14,6 +14,14 @@ export class AnalysisController {
       dates,
     });
   }
+  @Get('available-mounth')
+  async getMonthYearAvailabes(@Res() res: Response) {
+    const years = await this.analysisService.getMonthYearAvailabes();
+    res.json({
+      ok: true,
+      years,
+    });
+  }
 
   @Post('getnheatsourcebydepartament')
   async getNHeatSourceByDepartament(

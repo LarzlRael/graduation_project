@@ -1,4 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
+import * as moment from 'moment';
 import { Pool } from 'pg';
 import {
   departamentos,
@@ -30,6 +31,35 @@ export class AnalysisService {
     ]);
     console.log(resp.rows[0]);
     return resp.rows[0].cantidad == 0;
+  }
+  async getMonthYearAvailabes() {
+    const from = `select acq_date from ${fire_history} order by acq_date ASC limit 1 ;`;
+    const to = `select acq_date from ${fire_history} order by acq_date DESC limit 1 ;`;
+
+    const res1 = await this.pool.query(from);
+    const res2 = await this.pool.query(to);
+
+    const getAvailablesMounts = `
+    SELECT date_trunc('day', dd):: date
+    FROM generate_series
+      ('${moment(res1.rows[0].acq_date).utc().format('YYYY-MM-DD')}':: timestamp
+        , '${moment(res2.rows[0].acq_date)
+        .utc()
+        .format('YYYY-MM-DD')}':: timestamp
+        , '1 month':: interval) dd
+      ;
+      `;
+    const execute = await this.pool.query(getAvailablesMounts);
+    const array = [];
+    execute.rows.map((row, i) => {
+      const date = moment(row.date_trunc).utc().format('MM-YYYY');
+      if (parseInt(date.split('-')[0]) === 1) {
+        array.push(parseInt(date.split('-')[1]));
+      }
+      array.push(date);
+    });
+
+    return array.reverse();
   }
 
   async getDateFromDatabase(count: number, from: number): Promise<string[]> {
@@ -167,9 +197,8 @@ export class AnalysisService {
 
   async getCountHeatSourceByMonths(countDto: CountDto) {
     const query = `
-    select count(brightness) as focos_calor,extract(MONTH from acq_date) as mes  from fire_history 
-    where  extract(year from acq_date) = $1 group by mes
-    `;
+    select count(brightness) as focos_calor,extract(MONTH from acq_date) as mes from fire_history 
+    where  extract(year from acq_date) = $1 group by mes`;
     const res = await this.pool.query(query, [countDto.year]);
     return res.rows;
   }
