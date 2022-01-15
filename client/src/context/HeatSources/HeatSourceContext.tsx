@@ -24,6 +24,7 @@ import {
   LatLngInt,
 } from '../../interfaces/countProvinceDepartamento.interface'
 import { GeoJsonFeature } from '../../interfaces/geoJsonResponse'
+import { SelectOptionDateInterface } from './HeatSourcesReducer'
 moment.locale('es')
 
 type HeatSourcesStateProps = {
@@ -34,7 +35,7 @@ type HeatSourcesStateProps = {
   mapStyle: MapStyleInt
   tab: number
   graphType: string
-  mounthSelected: number
+  mounthAndYearSelected: SelectOptionDateInterface
   titleArray: string[]
   countByDates: CountByDates
   currentLatLongMidLocation: LatLngInt
@@ -47,8 +48,8 @@ type HeatSourcesStateProps = {
   setChangeMapType: (mapStyle: MapStyleInt) => void
   setChangeTab: (value: number) => void
   changeTypeGraph: (value: string) => void
-  setMounthSelected: (value: number) => void
-  getHeatSourcesInfoToGragh: (monthNumber: number) => void
+  setMounthSelected: (value: SelectOptionDateInterface) => void
+  getHeatSourcesInfoToGragh: (monthNumber: number, year: number) => void
   changeCurrentLatLng: (currentLatLong: LatLngInt) => void
   changeCurrentGeoJson: (geoJsonCurrent: GeoJsonFeature) => void
   changeDateSelectedAndRanked: (
@@ -71,7 +72,11 @@ const HeatSourcesInitialState: HeatSourcestState = {
   mapStyle: mapTypeStyle[2],
   tab: 1,
   graphType: graphTypeArray[0],
-  mounthSelected: 0,
+  mounthAndYearSelected: {
+    month: 1,
+    year: new Date().getFullYear(),
+    onlyYear: true,
+  },
   countByDates: {
     ok: false,
     resp: [],
@@ -110,7 +115,11 @@ export const HeatProvider = ({ children }: any) => {
 
   useEffect(() => {
     getDatesAvailable()
-    setMounthSelected(0)
+    setMounthSelected({
+      month: 1,
+      year: new Date().getFullYear(),
+      onlyYear: true,
+    })
     changeDateSelectedAndRanked({
       ...state.dateSelectedAndRange,
       dateStart: state.datesAvailable[1],
@@ -176,28 +185,30 @@ export const HeatProvider = ({ children }: any) => {
     })
   }
 
-  const setMounthSelected = (mes: number) => {
+  const setMounthSelected = (
+    selectedMountOrYear: SelectOptionDateInterface,
+  ) => {
     dispatch({
-      type: 'changeMounth',
-      payload: mes,
+      type: 'changeMounthOrYear',
+      payload: { ...selectedMountOrYear },
     })
   }
-  const getHeatSourcesInfoToGragh = async (month: number) => {
+  const getHeatSourcesInfoToGragh = async (month: number, year: number) => {
     let getInformation: CountByDates
     const arrayTitles: string[] = []
     dispatch({
       type: 'loading',
       payload: true,
     })
-    if (month === 0) {
+    if (state.mounthAndYearSelected.onlyYear) {
       getInformation = await getCountHeatSourcesByMonths({
-        year: 2021,
+        year: year,
       })
       getInformation?.resp.map((_, i) => arrayTitles.push(meses[i + 1]))
     } else {
       getInformation = await getCountHeatSourcesByMonth({
         month: month,
-        year: 2021,
+        year: year,
       })
       getInformation?.resp.map((resp) =>
         arrayTitles.push(moment(resp.acq_date).add(8, 'hours').format('L')),

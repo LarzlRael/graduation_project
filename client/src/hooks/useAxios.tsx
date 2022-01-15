@@ -4,7 +4,7 @@ import config from '../config.json'
 
 axios.defaults.baseURL = config.requestURL
 
-axios.interceptors.request.use(
+/* axios.interceptors.request.use(
   (config) => {
     const token_seguridad = window.localStorage.getItem('token_seguridad')
     if (token_seguridad) {
@@ -15,9 +15,9 @@ axios.interceptors.request.use(
   (error) => {
     return Promise.reject(error)
   },
-)
-const useAxiosAuth = (axiosParams: any) => {
-  const [response, setResponse] = useState(undefined)
+) */
+const useAxiosAuth = (axiosParams: { url: string }) => {
+  const [response, setResponse] = useState<any>(undefined)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -25,7 +25,7 @@ const useAxiosAuth = (axiosParams: any) => {
     try {
       const result = axiosParams?.url ? await axios.request(axiosParams) : null
       setResponse(result?.data)
-    } catch (err: any) {
+    } catch (err) {
       setError(error)
     } finally {
       setLoading(false)

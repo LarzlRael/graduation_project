@@ -33,7 +33,6 @@ export const PrivateRoute = (props: PrivateRouteProps) => {
             render={(routeProps) => logged ?
                 <Component {...routeProps} /> :
                 <Redirect to='/login' />
-
             }
         />
     );

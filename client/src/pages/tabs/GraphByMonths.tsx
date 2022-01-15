@@ -13,9 +13,15 @@ import {
 import { FormControlLabel } from '@material-ui/core'
 import { meses } from '../../data/data'
 import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext'
-import { getRandomColor } from '../../utils/utils'
-import {LoadingElipsis} from '../../components/widgets/LoadingElipsis';
-
+import {
+  getOnlyYear,
+  getRandomColor,
+  getOnlyMonth,
+  isYear,
+} from '../../utils/utils'
+import { LoadingElipsis } from '../../components/widgets/LoadingElipsis'
+import useAxiosAuth from '../../hooks/useAxios'
+import { convertMonths } from '../../utils/utils';
 
 moment.locale('es')
 
@@ -23,16 +29,19 @@ export const GraphByMonths = () => {
   const {
     setMounthSelected,
     getHeatSourcesInfoToGragh,
-    mounthSelected,
+    mounthAndYearSelected,
     titleArray,
     loadingState,
     countByDates,
   } = useContext(HeatSourcesContext)
 
   useEffect(() => {
-    getHeatSourcesInfoToGragh(mounthSelected)
+    getHeatSourcesInfoToGragh(
+      mounthAndYearSelected.month,
+      mounthAndYearSelected.year,
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounthSelected])
+  }, [mounthAndYearSelected])
 
   const [lineGraph, setLineGraph] = useState(false)
 
@@ -59,7 +68,8 @@ export const GraphByMonths = () => {
     plugins: {
       title: {
         display: true,
-        text: `Focos de calor en ${meses[mounthSelected]}`,
+        /* text: `Focos de calor en ${meses[mounthAndYearSelected.month]}`, */
+        text: `Focos de calor en xd`,
       },
     },
     elements: {
@@ -69,11 +79,32 @@ export const GraphByMonths = () => {
     },
   }
 
+  const { response, loading } = useAxiosAuth({
+    url: '/analysis/available-mounth',
+  })
   const myRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     window.scrollTo(0, myRef.current?.offsetTop ? myRef.current?.offsetTop : 0)
-  }, [mounthSelected])
+  }, [mounthAndYearSelected])
+
+  const handleChange = (value: string) => {
+    if (isYear(value)) {
+      setMounthSelected({
+        month: 0,
+        year: parseInt(value),
+        onlyYear: true,
+      })
+    } else {
+      setMounthSelected({
+        month: getOnlyMonth(value),
+        year: getOnlyYear(value),
+        onlyYear: false,
+      })
+    }
+  }
+  // list of mouths with year field
+
   return (
     <>
       <FormControlLabel
@@ -86,24 +117,28 @@ export const GraphByMonths = () => {
         label={`Grafico de ${!lineGraph ? 'Lineas' : 'Puntos'}`}
       />
 
-      <FormControl>
-        <InputLabel id="demo-simple-select-label">Seleccionar Fecha</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Age"
-          value={mounthSelected}
-          onChange={({ target }) =>
-            setMounthSelected(parseInt(target.value.toString()))
-          }
-        >
-          {meses.map((mes, i) => (
-            <MenuItem key={mes} value={i}>
-              {mes}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      {loading ? (
+        <LoadingElipsis />
+      ) : (
+        <FormControl>
+          <InputLabel id="demo-simple-select-label">
+            Seleccionar Fecha
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Age"
+            value={mounthAndYearSelected}
+            onChange={(e) => handleChange(e.target.value.toString())}
+          >
+            {response?.years?.map((mes: any, i: number) => (
+              <MenuItem key={mes} value={mes}>
+                {convertMonths(mes)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
       {loadingState ? (
         <LoadingElipsis />
       ) : (
