@@ -70,7 +70,6 @@ export const getOnlyMonth = (date: string): number => {
   return parseInt(date.split('-')[0])
 }
 export const getOnlyYear = (date: string): number => {
-  console.log(date)
   return parseInt(date.split('-')[1])
 }
 

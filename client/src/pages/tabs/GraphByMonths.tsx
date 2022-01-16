@@ -11,7 +11,7 @@ import {
   MenuItem,
 } from '@mui/material'
 import { FormControlLabel } from '@material-ui/core'
-import { meses } from '../../data/data'
+import { meses, monthName } from '../../data/data'
 import { HeatSourcesContext } from '../../context/HeatSources/HeatSourceContext'
 import {
   getOnlyYear,
@@ -21,7 +21,7 @@ import {
 } from '../../utils/utils'
 import { LoadingElipsis } from '../../components/widgets/LoadingElipsis'
 import useAxiosAuth from '../../hooks/useAxios'
-import { convertMonths } from '../../utils/utils';
+import { convertMonths } from '../../utils/utils'
 
 moment.locale('es')
 
@@ -69,7 +69,11 @@ export const GraphByMonths = () => {
       title: {
         display: true,
         /* text: `Focos de calor en ${meses[mounthAndYearSelected.month]}`, */
-        text: `Focos de calor en xd`,
+        text: mounthAndYearSelected.month
+          ? monthName[mounthAndYearSelected.month] +
+            '-' +
+            mounthAndYearSelected.year
+          : mounthAndYearSelected.year + '',
       },
     },
     elements: {
@@ -128,14 +132,27 @@ export const GraphByMonths = () => {
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             label="Age"
-            value={mounthAndYearSelected}
+            value={
+              mounthAndYearSelected.month
+                ? mounthAndYearSelected.month + '-' + mounthAndYearSelected.year
+                : mounthAndYearSelected.year
+            }
             onChange={(e) => handleChange(e.target.value.toString())}
           >
-            {response?.years?.map((mes: any, i: number) => (
-              <MenuItem key={mes} value={mes}>
-                {convertMonths(mes)}
-              </MenuItem>
-            ))}
+            {/*            {
+    "month": 10,
+    "year": 2020
+} */}
+            {response?.years?.map(
+              (mes: { month: number; year: number }, i: number) => (
+                <MenuItem
+                  key={mes.month}
+                  value={mes.month ? mes.month + '-' + mes.year : mes.year}
+                >
+                  {mes.month ? monthName[mes.month] + '-' + mes.year : mes.year}
+                </MenuItem>
+              ),
+            )}
           </Select>
         </FormControl>
       )}

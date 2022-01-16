@@ -26,7 +26,7 @@ export const UpdateInformation = () => {
 
         if (!selectedFile) return;
         const message = await uploadFileCVS(selectedFile);
-        console.log(message);
+
         if (message.ok) {
             toast.success(message.msg, {
             })

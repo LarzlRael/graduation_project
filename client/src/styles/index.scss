@@ -26,6 +26,7 @@ body {
       }
       .logo {
         @include media(sm) {
+          background: $back-ground-responsive;
         }
       }
       .enlaces {
@@ -33,16 +34,25 @@ body {
           color: white;
 
           @include media(sm) {
+            background: $back-ground-responsive;
           }
 
           &:hover {
-            color: $primaryLanding;
+            color: $back-ground-responsive;
+          }
+          &.active {
+            color: white;
+
+            border-bottom: 3px solid $back-ground-responsive;
           }
           &.active {
             @include media(sm) {
             }
           }
         }
+      }
+      .info .buttonMap {
+        background: $back-ground-responsive;
       }
     }
 
@@ -60,6 +70,7 @@ body {
         &:hover {
         }
         @include media(sm) {
+          background: $back-ground-responsive;
         }
       }
       .title {

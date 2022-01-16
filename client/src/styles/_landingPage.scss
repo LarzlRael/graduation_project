@@ -5,7 +5,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    transform: scale(1.01); 
+    transform: scale(1.01);
     @media (max-width: 450px) {
         background-image: url("https://res.cloudinary.com/negocioexitoso-online/image/upload/v1636335968/backResponsive_qex3mz.png");
     }
@@ -31,9 +31,8 @@
         margin-top: 0;
         padding-top: 7rem;
         width: 100%;
-        .info-container {   
+        .info-container {
             width: 100%;
-            
         }
     }
     .buttonMap {
@@ -67,8 +66,7 @@
         }
         @include media(sm) {
             width: 100%;
-        padding: 0;
+            padding: 0;
         }
     }
 }
-

@@ -29,7 +29,6 @@ export const GraphByDepartaments = () => {
         ok: false,
         resp: []
     });
-    console.log('render searcho provincias');
     const [loading, setLoading] = useState(false);
 
     const getProvinciasNamesService = async () => {

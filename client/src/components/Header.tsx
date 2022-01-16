@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { IoMenu } from 'react-icons/io5'
 import { useWindowDimensions } from '../hooks/useWindowsDimentions'
-import { IoPersonSharp } from 'react-icons/io5'
+import { IoPersonCircle } from 'react-icons/io5'
 import styled from 'styled-components'
 
 export const Header = () => {
@@ -35,7 +35,7 @@ export const Header = () => {
   return (
     <header className="header">
       <div className="logo">
-        <NavLink to="/inicio">Logo we</NavLink>
+        <NavLink to="/inicio">Logo</NavLink>
         <div className="menu-icon">
           <IoMenu
             color="#fff"
@@ -84,7 +84,7 @@ export const Header = () => {
           className="link"
           to="/login"
         >
-          <IoPersonSharp fontSize={20} />
+          <IoPersonCircle fontSize={30} />
         </NavLink>
       </div>
     </header>
