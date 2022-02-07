@@ -23,6 +23,7 @@ body {
     color: white;
     .header {
       @include media(sm) {
+        background: $back-ground-responsive;
       }
       .logo {
         @include media(sm) {
@@ -46,7 +47,10 @@ body {
             border-bottom: 3px solid $back-ground-responsive;
           }
           &.active {
+            color: $back-ground-responsive;
+
             @include media(sm) {
+              color: white;
             }
           }
         }
@@ -79,6 +83,49 @@ body {
         }
       }
     }
+
+    /* .login-div .form .formLogin .button-login,
+    .login-div .info-login {
+      background: $back-ground-responsive;
+      &:hover {
+        // background: $dash-background;
+        background-color: darken($color: $back-ground-responsive, $amount: 15);
+      }
+    }
+    .login-div .form .formLogin .title {
+      color: white;
+    }
+
+    .dashboard {
+      .dash {
+        background: $back-ground-responsive;
+        transition: 0.4s ease all;
+        .dash-group {
+          .dash-item {
+            color: white;
+            background: $back-ground-responsive;
+
+            &:hover {
+              background: $dash-title-color;
+              border-left: 5px solid $primary-color;
+            }
+            &.active {
+              color: white;
+              background: $dash-title-color;
+              border-left: 5px solid white;
+              font-size: 13px;
+            }
+          }
+        }
+      }
+    }
+    // Toolbar 
+    .toolbar {
+      background-color: $back-ground-responsive;
+    }
+  } */
+    .login-div .form .formLogin .title {
+      color: white;
+    }
   }
 }
-//dark theme

@@ -24,7 +24,7 @@ export const TabNavigator = () => {
                     <TabList onChange={handleChange}
                         variant="scrollable">
                         <Tab color="white" label="Departamentos" value="1" />
-                        <Tab label="Gráficos por meses" value="2" />
+                        <Tab label="Gráficos por periodo de tiempo" value="2" />
                         <Tab label="Gráficos por departamentos" value="3" />
                     </TabList>
                 </Box>

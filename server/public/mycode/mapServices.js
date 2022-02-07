@@ -1,4 +1,4 @@
-const baseUrl = 'http://192.168.0.9:4000';
+const baseUrl = 'http://localhost:4000';
 
 const getByDate = async function (date) {
   const respuesta = await fetch(`${baseUrl}/maps/getbyDate/${date}`);

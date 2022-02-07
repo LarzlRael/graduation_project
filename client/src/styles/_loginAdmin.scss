@@ -292,11 +292,9 @@ input[type="file"] {
 
 .toolbar {
     display: none;
-
     @include media(sm) {
         display: flex;
     }
-
     color: white;
     width: 100%;
     background-color: $dash-background;

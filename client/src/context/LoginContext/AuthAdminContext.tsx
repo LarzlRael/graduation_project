@@ -3,7 +3,6 @@ import { createContext, useEffect, useReducer, useContext } from 'react'
 /* import { authReducer, AuthState } from '../AuthAdminReducer' */
 
 import {
-  ErrorResponse,
   LoginData,
   LoginResponse,
   RegisterData,
@@ -13,7 +12,7 @@ import { singInAdmin } from '../../provider/authServices'
 import tokenAuth from '../../utils/token_auth'
 import { authReducer, AuthState } from './AuthAdminReducer'
 import { CommonContext } from '../commonContext/CommonContext_'
-import { openSnackbar } from '../commonContext/actions'
+
 
 type AuthContextProps = {
   errorMessage: string
@@ -80,6 +79,7 @@ export const AuthProvider = ({ children }: any) => {
         type: 'loading',
         payload: true,
       })
+
       const data = await singInAdmin(username, password)
 
       dispatch({

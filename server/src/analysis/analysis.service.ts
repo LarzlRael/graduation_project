@@ -23,13 +23,12 @@ export class AnalysisService {
   }
   async verifyDatesDB(datestart: Date, dateEnd: Date, instrument: string) {
     const verify = `select count(acq_date) as cantidad from fire_history where instrument=$1 and acq_date BETWEEN $2 and $3`;
-
     const resp = await this.pool.query(verify, [
       instrument,
-      datestart,
-      dateEnd,
+      moment(datestart).add(8, 'hours'),
+      moment(dateEnd).add(8, 'hours'),
     ]);
-    console.log(resp.rows[0]);
+
     return resp.rows[0].cantidad == 0;
   }
   async getMonthYearAvailabes() {
@@ -51,12 +50,20 @@ export class AnalysisService {
       `;
     const execute = await this.pool.query(getAvailablesMounts);
     const array = [];
-    execute.rows.map((row, i) => {
+    execute.rows.map((row) => {
+      const month = moment(row.date_trunc).utc().format('MM');
+      const year = moment(row.date_trunc).utc().format('YYYY');
       const date = moment(row.date_trunc).utc().format('MM-YYYY');
       if (parseInt(date.split('-')[0]) === 1) {
-        array.push(parseInt(date.split('-')[1]));
+        array.push({
+          month: 0,
+          year: parseInt(date.split('-')[1]),
+        });
       }
-      array.push(date);
+      array.push({
+        month: parseInt(month),
+        year: parseInt(year),
+      });
     });
 
     return array.reverse();

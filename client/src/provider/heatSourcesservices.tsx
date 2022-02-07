@@ -10,7 +10,6 @@ export const getHigherOrLowerByDate = async (): Promise<DatesResponse> => {
     const { data } = await serverAPI.get<DatesResponse>('/analysis/dates');
     return data;
 }
-
 export const getHeatSourcesByDepartament = async (consulHeatSources: HeatSourcesByPlace): Promise<GeoJSONResponse> => {
     const resp = await serverAPI.post<Promise<GeoJSONResponse>>('/maps/getheatsourcesbydeparment', {
         ...consulHeatSources,

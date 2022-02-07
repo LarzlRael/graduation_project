@@ -92,7 +92,7 @@ export class MapsController {
     @Res() res: Response,
     @Body() mapDto: MapDto,
   ) {
-    console.log(mapDto);
+
     const result = await this.mapsService.getHeatSourcesByProvincia(mapDto);
     return res.json(result);
   }
@@ -112,7 +112,6 @@ export class MapsController {
     @Res() res: Response,
     @Body() mapDto: MapDto,
   ) {
-    console.log(mapDto);
     const result = await this.mapsService.getHeatSourcesByMunicipio(mapDto);
     return res.json(result);
   }

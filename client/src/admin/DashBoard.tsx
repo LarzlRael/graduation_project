@@ -23,7 +23,6 @@ export const AdminDashboard = (props: RouteComponentProps) => {
   const [openMenu, setOpenMenu] = useState(false)
   const { logOut } = useContext(AuthAdminContext)
   const { windowDimensions } = useWindowDimensions()
-
   const handleToogleMenu = () => {
     setOpenMenu(!openMenu)
   }
@@ -55,8 +54,6 @@ export const AdminDashboard = (props: RouteComponentProps) => {
         <h4>Panel de administracion</h4>
       </div>
       <div className="dashboard">
-        {/* <div className="dash open-menu"> */}
-
         <div className={`dash ${openMenu ? 'open-menu' : 'close-menu'}`}>
           <div className="profile-image">
             <img

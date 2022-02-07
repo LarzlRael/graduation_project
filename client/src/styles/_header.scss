@@ -24,6 +24,12 @@
         }
     }
     .enlaces {
+        display: flex;
+        align-items: center;
+        @include media(sm) {
+            align-items: flex-start;
+            flex-direction: column;
+        }
         transition: 0.5s ease all;
         &.openMenu {
             transform: translate(0%);
@@ -33,6 +39,9 @@
             display: none;
         }
         .link {
+            &:nth-last-child(1) {
+                margin: auto;
+            }
             @include media(sm) {
                 display: flex;
                 background: $primaryLanding;

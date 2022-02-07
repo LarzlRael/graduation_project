@@ -1,5 +1,7 @@
-import { createContext, useReducer } from 'react'
+import { createContext, useReducer, useContext } from 'react'
 import { commonReducer, CommonState, ISnackbar } from './CommonReducer'
+import { HeatSourcesContext } from '../HeatSources/HeatSourceContext'
+import { mapTypeStyle } from '../../data/data'
 
 type CommonContextProps = {
   snackBar: ISnackbar
@@ -40,8 +42,6 @@ export const CommonProvider = ({ children }: any) => {
         ...state,
         setTheme,
         showSnackBar,
-        
-        
       }}
     >
       {children}
